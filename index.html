@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1F3864">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Iglesia App">
+<title>Crecimiento Espiritual — IASD</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --azul: #1F3864; --verde: #1E5631; --bg: #f5f5f5; --card: #ffffff;
+    --text: #111111; --text2: #666666; --border: rgba(0,0,0,0.1);
+    --green: #059669; --blue: #2563EB; --amber: #D97706; --red: #DC2626;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar { background: var(--azul); color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .topbar-logo { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .topbar-title { flex: 1; }
+  .topbar-title h1 { font-size: 15px; font-weight: 600; }
+  .topbar-title p { font-size: 11px; opacity: 0.75; }
+
+  /* NAV */
+  .nav { display: flex; background: white; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
+  .nav-btn { flex: 1; padding: 8px 4px 10px; font-size: 10px; color: var(--text2); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color .2s; }
+  .nav-btn .icon { font-size: 20px; }
+  .nav-btn.active { color: var(--azul); font-weight: 600; }
+
+  /* PAGES */
+  .page { display: none; padding: 16px 16px 80px; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  /* SEARCH */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input { width: 100%; padding: 10px 12px 10px 36px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
+  .search-wrap input:focus { border-color: var(--azul); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+  .filter-chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; white-space: nowrap; border: 1px solid var(--border); background: white; color: var(--text2); cursor: pointer; }
+  .filter-chip.active { background: var(--azul); color: white; border-color: var(--azul); }
+
+  /* MEMBER ITEM */
+  .member-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 12px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); active: scale(.98); }
+  .member-item:active { transform: scale(0.98); }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .member-sub { font-size: 12px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* SEMAFORO */
+  .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .b-verde { background: #D1FAE5; color: #065F46; }
+  .b-amarillo { background: #FEF3C7; color: #92400E; }
+  .b-rojo { background: #FEE2E2; color: #991B1B; }
+  .b-azul { background: #DBEAFE; color: #1E40AF; }
+  .b-gris { background: #F3F4F6; color: #4B5563; }
+
+  /* PROFILE */
+  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--azul); background: none; border: none; cursor: pointer; padding: 0 0 14px; font-weight: 500; }
+  .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .avatar-xl { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+
+  /* PROGRESS */
+  .progress-section { margin-bottom: 14px; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-label span { font-size: 13px; color: var(--text2); }
+  .progress-label strong { font-size: 13px; font-weight: 600; }
+  .progress-bar { height: 10px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .fill-verde { background: var(--green); }
+  .fill-azul { background: var(--blue); }
+  .fill-amber { background: var(--amber); }
+  .fill-rojo { background: var(--red); }
+
+  /* POINTS GRID */
+  .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .point-card { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
+  .point-val { font-size: 22px; font-weight: 700; color: var(--text); }
+  .point-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.3; }
+
+  /* ESTUDIOS */
+  .estudio-item { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .estudio-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .estudio-name { font-size: 13px; font-weight: 600; }
+  .leccion-bar { height: 5px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+  .leccion-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+
+  /* INTERESADOS */
+  .int-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .int-name { font-size: 14px; font-weight: 600; }
+  .int-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .sugerencia-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #1E40AF; line-height: 1.4; }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; font-size: 14px; padding: 11px 12px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: white; color: var(--text); outline: none;
+    -webkit-appearance: none; appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--azul); }
+  .form-group textarea { min-height: 70px; resize: vertical; }
+  .btn-primary { width: 100%; padding: 13px; background: var(--azul); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+  .btn-primary:active { opacity: .85; }
+  .btn-secondary { width: 100%; padding: 13px; background: white; color: var(--azul); border: 2px solid var(--azul); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+  /* ACTION CARDS */
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .action-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+  .action-card:active { transform: scale(0.96); }
+  .action-icon { font-size: 32px; margin-bottom: 8px; }
+  .action-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .action-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+  /* DASHBOARD */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
+  .stat-val { font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.3; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+  /* LOADING / EMPTY */
+  .loading { text-align: center; padding: 50px 20px; color: var(--text2); }
+  .spinner { width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--azul); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; line-height: 1.6; }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 80px; left: 16px; right: 16px; background: #1F3864; color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; text-align: center; }
+  .toast.show { opacity: 1; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  .tag { display: inline-block; background: #EEF2FF; color: #3730A3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">✝</div>
+  <div class="topbar-title">
+    <h1>Crecimiento Espiritual</h1>
+    <p>Iglesia Adventista del Séptimo Día</p>
+  </div>
+</div>
+
+<!-- PÁGINAS -->
+<div id="page-miembros" class="page active">
+  <div class="search-wrap" style="margin-top:8px;">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-miembro" placeholder="Buscar hermano..." oninput="filtrarMiembros()">
+  </div>
+  <div class="filters" id="filtros-nivel">
+    <div class="filter-chip active" onclick="setFiltroNivel('',this)">Todos</div>
+    <div class="filter-chip" onclick="setFiltroNivel('verde',this)">🟢 Activos</div>
+    <div class="filter-chip" onclick="setFiltroNivel('amarillo',this)">🟡 En desarrollo</div>
+    <div class="filter-chip" onclick="setFiltroNivel('rojo',this)">🔴 Atención</div>
+  </div>
+  <div id="lista-miembros">
+    <div class="loading"><div class="spinner"></div>Conectando con Google Sheets...</div>
+  </div>
+</div>
+
+<div id="page-perfil" class="page">
+  <button class="back-btn" onclick="showPage('miembros')">← Volver a hermanos</button>
+  <div id="perfil-contenido"></div>
+</div>
+
+<div id="page-interesados" class="page">
+  <div style="margin-top:8px;margin-bottom:14px;">
+    <button class="btn-primary" onclick="showPage('nuevo-interesado')">+ Registrar nuevo interesado</button>
+  </div>
+  <div class="section-title">Interesados registrados</div>
+  <div id="lista-interesados">
+    <div class="loading"><div class="spinner"></div>Cargando...</div>
+  </div>
+</div>
+
+<div id="page-nuevo-interesado" class="page">
+  <button class="back-btn" onclick="showPage('interesados')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Nuevo interesado</div>
+  <div class="form-group">
+    <label>Nombre completo *</label>
+    <input type="text" id="ni-nombre" placeholder="Apellido, Nombre">
+  </div>
+  <div class="form-group">
+    <label>Teléfono / Celular</label>
+    <input type="tel" id="ni-tel" placeholder="+591 7...">
+  </div>
+  <div class="form-group">
+    <label>Dirección / Referencia</label>
+    <input type="text" id="ni-dir" placeholder="Barrio, zona, referencia...">
+  </div>
+  <div class="form-group">
+    <label>Asignar a hermano</label>
+    <select id="ni-hermano">
+      <option value="">— Dejar en lista de espera —</option>
+    </select>
+  </div>
+  <div id="ni-sugerencia" style="display:none;" class="sugerencia-box"></div>
+  <div class="form-group" style="margin-top:10px;">
+    <label>Observaciones</label>
+    <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
+  </div>
+  <button class="btn-primary" onclick="guardarInteresado()">Guardar interesado</button>
+  <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
+</div>
+
+<div id="page-registro" class="page">
+  <div class="section-title" style="margin-top:8px;">Tipo de actividad</div>
+  <div class="action-grid">
+    <div class="action-card" onclick="showPage('reg-ministerial')">
+      <div class="action-icon">🏛️</div>
+      <div class="action-title">Ministerial</div>
+      <div class="action-sub">Dentro de la iglesia</div>
+    </div>
+    <div class="action-card" onclick="showPage('reg-misionero')">
+      <div class="action-icon">🌍</div>
+      <div class="action-title">Misionero</div>
+      <div class="action-sub">Estudios bíblicos</div>
+    </div>
+  </div>
+  <div style="margin-top:20px;" class="section-title">Accesos rápidos</div>
+  <div class="card" onclick="showPage('nuevo-interesado')" style="cursor:pointer;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">📋</span>
+    <div>
+      <div style="font-size:14px;font-weight:600;">Nuevo interesado</div>
+      <div style="font-size:12px;color:var(--text2);">Registrar persona para estudios</div>
+    </div>
+    <span style="margin-left:auto;color:var(--text2);">›</span>
+  </div>
+</div>
+
+<div id="page-reg-ministerial" class="page">
+  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Actividad ministerial</div>
+  <div class="form-group">
+    <label>Hermano *</label>
+    <select id="rm-hermano"><option value="">Seleccionar hermano...</option></select>
+  </div>
+  <div class="form-group">
+    <label>Departamento</label>
+    <select id="rm-dept"><option value="">Seleccionar...</option></select>
+  </div>
+  <div class="form-group">
+    <label>Tipo de actividad</label>
+    <select id="rm-tipo">
+      <option>Reunión Departamental</option>
+      <option>Evento Especial</option>
+      <option>Capacitación</option>
+      <option>Servicio</option>
+      <option>Programa</option>
+      <option>Seminario</option>
+      <option>Otro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Fecha</label>
+    <input type="date" id="rm-fecha">
+  </div>
+  <div class="form-group">
+    <label>Descripción</label>
+    <textarea id="rm-desc" placeholder="Describa la actividad realizada..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>Registrado por</label>
+    <input type="text" id="rm-registrador" placeholder="Su nombre">
+  </div>
+  <button class="btn-primary" onclick="guardarMinisterial()">Guardar actividad</button>
+  <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
+</div>
+
+<div id="page-reg-misionero" class="page">
+  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Estudio bíblico</div>
+  <div class="form-group">
+    <label>Hermano que da el estudio *</label>
+    <select id="rmi-hermano"><option value="">Seleccionar hermano...</option></select>
+  </div>
+  <div class="form-group">
+    <label>Nombre del estudiante *</label>
+    <input type="text" id="rmi-estudiante" placeholder="Apellido, Nombre">
+  </div>
+  <div class="form-group">
+    <label>Teléfono del estudiante</label>
+    <input type="tel" id="rmi-tel" placeholder="+591 7...">
+  </div>
+  <div class="form-group">
+    <label>Lección actual (1-20)</label>
+    <input type="number" id="rmi-leccion" min="1" max="20" value="1">
+  </div>
+  <div class="form-group">
+    <label>Estado del estudio</label>
+    <select id="rmi-estado">
+      <option>En Curso</option>
+      <option>Bautizado</option>
+      <option>Pausado</option>
+      <option>Abandonó</option>
+      <option>Transferido</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Observaciones</label>
+    <textarea id="rmi-obs" placeholder="Notas sobre el progreso del estudio..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>Registrado por</label>
+    <input type="text" id="rmi-registrador" placeholder="Su nombre">
+  </div>
+  <button class="btn-primary" onclick="guardarMisionero()">Guardar estudio</button>
+  <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
+</div>
+
+<div id="page-dashboard" class="page">
+  <div id="dashboard-contenido">
+    <div class="loading"><div class="spinner"></div>Calculando estadísticas...</div>
+  </div>
+</div>
+
+<!-- NAV BOTTOM -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showPage('miembros')">
+    <span class="icon">👥</span>Hermanos
+  </button>
+  <button class="nav-btn" onclick="showPage('interesados')">
+    <span class="icon">📋</span>Interesados
+  </button>
+  <button class="nav-btn" onclick="showPage('registro')">
+    <span class="icon">✏️</span>Registrar
+  </button>
+  <button class="nav-btn" onclick="showPage('dashboard')">
+    <span class="icon">📊</span>Resumen
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q';
+const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
+
+let MIEMBROS = [], MINISTERIAL = [], MISIONERO = [], INTERESADOS = [];
+let filtroNivel = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function gvizFetch(sheet) {
+  return fetch(BASE + encodeURIComponent(sheet))
+    .then(r => r.text())
+    .then(t => {
+      const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const cols = json.table.cols.map(c => c.label);
+      return (json.table.rows || []).map(r =>
+        Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+      );
+    });
+}
+
+async function cargarDatos() {
+  try {
+    const [m, min, mis] = await Promise.all([
+      gvizFetch('MIEMBROS'),
+      gvizFetch('CRECIMIENTO_MINISTERIAL'),
+      gvizFetch('CRECIMIENTO_MISIONERO'),
+    ]);
+    MIEMBROS = m.filter(r => {
+      const n = String(r['Apellidos y Nombres'] || '').trim();
+      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
+    });
+    MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
+    MISIONERO = mis.filter(r => getNombreHermano(r));
+    renderMiembros(MIEMBROS);
+    renderInteresados();
+    renderDashboard();
+    poblarSelectores();
+  } catch(e) {
+    document.getElementById('lista-miembros').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div>No se pudo conectar con Google Sheets.<br><small style="color:#999;">${e.message}</small></div>`;
+  }
+}
+
+function getNombreHermano(r) {
+  return String(r['Nombre del\nHermano'] || r['Nombre del Hermano'] || '').trim();
+}
+
+function getCargo(m) {
+  return String(m['Cargo\nPrincipal'] || m['Cargo Principal'] || '').trim();
+}
+
+function calcNivel(m) {
+  const nombre = String(m['Apellidos y Nombres'] || '').trim();
+  const cargo = getCargo(m);
+  const otros = String(m['Otros\nCargos'] || m['Otros Cargos'] || '').trim();
+  let min = 0;
+  if (cargo && cargo !== '-') min += 40;
+  if (otros && otros !== '-') min += 10;
+  const actsMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres'] || '').trim() === nombre);
+  min = Math.min(100, min + Math.min(40, actsMin.length * 10));
+
+  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
+  const activos = estudios.filter(r => String(r['Estado'] || '') === 'En Curso');
+  const bautizados = estudios.filter(r => String(r['Estado'] || '') === 'Bautizado');
+  let mis = Math.min(60, activos.length * 20) + Math.min(30, bautizados.length * 15);
+  if (estudios.length > 0 && bautizados.length === 0) mis += 10;
+  mis = Math.min(100, mis);
+
+  return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: actsMin.length };
+}
+
+function semaforo(pts) {
+  if (pts >= 70) return { cls: 'b-verde', label: 'Activo', key: 'verde' };
+  if (pts >= 40) return { cls: 'b-amarillo', label: 'En desarrollo', key: 'amarillo' };
+  return { cls: 'b-rojo', label: 'Necesita atención', key: 'rojo' };
+}
+
+function initials(n) {
+  const p = String(n).split(/[\s,]+/).filter(Boolean);
+  return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : (p[0]||'?')[0].toUpperCase();
+}
+
+const PALETTE = ['#1F3864','#1E5631','#7C3AED','#B45309','#0F766E','#9F1239','#1D4ED8'];
+function avatarColor(n) { let h=0; for(let c of n) h+=c.charCodeAt(0); return PALETTE[h%PALETTE.length]; }
+
+function setFiltroNivel(val, el) {
+  filtroNivel = val;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filtrarMiembros();
+}
+
+function renderMiembros(lista) {
+  const el = document.getElementById('lista-miembros');
+  const mostrar = filtroNivel ? lista.filter(m => {
+    const niv = calcNivel(m);
+    return semaforo(Math.round((niv.min+niv.mis)/2)).key === filtroNivel;
+  }) : lista;
+
+  if (!mostrar.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No se encontraron hermanos</div>';
+    return;
+  }
+  const max = 100;
+  el.innerHTML = mostrar.slice(0, max).map(m => {
+    const n = String(m['Apellidos y Nombres'] || '').trim();
+    const col = avatarColor(n);
+    const dept = String(m['Departamento'] || '').trim();
+    const clasif = String(m['Clasificación'] || '').trim();
+    const niv = calcNivel(m);
+    const sm = semaforo(Math.round((niv.min+niv.mis)/2));
+    return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
+      <div class="avatar" style="background:${col}25;color:${col};">${initials(n)}</div>
+      <div class="member-info">
+        <div class="member-name">${n}</div>
+        <div class="member-sub">${dept||'Sin departamento'}${clasif?' · '+clasif:''}</div>
+      </div>
+      <span class="badge ${sm.cls}">${sm.label}</span>
+    </div>`;
+  }).join('') + (mostrar.length > max ? `<div class="empty-state" style="padding:12px;">Mostrando ${max} de ${mostrar.length}. Use el buscador.</div>` : '');
+}
+
+function filtrarMiembros() {
+  const q = document.getElementById('search-miembro').value.toLowerCase();
+  const lista = q ? MIEMBROS.filter(m => String(m['Apellidos y Nombres']||'').toLowerCase().includes(q)) : MIEMBROS;
+  renderMiembros(lista);
+}
+
+function verPerfil(nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+  if (!m) return;
+  const niv = calcNivel(m);
+  const smMin = semaforo(niv.min);
+  const smMis = semaforo(niv.mis);
+  const smGen = semaforo(Math.round((niv.min+niv.mis)/2));
+  const col = avatarColor(nombre);
+  const cargo = getCargo(m) || 'Sin cargo';
+  const dept = String(m['Departamento']||'Sin departamento').trim();
+  const dones = String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
+  const talentos = String(m['Talentos\nPrácticos']||m['Talentos Prácticos']||'').trim();
+  const clasif = String(m['Clasificación']||'').trim();
+  const estado = String(m['Estado']||'').trim();
+  const bautizado = String(m['Bautizado']||'').trim();
+
+  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
+  const activos = estudios.filter(r => String(r['Estado']||'') === 'En Curso');
+  const disponibilidad = activos.length === 0 ? 'Disponible' : activos.length < 3 ? `${activos.length}/3 estudios` : 'Consultar';
+  const dispBadge = activos.length < 3 ? 'b-verde' : 'b-amarillo';
+
+  const estudiosHTML = activos.length > 0
+    ? activos.map(e => {
+        const est = String(e['Nombre del\nEstudiante']||e['Nombre del Estudiante']||'Sin nombre').trim();
+        const lec = parseInt(e['Lección\nActual (1-20)']||e['Lección Actual (1-20)']||0)||0;
+        return `<div class="estudio-item">
+          <div class="estudio-top">
+            <span class="estudio-name">${est}</span>
+            <span style="font-size:11px;color:var(--text2);">Lec. ${lec}/20</span>
+          </div>
+          <div class="leccion-bar"><div class="leccion-fill" style="width:${Math.round(lec/20*100)}%"></div></div>
+        </div>`;
+      }).join('')
+    : '<div style="font-size:13px;color:var(--text2);padding:8px 0 4px;">Sin estudios bíblicos activos registrados</div>';
+
+  document.getElementById('perfil-contenido').innerHTML = `
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar-xl" style="background:${col}25;color:${col};">${initials(nombre)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:700;color:var(--text);">${nombre}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${cargo}</div>
+          <div style="font-size:12px;color:var(--text2);">${dept}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge ${smGen.cls}">${smGen.label}</span>
+            ${clasif ? `<span class="badge b-gris">${clasif}</span>` : ''}
+            ${estado ? `<span class="badge b-azul">${estado}</span>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>🏛️ Nivel ministerial</span>
+          <strong>${niv.min} / 100</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-${niv.min>=70?'verde':niv.min>=40?'amber':'rojo'}" style="width:${niv.min}%"></div>
+        </div>
+        <div style="margin-top:5px;"><span class="badge ${smMin.cls}">${smMin.label}</span></div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>🌍 Nivel misionero</span>
+          <strong>${niv.mis} / 100</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-${niv.mis>=70?'azul':niv.mis>=40?'amber':'rojo'}" style="width:${niv.mis}%"></div>
+        </div>
+        <div style="margin-top:5px;"><span class="badge ${smMis.cls}">${smMis.label}</span></div>
+      </div>
+
+      <div class="points-grid">
+        <div class="point-card">
+          <div class="point-val">${niv.actsMin}</div>
+          <div class="point-lbl">Actividades ministeriales</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val">${activos.length}</div>
+          <div class="point-lbl">Estudios activos</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val">${niv.bautizados}</div>
+          <div class="point-lbl">Personas bautizadas</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val" style="font-size:16px;">${disponibilidad}</div>
+          <div class="point-lbl">Disponibilidad misionera</div>
+        </div>
+      </div>
+
+      ${dones || talentos ? `<div class="divider"></div>
+      ${dones ? `<div style="margin-bottom:6px;"><span style="font-size:12px;font-weight:600;color:var(--text2);">DONES: </span>${dones.split(',').map(d=>`<span class="tag">${d.trim()}</span>`).join('')}</div>` : ''}
+      ${talentos ? `<div><span style="font-size:12px;font-weight:600;color:var(--text2);">TALENTOS: </span>${talentos.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>` : ''}` : ''}
+    </div>
+
+    <div class="section-title">Estudios bíblicos activos</div>
+    ${estudiosHTML}
+  `;
+  showPage('perfil');
+}
+
+function renderInteresados() {
+  const el = document.getElementById('lista-interesados');
+  if (!INTERESADOS.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No hay interesados registrados aún.</div>';
+    return;
+  }
+  el.innerHTML = INTERESADOS.map(int => `
+    <div class="card">
+      <div class="int-header">
+        <div>
+          <div class="int-name">${int.nombre}</div>
+          <div class="int-sub">${[int.tel, int.dir].filter(Boolean).join(' · ')}</div>
+        </div>
+        <span class="badge ${int.hermano ? 'b-verde' : 'b-amarillo'}">${int.hermano ? 'Asignado' : 'En espera'}</span>
+      </div>
+      ${int.hermano ? `<div style="font-size:13px;color:var(--text2);">Hermano: <strong style="color:var(--text);">${int.hermano}</strong></div>` : ''}
+      ${int.obs ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${int.obs}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderDashboard() {
+  const total = MIEMBROS.length;
+  if (!total) return;
+  let verdes=0, amarillos=0, rojos=0, sinCargo=0, disponibles=0;
+  MIEMBROS.forEach(m => {
+    const niv = calcNivel(m);
+    const sm = semaforo(Math.round((niv.min+niv.mis)/2));
+    if (sm.key==='verde') verdes++;
+    else if (sm.key==='amarillo') amarillos++;
+    else rojos++;
+    if (!getCargo(m) || getCargo(m)==='-') sinCargo++;
+    if (niv.activos < 3) disponibles++;
+  });
+  const totalEst = MISIONERO.filter(r => String(r['Estado']||'').trim()==='En Curso').length;
+  const totalBaut = MISIONERO.filter(r => String(r['Estado']||'').trim()==='Bautizado').length;
+
+  document.getElementById('dashboard-contenido').innerHTML = `
+    <div class="stats-grid" style="margin-top:8px;">
+      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total miembros registrados</div></div>
+      <div class="stat-card"><div class="stat-val">${totalEst}</div><div class="stat-lbl">Estudios bíblicos activos</div></div>
+      <div class="stat-card"><div class="stat-val">${totalBaut}</div><div class="stat-lbl">Bautizados históricamente</div></div>
+      <div class="stat-card"><div class="stat-val">${disponibles}</div><div class="stat-lbl">Disponibles para estudiar</div></div>
+    </div>
+
+    <div class="section-title" style="margin-top:4px;">Nivel espiritual de la congregación</div>
+    <div class="card">
+      <div class="progress-section">
+        <div class="progress-label"><span>🟢 Activos</span><strong>${verdes} (${Math.round(verdes/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-verde" style="width:${Math.round(verdes/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🟡 En desarrollo</span><strong>${amarillos} (${Math.round(amarillos/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillos/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🔴 Necesitan atención</span><strong>${rojos} (${Math.round(rojos/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojos/total*100)}%"></div></div>
+      </div>
+    </div>
+
+    <div class="section-title">Oportunidades de crecimiento</div>
+    <div class="card" style="margin-bottom:10px;">
+      <div style="font-size:15px;font-weight:700;color:var(--azul);">${sinCargo}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Hermanos sin cargo ministerial activo</div>
+    </div>
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;color:var(--verde);">${disponibles}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Hermanos disponibles para dar estudios bíblicos</div>
+    </div>
+
+    <div class="section-title" style="margin-top:4px;">Interesados en espera</div>
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;color:var(--text);">${INTERESADOS.filter(i=>!i.hermano).length}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Sin asignar — ${INTERESADOS.filter(i=>i.hermano).length} asignados</div>
+    </div>
+  `;
+}
+
+function poblarSelectores() {
+  const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
+  const depts = [...new Set(MIEMBROS.map(m => String(m['Departamento']||'').trim()).filter(Boolean))].sort();
+
+  ['rm-hermano','rmi-hermano'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    nombres.forEach(n => { const o = document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+  });
+
+  const ds = document.getElementById('rm-dept');
+  if (ds) depts.forEach(d => { const o=document.createElement('option'); o.value=d; o.textContent=d; ds.appendChild(o); });
+
+  const niSel = document.getElementById('ni-hermano');
+  if (niSel) {
+    const disp = MIEMBROS.filter(m => {
+      const n = String(m['Apellidos y Nombres']||'').trim();
+      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
+      return act < 3;
+    }).sort((a,b) => {
+      const na = String(a['Apellidos y Nombres']||'').trim();
+      const nb = String(b['Apellidos y Nombres']||'').trim();
+      const aa = MISIONERO.filter(r => getNombreHermano(r)===na && String(r['Estado']||'')==='En Curso').length;
+      const ab = MISIONERO.filter(r => getNombreHermano(r)===nb && String(r['Estado']||'')==='En Curso').length;
+      return aa - ab;
+    });
+    disp.forEach(m => {
+      const n = String(m['Apellidos y Nombres']||'').trim();
+      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
+      const o = document.createElement('option');
+      o.value = n;
+      o.textContent = `${n} (${act===0?'sin estudios':act+' estudio(s)'})`;
+      niSel.appendChild(o);
+    });
+    niSel.onchange = () => {
+      const sel = niSel.value;
+      const box = document.getElementById('ni-sugerencia');
+      if (!sel) { box.style.display='none'; return; }
+      const act = MISIONERO.filter(r => getNombreHermano(r)===sel && String(r['Estado']||'')==='En Curso').length;
+      box.style.display = 'block';
+      box.innerHTML = act===0
+        ? `✅ ${sel} no tiene estudios activos. ¡Candidato ideal para este interesado!`
+        : act<3 ? `ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
+        : `⚠️ ${sel} ya tiene 3 estudios activos. Se recomienda consultar con él/ella antes de asignar.`;
+    };
+  }
+
+  const f = document.getElementById('rm-fecha');
+  if (f) f.value = new Date().toISOString().split('T')[0];
+}
+
+function guardarInteresado() {
+  const nombre = document.getElementById('ni-nombre').value.trim();
+  if (!nombre) { showToast('⚠️ Ingrese el nombre del interesado'); return; }
+  INTERESADOS.push({
+    nombre,
+    tel: document.getElementById('ni-tel').value.trim(),
+    dir: document.getElementById('ni-dir').value.trim(),
+    hermano: document.getElementById('ni-hermano').value,
+    obs: document.getElementById('ni-obs').value.trim(),
+    fecha: new Date().toLocaleDateString('es-BO'),
+  });
+  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('ni-hermano').value='';
+  document.getElementById('ni-sugerencia').style.display='none';
+  renderInteresados();
+  renderDashboard();
+  showToast('✅ Interesado guardado correctamente');
+  showPage('interesados');
+}
+
+function guardarMinisterial() {
+  const h = document.getElementById('rm-hermano').value;
+  if (!h) { showToast('⚠️ Seleccione un hermano'); return; }
+  MINISTERIAL.push({ 'Apellidos y Nombres': h });
+  showToast('✅ Actividad registrada. Guárdela también en Google Sheets.');
+  showPage('registro');
+}
+
+function guardarMisionero() {
+  const h = document.getElementById('rmi-hermano').value;
+  const est = document.getElementById('rmi-estudiante').value.trim();
+  if (!h || !est) { showToast('⚠️ Complete los campos obligatorios'); return; }
+  MISIONERO.push({ 'Nombre del\nHermano': h, 'Estado': document.getElementById('rmi-estado').value });
+  showToast('✅ Estudio registrado. Guárdelo también en Google Sheets.');
+  showPage('registro');
+}
+
+const NAV_MAP = {
+  'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,
+  'registro':2,'reg-ministerial':2,'reg-misionero':2,'dashboard':3
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const p = document.getElementById('page-'+id);
+  if (p) p.style.display='block';
+  const idx = NAV_MAP[id];
+  if (idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  window.scrollTo(0,0);
+}
+
+cargarDatos();
+</script>
+</body>
+</html>
