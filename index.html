@@ -5,176 +5,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#1F3864">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --azul: #1F3864; --verde: #1E5631; --bg: #f5f5f5; --card: #ffffff;
-    --text: #111111; --text2: #666666; --border: rgba(0,0,0,0.1);
-    --green: #059669; --blue: #2563EB; --amber: #D97706; --red: #DC2626;
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --azul: #1F3864; --verde: #1E5631; --bg: #f0f2f5; --card: #ffffff;
+  --text: #111111; --text2: #555555; --border: rgba(0,0,0,0.1);
+  --green: #059669; --blue: #2563EB; --amber: #D97706; --red: #DC2626;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* TOP BAR */
-  .topbar { background: var(--azul); color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-  .topbar-logo { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .topbar-title { flex: 1; }
-  .topbar-title h1 { font-size: 15px; font-weight: 600; }
-  .topbar-title p { font-size: 11px; opacity: 0.75; }
+.topbar { background: var(--azul); color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.topbar-logo { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.topbar-title h1 { font-size: 15px; font-weight: 600; }
+.topbar-title p { font-size: 11px; opacity: 0.75; }
 
-  /* NAV */
-  .nav { display: flex; background: white; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
-  .nav-btn { flex: 1; padding: 8px 4px 10px; font-size: 10px; color: var(--text2); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color .2s; }
-  .nav-btn .icon { font-size: 20px; }
-  .nav-btn.active { color: var(--azul); font-weight: 600; }
+.nav { display: flex; background: white; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
+.nav-btn { flex: 1; padding: 8px 4px 10px; font-size: 10px; color: var(--text2); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.nav-btn .icon { font-size: 20px; }
+.nav-btn.active { color: var(--azul); font-weight: 600; }
 
-  /* PAGES */
-  .page { display: none; padding: 16px 16px 80px; }
-  .page.active { display: block; }
+.page { display: none; padding: 16px 16px 80px; }
+.page.active { display: block; }
 
-  /* CARDS */
-  .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 
-  /* SEARCH */
-  .search-wrap { position: relative; margin-bottom: 12px; }
-  .search-wrap input { width: 100%; padding: 10px 12px 10px 36px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
-  .search-wrap input:focus { border-color: var(--azul); }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-wrap input { width: 100%; padding: 10px 12px 10px 36px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
+.search-wrap input:focus { border-color: var(--azul); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
 
-  /* FILTERS */
-  .filters { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
-  .filter-chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; white-space: nowrap; border: 1px solid var(--border); background: white; color: var(--text2); cursor: pointer; }
-  .filter-chip.active { background: var(--azul); color: white; border-color: var(--azul); }
+.filters { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+.filter-chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; white-space: nowrap; border: 1px solid var(--border); background: white; color: var(--text2); cursor: pointer; flex-shrink: 0; }
+.filter-chip.active { background: var(--azul); color: white; border-color: var(--azul); }
 
-  /* MEMBER ITEM */
-  .member-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 12px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  .member-item:active { transform: scale(0.98); }
-  .avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-  .member-info { flex: 1; min-width: 0; }
-  .member-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .member-sub { font-size: 12px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border-radius: 12px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.member-item:active { transform: scale(0.98); }
+.avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-sub { font-size: 12px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* SEMAFORO */
-  .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-  .b-verde { background: #D1FAE5; color: #065F46; }
-  .b-amarillo { background: #FEF3C7; color: #92400E; }
-  .b-rojo { background: #FEE2E2; color: #991B1B; }
-  .b-azul { background: #DBEAFE; color: #1E40AF; }
-  .b-gris { background: #F3F4F6; color: #4B5563; }
-  .b-naranja { background: #FED7AA; color: #9A3412; }
-  .b-morado { background: #EDE9FE; color: #5B21B6; }
+.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.b-verde { background: #D1FAE5; color: #065F46; }
+.b-amarillo { background: #FEF3C7; color: #92400E; }
+.b-rojo { background: #FEE2E2; color: #991B1B; }
+.b-azul { background: #DBEAFE; color: #1E40AF; }
+.b-gris { background: #F3F4F6; color: #4B5563; }
+.b-morado { background: #EDE9FE; color: #5B21B6; }
+.b-naranja { background: #FEF3C7; color: #92400E; }
 
-  /* PROFILE */
-  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--azul); background: none; border: none; cursor: pointer; padding: 0 0 14px; font-weight: 500; }
-  .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-  .avatar-xl { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--azul); background: none; border: none; cursor: pointer; padding: 0 0 14px; font-weight: 500; }
+.profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.avatar-xl { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0; }
 
-  /* PROGRESS */
-  .progress-section { margin-bottom: 14px; }
-  .progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
-  .progress-label span { font-size: 13px; color: var(--text2); }
-  .progress-label strong { font-size: 13px; font-weight: 600; }
-  .progress-bar { height: 10px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
-  .fill-verde { background: var(--green); }
-  .fill-azul { background: var(--blue); }
-  .fill-amber { background: var(--amber); }
-  .fill-rojo { background: var(--red); }
+.progress-section { margin-bottom: 14px; }
+.progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.progress-label span { font-size: 13px; color: var(--text2); }
+.progress-label strong { font-size: 13px; font-weight: 600; }
+.progress-bar { height: 10px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.fill-verde { background: var(--green); }
+.fill-azul { background: var(--blue); }
+.fill-amber { background: var(--amber); }
+.fill-rojo { background: var(--red); }
 
-  /* POINTS GRID */
-  .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-  .point-card { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
-  .point-val { font-size: 22px; font-weight: 700; color: var(--text); }
-  .point-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.3; }
+.points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.point-card { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
+.point-val { font-size: 22px; font-weight: 700; color: var(--text); }
+.point-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.3; }
 
-  /* ESTUDIOS */
-  .estudio-item { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border); }
-  .estudio-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .estudio-name { font-size: 13px; font-weight: 600; }
-  .leccion-bar { height: 5px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
-  .leccion-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+.estudio-item { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+.estudio-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.estudio-name { font-size: 13px; font-weight: 600; }
+.leccion-bar { height: 5px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+.leccion-fill { height: 100%; background: var(--blue); border-radius: 99px; }
 
-  /* INTERESADOS */
-  .int-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-  .int-name { font-size: 14px; font-weight: 600; }
-  .int-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .sugerencia-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #1E40AF; line-height: 1.4; }
+.int-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.int-name { font-size: 14px; font-weight: 600; }
+.int-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.sugerencia-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #1E40AF; line-height: 1.4; }
 
-  /* FORM */
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; font-size: 14px; padding: 11px 12px;
-    border: 1px solid var(--border); border-radius: 10px;
-    background: white; color: var(--text); outline: none;
-    -webkit-appearance: none; appearance: none;
-  }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--azul); }
-  .form-group textarea { min-height: 70px; resize: vertical; }
-  .btn-primary { width: 100%; padding: 13px; background: var(--azul); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
-  .btn-primary:active { opacity: .85; }
-  .btn-secondary { width: 100%; padding: 13px; background: white; color: var(--azul); border: 2px solid var(--azul); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; font-size: 14px; padding: 11px 12px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: white; color: var(--text); outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--azul); }
+.form-group textarea { min-height: 70px; resize: vertical; }
+.btn-primary { width: 100%; padding: 13px; background: var(--azul); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+.btn-primary:active { opacity: .85; }
+.btn-secondary { width: 100%; padding: 13px; background: white; color: var(--azul); border: 2px solid var(--azul); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
 
-  /* ACTION CARDS */
-  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-  .action-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); }
-  .action-card:active { transform: scale(0.96); }
-  .action-icon { font-size: 32px; margin-bottom: 8px; }
-  .action-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .action-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.action-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+.action-card:active { transform: scale(0.96); }
+.action-icon { font-size: 32px; margin-bottom: 8px; }
+.action-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.action-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
 
-  /* DASHBOARD */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
-  .stat-val { font-size: 28px; font-weight: 700; color: var(--text); }
-  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.3; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
+.stat-val { font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-val.big { font-size: 36px; }
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.3; }
 
-  /* DESTACADOS BIG NUMBERS */
-  .big-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .big-stat-card { border-radius: 14px; padding: 18px 14px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.10); }
-  .big-stat-val { font-size: 48px; font-weight: 800; line-height: 1; }
-  .big-stat-lbl { font-size: 12px; font-weight: 600; margin-top: 6px; line-height: 1.3; text-transform: uppercase; letter-spacing: .4px; }
-  .bsc-rescatar { background: #FEE2E2; color: #991B1B; }
-  .bsc-transferir { background: #DBEAFE; color: #1E40AF; }
-  .bsc-frecuente { background: #D1FAE5; color: #065F46; }
-  .bsc-nofrecuente { background: #FEF3C7; color: #92400E; }
+.section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
 
-  /* SECTION TITLE */
-  .section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.loading { text-align: center; padding: 50px 20px; color: var(--text2); }
+.spinner { width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--azul); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; line-height: 1.6; }
+.empty-icon { font-size: 40px; margin-bottom: 10px; }
 
-  /* LOADING / EMPTY */
-  .loading { text-align: center; padding: 50px 20px; color: var(--text2); }
-  .spinner { width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--azul); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; line-height: 1.6; }
-  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+.toast { position: fixed; bottom: 80px; left: 16px; right: 16px; background: #1F3864; color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; text-align: center; }
+.toast.show { opacity: 1; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 80px; left: 16px; right: 16px; background: #1F3864; color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; text-align: center; }
-  .toast.show { opacity: 1; }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.tag { display: inline-block; background: #EEF2FF; color: #3730A3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin: 2px; }
 
-  /* DIVIDER */
-  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+/* CHECKBOXES */
+.check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.check-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #F9FAFB; border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer; }
+.check-item input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--azul); cursor: pointer; border: 2px solid #555; }
+.check-item label { font-size: 12px; color: var(--text); cursor: pointer; line-height: 1.3; }
 
-  .tag { display: inline-block; background: #EEF2FF; color: #3730A3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin: 2px; }
+/* ALERTA */
+.alerta { padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 10px; line-height: 1.5; }
+.alerta-azul { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+.alerta-verde { background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; }
+.alerta-amber { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+.alerta-rojo { background: #FFF1F2; border: 1px solid #FECDD3; color: #9F1239; }
 
-  /* CHECKBOX GRID para áreas de apoyo */
-  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .checkbox-item { display: flex; align-items: center; gap: 8px; background: #F9FAFB; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 13px; }
-  .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--azul); flex-shrink: 0; }
-  .checkbox-item label { cursor: pointer; line-height: 1.3; }
+/* TABS */
+.tabs { display: flex; gap: 0; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.tab-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: 500; background: white; border: none; cursor: pointer; color: var(--text2); }
+.tab-btn.active { background: var(--azul); color: white; }
 
-  /* ALERTA JOVEN */
-  .alerta-joven { background: #EDE9FE; border: 1px solid #C4B5FD; border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #5B21B6; line-height: 1.5; }
-  .alerta-bautizado { background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #92400E; line-height: 1.5; }
+/* REPORTE */
+.reporte-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.reporte-row:last-child { border-bottom: none; }
+.reporte-label { font-size: 13px; color: var(--text); }
+.reporte-val { font-size: 13px; font-weight: 700; color: var(--azul); }
 
-  /* TIPO MISIONERO - elegir entre Estudio o Visitación */
-  .tipo-misionero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .tipo-misionero-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 2px solid var(--border); transition: border-color .2s; }
-  .tipo-misionero-card:active { transform: scale(0.96); }
-  .tipo-misionero-card.selected { border-color: var(--azul); background: #EFF6FF; }
+/* NIVEL ESPIRITUAL LEYENDA */
+.leyenda-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+.leyenda-item { background: white; border-radius: 10px; padding: 10px 12px; border-left: 4px solid; }
+.leyenda-min { border-color: var(--green); }
+.leyenda-mis { border-color: var(--blue); }
+.leyenda-gen { border-color: var(--amber); }
 </style>
 </head>
 <body>
@@ -187,28 +170,32 @@
   </div>
 </div>
 
-<!-- PÁGINAS -->
+<!-- MIEMBROS -->
 <div id="page-miembros" class="page active">
   <div class="search-wrap" style="margin-top:8px;">
     <span class="search-icon">🔍</span>
     <input type="text" id="search-miembro" placeholder="Buscar hermano..." oninput="filtrarMiembros()">
   </div>
-  <div class="filters" id="filtros-nivel">
+  <div class="filters">
     <div class="filter-chip active" onclick="setFiltroNivel('',this)">Todos</div>
     <div class="filter-chip" onclick="setFiltroNivel('verde',this)">🟢 Activos</div>
     <div class="filter-chip" onclick="setFiltroNivel('amarillo',this)">🟡 En desarrollo</div>
     <div class="filter-chip" onclick="setFiltroNivel('rojo',this)">🔴 Atención</div>
+    <div class="filter-chip" onclick="setFiltroNivel('joven',this)">🧑 12-19 años</div>
+    <div class="filter-chip" onclick="setFiltroNivel('bautizado',this)">🆕 Recién bautizados</div>
   </div>
   <div id="lista-miembros">
     <div class="loading"><div class="spinner"></div>Conectando con Google Sheets...</div>
   </div>
 </div>
 
+<!-- PERFIL -->
 <div id="page-perfil" class="page">
   <button class="back-btn" onclick="showPage('miembros')">← Volver a hermanos</button>
   <div id="perfil-contenido"></div>
 </div>
 
+<!-- INTERESADOS -->
 <div id="page-interesados" class="page">
   <div style="margin-top:8px;margin-bottom:14px;">
     <button class="btn-primary" onclick="showPage('nuevo-interesado')">+ Registrar nuevo interesado</button>
@@ -219,6 +206,7 @@
   </div>
 </div>
 
+<!-- NUEVO INTERESADO -->
 <div id="page-nuevo-interesado" class="page">
   <button class="back-btn" onclick="showPage('interesados')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Nuevo interesado</div>
@@ -241,8 +229,6 @@
     </select>
   </div>
   <div id="ni-sugerencia" style="display:none;" class="sugerencia-box"></div>
-  <div id="ni-sugerencia-jovenes" style="display:none;" class="alerta-joven"></div>
-  <div id="ni-sugerencia-bautizados" style="display:none;" class="alerta-bautizado"></div>
   <div class="form-group" style="margin-top:10px;">
     <label>Observaciones</label>
     <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
@@ -251,7 +237,7 @@
   <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
 </div>
 
-<!-- REGISTRO: elegir tipo -->
+<!-- REGISTRO -->
 <div id="page-registro" class="page">
   <div class="section-title" style="margin-top:8px;">Tipo de actividad</div>
   <div class="action-grid">
@@ -260,10 +246,10 @@
       <div class="action-title">Ministerial</div>
       <div class="action-sub">Dentro de la iglesia</div>
     </div>
-    <div class="action-card" onclick="showPage('reg-misionero-tipo')">
+    <div class="action-card" onclick="showPage('reg-misionero')">
       <div class="action-icon">🌍</div>
       <div class="action-title">Misionero</div>
-      <div class="action-sub">Estudio / Visitación</div>
+      <div class="action-sub">Estudios y visitas</div>
     </div>
   </div>
   <div style="margin-top:20px;" class="section-title">Accesos rápidos</div>
@@ -275,27 +261,17 @@
     </div>
     <span style="margin-left:auto;color:var(--text2);">›</span>
   </div>
-</div>
-
-<!-- MODIFICACIÓN 8: Selección de tipo misionero -->
-<div id="page-reg-misionero-tipo" class="page">
-  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
-  <div class="section-title" style="margin-bottom:16px;">Actividad misionera — Tipo</div>
-  <div class="tipo-misionero-grid">
-    <div class="action-card" onclick="showPage('reg-misionero')">
-      <div class="action-icon">📖</div>
-      <div class="action-title">Estudio Bíblico</div>
-      <div class="action-sub">Registrar estudio con estudiante</div>
+  <div class="card" onclick="showPage('reporte-visitas')" style="cursor:pointer;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">📊</span>
+    <div>
+      <div style="font-size:14px;font-weight:600;">Reporte de visitas</div>
+      <div style="font-size:12px;color:var(--text2);">Por gestión, clase EESS y departamento</div>
     </div>
-    <div class="action-card" onclick="showPage('reg-visitacion')">
-      <div class="action-icon">🚶</div>
-      <div class="action-title">Visitación</div>
-      <div class="action-sub">Registrar visita realizada</div>
-    </div>
+    <span style="margin-left:auto;color:var(--text2);">›</span>
   </div>
 </div>
 
-<!-- ACTIVIDAD MINISTERIAL (MODIFICACIÓN 1: áreas de apoyo + FIX DEPARTAMENTO) -->
+<!-- REGISTRO MINISTERIAL -->
 <div id="page-reg-ministerial" class="page">
   <button class="back-btn" onclick="showPage('registro')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Actividad ministerial</div>
@@ -327,15 +303,23 @@
     <label>Descripción</label>
     <textarea id="rm-desc" placeholder="Describa la actividad realizada..."></textarea>
   </div>
-
-  <!-- MODIFICACIÓN 1: Áreas en las que le gustaría apoyar -->
   <div class="form-group">
-    <label>Áreas en las que le gustaría apoyar</label>
-    <div class="checkbox-grid" id="rm-areas-apoyo">
-      <!-- Se poblará dinámicamente con las áreas/departamentos existentes -->
+    <label>Áreas donde le gustaría apoyar</label>
+    <div class="check-grid" id="areas-check">
+      <div class="check-item"><input type="checkbox" id="a1" value="Escuela Sabática"><label for="a1">Escuela Sabática</label></div>
+      <div class="check-item"><input type="checkbox" id="a2" value="Ministerio Personal"><label for="a2">Ministerio Personal</label></div>
+      <div class="check-item"><input type="checkbox" id="a3" value="Mayordomía"><label for="a3">Mayordomía</label></div>
+      <div class="check-item"><input type="checkbox" id="a4" value="Ministerio de Música"><label for="a4">Música / Alabanza</label></div>
+      <div class="check-item"><input type="checkbox" id="a5" value="Ministerio Joven"><label for="a5">Ministerio Joven</label></div>
+      <div class="check-item"><input type="checkbox" id="a6" value="Ministerio de Niños"><label for="a6">Ministerio de Niños</label></div>
+      <div class="check-item"><input type="checkbox" id="a7" value="Salud y Temperancia"><label for="a7">Salud y Temperancia</label></div>
+      <div class="check-item"><input type="checkbox" id="a8" value="Comunicaciones"><label for="a8">Comunicaciones</label></div>
+      <div class="check-item"><input type="checkbox" id="a9" value="Diaconato"><label for="a9">Diaconato / Ujieres</label></div>
+      <div class="check-item"><input type="checkbox" id="a10" value="Ministerio de la Familia"><label for="a10">Ministerio Familia</label></div>
+      <div class="check-item"><input type="checkbox" id="a11" value="Estudios Bíblicos"><label for="a11">Estudios Bíblicos</label></div>
+      <div class="check-item"><input type="checkbox" id="a12" value="Visitación"><label for="a12">Visitación</label></div>
     </div>
   </div>
-
   <div class="form-group">
     <label>Registrado por</label>
     <input type="text" id="rm-registrador" placeholder="Su nombre">
@@ -344,160 +328,162 @@
   <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
 </div>
 
-<!-- ESTUDIO BÍBLICO MISIONERO (MODIFICACIONES 5, 7, 9) -->
+<!-- REGISTRO MISIONERO -->
 <div id="page-reg-misionero" class="page">
-  <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
-  <div class="section-title" style="margin-bottom:16px;">Registro — Estudio Bíblico</div>
-  <div class="form-group">
-    <label>Hermano que da el estudio *</label>
-    <select id="rmi-hermano"><option value="">Seleccionar hermano...</option></select>
+  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Actividad misionera</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setTabMis('estudio',this)">📖 Estudio Bíblico</button>
+    <button class="tab-btn" onclick="setTabMis('visita',this)">🚪 Visitación</button>
   </div>
-  <div class="form-group">
-    <label>Nombre del estudiante *</label>
-    <input type="text" id="rmi-estudiante" placeholder="Apellido, Nombre">
+
+  <!-- TAB ESTUDIO BÍBLICO -->
+  <div id="tab-estudio">
+    <div class="form-group">
+      <label>Hermano que da el estudio *</label>
+      <select id="rmi-hermano"><option value="">Seleccionar hermano...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Nombre del estudiante *</label>
+      <input type="text" id="rmi-estudiante" placeholder="Apellido, Nombre">
+    </div>
+    <div class="form-group">
+      <label>Teléfono del estudiante</label>
+      <input type="tel" id="rmi-tel" placeholder="+591 7...">
+    </div>
+    <div class="form-group">
+      <label>Estado civil del estudiante</label>
+      <select id="rmi-estado-civil">
+        <option value="">Seleccionar...</option>
+        <option>Soltero/a</option>
+        <option>Casado/a</option>
+        <option>Divorciado/a</option>
+        <option>Viudo/a</option>
+        <option>Unión libre</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Lección actual (1-20)</label>
+      <input type="number" id="rmi-leccion" min="1" max="20" value="1" oninput="validarLeccion(this)">
+      <div id="leccion-error" style="color:#DC2626;font-size:11px;margin-top:3px;display:none;">⚠️ Ingrese un número entre 1 y 20</div>
+    </div>
+    <div class="form-group">
+      <label>Estado del estudio</label>
+      <select id="rmi-estado">
+        <option>En Curso</option>
+        <option>Bautizado</option>
+        <option>Pausado</option>
+        <option>Abandonó</option>
+        <option>Transferido</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Observaciones</label>
+      <textarea id="rmi-obs" placeholder="Notas sobre el progreso del estudio..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Registrado por</label>
+      <input type="text" id="rmi-registrador" placeholder="Su nombre">
+    </div>
+    <button class="btn-primary" onclick="guardarEstudio()">Guardar estudio bíblico</button>
+    <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
   </div>
-  <!-- MODIFICACIÓN 9: Teléfono + Estado civil -->
-  <div class="form-group">
-    <label>Teléfono del estudiante</label>
-    <input type="tel" id="rmi-tel" placeholder="+591 7...">
+
+  <!-- TAB VISITACIÓN -->
+  <div id="tab-visita" style="display:none;">
+    <div class="form-group">
+      <label>Hermano que realiza la visita *</label>
+      <select id="rv-hermano"><option value="">Seleccionar hermano...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Nombre de la persona a visitar *</label>
+      <input type="text" id="rv-nombre" placeholder="Apellido, Nombre">
+    </div>
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input type="tel" id="rv-tel" placeholder="+591 7...">
+    </div>
+    <div class="form-group">
+      <label>Dirección / Referencia</label>
+      <input type="text" id="rv-dir" placeholder="Barrio, zona...">
+    </div>
+    <div class="form-group">
+      <label>Fecha de la visita</label>
+      <input type="date" id="rv-fecha">
+    </div>
+    <div class="form-group">
+      <label>Estado de la visita</label>
+      <select id="rv-estado">
+        <option>Concretada</option>
+        <option>No Concretada</option>
+        <option>Pendiente</option>
+        <option>Reprogramada</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Material entregado</label>
+      <select id="rv-material">
+        <option value="">Ninguno</option>
+        <option>Folleto de estudios bíblicos</option>
+        <option>Revista El Centinela</option>
+        <option>Libro El Camino a Cristo</option>
+        <option>Biblia</option>
+        <option>Libro El Deseado de Todas las Gentes</option>
+        <option>Tratado / Volante</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Observaciones</label>
+      <textarea id="rv-obs" placeholder="Notas de la visita..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Registrado por</label>
+      <input type="text" id="rv-registrador" placeholder="Su nombre">
+    </div>
+    <button class="btn-primary" onclick="guardarVisita()">Guardar visita</button>
+    <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
   </div>
-  <div class="form-group">
-    <label>Estado civil del estudiante</label>
-    <select id="rmi-estado-civil">
-      <option value="">Seleccionar...</option>
-      <option>Soltero/a</option>
-      <option>Casado/a</option>
-      <option>Unión libre</option>
-      <option>Divorciado/a</option>
-      <option>Viudo/a</option>
-    </select>
-  </div>
-  <!-- MODIFICACIÓN 5: Validación 1-20 estricta -->
-  <div class="form-group">
-    <label>Lección actual (1-20)</label>
-    <input type="number" id="rmi-leccion" min="1" max="20" value="1" oninput="validarLeccion(this)">
-    <div id="rmi-leccion-error" style="color:#DC2626;font-size:12px;margin-top:4px;display:none;">⚠️ La lección debe estar entre 1 y 20</div>
-  </div>
-  <div class="form-group">
-    <label>Estado del estudio</label>
-    <select id="rmi-estado">
-      <option>En Curso</option>
-      <option>Bautizado</option>
-      <option>Pausado</option>
-      <option>Abandonó</option>
-      <option>Transferido</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Observaciones</label>
-    <textarea id="rmi-obs" placeholder="Notas sobre el progreso del estudio..."></textarea>
-  </div>
-  <div class="form-group">
-    <label>Registrado por</label>
-    <input type="text" id="rmi-registrador" placeholder="Su nombre">
-  </div>
-  <button class="btn-primary" onclick="guardarMisionero()">Guardar estudio</button>
-  <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
 </div>
 
-<!-- MODIFICACIÓN 8: VISITACIÓN -->
-<div id="page-reg-visitacion" class="page">
-  <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
-  <div class="section-title" style="margin-bottom:16px;">Registro — Visitación</div>
-
-  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">👤 Datos del hermano visitador</div>
+<!-- REPORTE VISITAS -->
+<div id="page-reporte-visitas" class="page">
+  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Reporte de visitas</div>
   <div class="form-group">
-    <label>Hermano que realiza la visita *</label>
-    <select id="rv-hermano"><option value="">Seleccionar hermano...</option></select>
-  </div>
-
-  <div class="divider"></div>
-  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">🏠 Datos de la persona visitada</div>
-  <div class="form-group">
-    <label>Nombre de la persona visitada *</label>
-    <input type="text" id="rv-nombre" placeholder="Apellido, Nombre">
-  </div>
-  <div class="form-group">
-    <label>Teléfono</label>
-    <input type="tel" id="rv-tel" placeholder="+591 7...">
-  </div>
-  <div class="form-group">
-    <label>Dirección / Referencia</label>
-    <input type="text" id="rv-dir" placeholder="Barrio, zona, referencia...">
-  </div>
-  <div class="form-group">
-    <label>Relación con la iglesia</label>
-    <select id="rv-relacion">
-      <option value="">Seleccionar...</option>
-      <option>Familiar de miembro</option>
-      <option>Conocido</option>
-      <option>Interesado previo</option>
-      <option>Desconocido / Evangelismo</option>
-      <option>Ex miembro</option>
-      <option>Otro</option>
-    </select>
-  </div>
-
-  <div class="divider"></div>
-  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Detalles de la visita</div>
-  <div class="form-group">
-    <label>Fecha de la visita</label>
-    <input type="date" id="rv-fecha">
-  </div>
-  <div class="form-group">
-    <label>Estado de la visita</label>
-    <select id="rv-estado">
-      <option value="">Seleccionar...</option>
-      <option>Concretada</option>
-      <option>No encontrado</option>
-      <option>Reprogramada</option>
-      <option>Cancelada</option>
+    <label>Filtrar por gestión (año)</label>
+    <select id="rep-anio">
+      <option value="">Todos los años</option>
+      <option>2024</option>
+      <option>2025</option>
+      <option>2026</option>
     </select>
   </div>
   <div class="form-group">
-    <label>Material entregado</label>
-    <select id="rv-material">
-      <option value="">Ninguno</option>
-      <option>Biblia</option>
-      <option>Libro devocional</option>
-      <option>Tratado / Folleto</option>
-      <option>Revista Adventista</option>
-      <option>Invitación a culto</option>
-      <option>Otro</option>
-    </select>
+    <label>Filtrar por clase EESS</label>
+    <select id="rep-clase"><option value="">Todas las clases</option></select>
   </div>
   <div class="form-group">
-    <label>Observaciones</label>
-    <textarea id="rv-obs" placeholder="Cómo fue recibido, interés demostrado, próximos pasos..."></textarea>
+    <label>Filtrar por departamento</label>
+    <select id="rep-dept2"><option value="">Todos los departamentos</option></select>
   </div>
-  <div class="form-group">
-    <label>Registrado por</label>
-    <input type="text" id="rv-registrador" placeholder="Su nombre">
-  </div>
-  <button class="btn-primary" onclick="guardarVisitacion()">Guardar visita</button>
-  <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
+  <button class="btn-primary" onclick="generarReporte()">Generar reporte</button>
+  <div id="reporte-resultado" style="margin-top:16px;"></div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="page-dashboard" class="page">
   <div id="dashboard-contenido">
     <div class="loading"><div class="spinner"></div>Calculando estadísticas...</div>
   </div>
 </div>
 
-<!-- NAV BOTTOM -->
+<!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="showPage('miembros')">
-    <span class="icon">👥</span>Hermanos
-  </button>
-  <button class="nav-btn" onclick="showPage('interesados')">
-    <span class="icon">📋</span>Interesados
-  </button>
-  <button class="nav-btn" onclick="showPage('registro')">
-    <span class="icon">✏️</span>Registrar
-  </button>
-  <button class="nav-btn" onclick="showPage('dashboard')">
-    <span class="icon">📊</span>Resumen
-  </button>
+  <button class="nav-btn active" onclick="showPage('miembros')"><span class="icon">👥</span>Hermanos</button>
+  <button class="nav-btn" onclick="showPage('interesados')"><span class="icon">📋</span>Interesados</button>
+  <button class="nav-btn" onclick="showPage('registro')"><span class="icon">✏️</span>Registrar</button>
+  <button class="nav-btn" onclick="showPage('dashboard')"><span class="icon">📊</span>Resumen</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -506,233 +492,227 @@
 const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
 
-// ÁREAS MINISTERIALES DEFINIDAS EN LA IGLESIA
-const AREAS_IGLESIA = [
-  'Escuela Sabática','Ministerio Joven','Ministerio de la Mujer',
-  'Diaconado','Mayordomía','Música','Educación','Comunicación',
-  'Salud','Bienestar de la Familia','Dorcas','Evangelismo',
-  'Capturadores de Hombres','Niños','Ministerio Personal'
-];
-
-let MIEMBROS = [], MINISTERIAL = [], MISIONERO = [], INTERESADOS = [];
-let filtroNivel = '';
+let MIEMBROS=[], MINISTERIAL=[], MISIONERO=[], VISITAS=[], INTERESADOS=[], VISITACIONES=[];
+let filtroNivel='';
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 
 function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet))
-    .then(r => r.text())
-    .then(t => {
-      const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-      const cols = json.table.cols.map(c => c.label);
-      return (json.table.rows || []).map(r =>
-        Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
-      );
+  return fetch(BASE+encodeURIComponent(sheet))
+    .then(r=>r.text())
+    .then(t=>{
+      const json=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const cols=json.table.cols.map(c=>c.label);
+      return (json.table.rows||[]).map(r=>Object.fromEntries(cols.map((c,i)=>[c,r.c[i]?.v??''])));
     });
 }
 
 async function cargarDatos() {
   try {
-    const [m, min, mis] = await Promise.all([
+    const [m,min,mis,vis]=await Promise.all([
       gvizFetch('MIEMBROS'),
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
+      gvizFetch('VISITAS'),
     ]);
-    MIEMBROS = m.filter(r => {
-      const n = String(r['Apellidos y Nombres'] || '').trim();
-      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
+    MIEMBROS=m.filter(r=>{
+      const n=String(r['Apellidos y Nombres']||'').trim();
+      return n && n!=='Apellido, Nombre' && n!=='← Ejemplo';
     });
-    MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
-    MISIONERO = mis.filter(r => getNombreHermano(r));
+    MINISTERIAL=min.filter(r=>r['Apellidos y Nombres']);
+    MISIONERO=mis.filter(r=>getNombreHermano(r));
+    VISITAS=vis.filter(r=>r['Apellidos y Nombres']);
     renderMiembros(MIEMBROS);
     renderInteresados();
     renderDashboard();
     poblarSelectores();
   } catch(e) {
-    document.getElementById('lista-miembros').innerHTML =
-      `<div class="empty-state"><div class="empty-icon">⚠️</div>No se pudo conectar con Google Sheets.<br><small style="color:#999;">${e.message}</small></div>`;
+    document.getElementById('lista-miembros').innerHTML=
+      `<div class="empty-state"><div class="empty-icon">⚠️</div>No se pudo conectar con Google Sheets.<br><small>${e.message}</small></div>`;
   }
 }
 
-function getNombreHermano(r) {
-  return String(r['Nombre del\nHermano'] || r['Nombre del Hermano'] || '').trim();
+function getNombreHermano(r){ return String(r['Nombre del\nHermano']||r['Nombre del Hermano']||'').trim(); }
+function getCargo(m){ return String(m['Cargo\nPrincipal']||m['Cargo Principal']||'').trim(); }
+function getClasif(m){ return String(m['Clasificación']||'').trim(); }
+function getRegIglesia(m){ return String(m['Registro\nIglesia']||m['Registro Iglesia']||'').trim(); }
+function getClaseEESS(m){ return String(m['Clase\nEESS']||m['Clase EESS']||m['Clase']||'').trim(); }
+function getDept(m){ return String(m['Departamento']||'').trim(); }
+
+function calcEdad(m) {
+  const fn = m['Fecha\nNacimiento']||m['Fecha Nacimiento']||m['FechaNacimiento']||'';
+  if (!fn) return null;
+  try {
+    const d = new Date(fn);
+    if (isNaN(d)) return null;
+    const hoy = new Date();
+    let edad = hoy.getFullYear()-d.getFullYear();
+    const mes = hoy.getMonth()-d.getMonth();
+    if (mes<0||(mes===0&&hoy.getDate()<d.getDate())) edad--;
+    return edad;
+  } catch(e){ return null; }
 }
 
-function getCargo(m) {
-  return String(m['Cargo\nPrincipal'] || m['Cargo Principal'] || '').trim();
+function diasDesdeBautismo(m) {
+  const fb = m['Fecha\nBautismo']||m['Fecha Bautismo']||m['FechaBautismo']||'';
+  if (!fb) return null;
+  try {
+    const d=new Date(fb);
+    if(isNaN(d)) return null;
+    return Math.floor((new Date()-d)/(1000*60*60*24));
+  } catch(e){ return null; }
 }
 
 function calcNivel(m) {
-  const nombre = String(m['Apellidos y Nombres'] || '').trim();
-  const cargo = getCargo(m);
-  const otros = String(m['Otros\nCargos'] || m['Otros Cargos'] || '').trim();
-  let min = 0;
-  if (cargo && cargo !== '-') min += 40;
-  if (otros && otros !== '-') min += 10;
-  const actsMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres'] || '').trim() === nombre);
-  min = Math.min(100, min + Math.min(40, actsMin.length * 10));
+  const nombre=String(m['Apellidos y Nombres']||'').trim();
+  const cargo=getCargo(m);
+  const otros=String(m['Otros\nCargos']||m['Otros Cargos']||'').trim();
+  let min=0;
+  if(cargo&&cargo!=='-') min+=40;
+  if(otros&&otros!=='-') min+=10;
+  const actsMin=MINISTERIAL.filter(r=>String(r['Apellidos y Nombres']||'').trim()===nombre);
+  min=Math.min(100,min+Math.min(40,actsMin.length*10));
 
-  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
-  const activos = estudios.filter(r => String(r['Estado'] || '') === 'En Curso');
-  const bautizados = estudios.filter(r => String(r['Estado'] || '') === 'Bautizado');
-  let mis = Math.min(60, activos.length * 20) + Math.min(30, bautizados.length * 15);
-  if (estudios.length > 0 && bautizados.length === 0) mis += 10;
-  mis = Math.min(100, mis);
+  const estudios=MISIONERO.filter(r=>getNombreHermano(r)===nombre);
+  const activos=estudios.filter(r=>String(r['Estado']||'')==='En Curso');
+  const bautizados=estudios.filter(r=>String(r['Estado']||'')==='Bautizado');
+  let mis=Math.min(60,activos.length*20)+Math.min(30,bautizados.length*15);
+  if(estudios.length>0&&bautizados.length===0) mis+=10;
+  mis=Math.min(100,mis);
 
-  return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: actsMin.length };
+  return {min,mis,activos:activos.length,bautizados:bautizados.length,actsMin:actsMin.length};
 }
 
-function semaforo(pts) {
-  if (pts >= 70) return { cls: 'b-verde', label: 'Activo', key: 'verde' };
-  if (pts >= 40) return { cls: 'b-amarillo', label: 'En desarrollo', key: 'amarillo' };
-  return { cls: 'b-rojo', label: 'Necesita atención', key: 'rojo' };
+function semaforo(pts){
+  if(pts>=70) return {cls:'b-verde',label:'Activo',key:'verde'};
+  if(pts>=40) return {cls:'b-amarillo',label:'En desarrollo',key:'amarillo'};
+  return {cls:'b-rojo',label:'Necesita atención',key:'rojo'};
 }
 
-function initials(n) {
-  const p = String(n).split(/[\s,]+/).filter(Boolean);
-  return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : (p[0]||'?')[0].toUpperCase();
+function initials(n){
+  const p=String(n).split(/[\s,]+/).filter(Boolean);
+  return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():(p[0]||'?')[0].toUpperCase();
 }
 
-const PALETTE = ['#1F3864','#1E5631','#7C3AED','#B45309','#0F766E','#9F1239','#1D4ED8'];
-function avatarColor(n) { let h=0; for(let c of n) h+=c.charCodeAt(0); return PALETTE[h%PALETTE.length]; }
+const PALETTE=['#1F3864','#1E5631','#7C3AED','#B45309','#0F766E','#9F1239','#1D4ED8'];
+function avatarColor(n){let h=0;for(let c of n)h+=c.charCodeAt(0);return PALETTE[h%PALETTE.length];}
 
-function setFiltroNivel(val, el) {
-  filtroNivel = val;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+function setFiltroNivel(val,el){
+  filtroNivel=val;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   filtrarMiembros();
 }
 
-function renderMiembros(lista) {
-  const el = document.getElementById('lista-miembros');
-  const mostrar = filtroNivel ? lista.filter(m => {
-    const niv = calcNivel(m);
-    return semaforo(Math.round((niv.min+niv.mis)/2)).key === filtroNivel;
-  }) : lista;
+function renderMiembros(lista){
+  const el=document.getElementById('lista-miembros');
+  let mostrar=lista;
+  if(filtroNivel==='joven'){
+    mostrar=lista.filter(m=>{const e=calcEdad(m);return e!==null&&e>=12&&e<=19;});
+  } else if(filtroNivel==='bautizado'){
+    mostrar=lista.filter(m=>{const d=diasDesdeBautismo(m);return d!==null&&d>=0&&d<=60;});
+  } else if(filtroNivel){
+    mostrar=lista.filter(m=>{
+      const niv=calcNivel(m);
+      return semaforo(Math.round((niv.min+niv.mis)/2)).key===filtroNivel;
+    });
+  }
 
-  if (!mostrar.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No se encontraron hermanos</div>';
+  if(!mostrar.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>No se encontraron hermanos</div>';
     return;
   }
-  const max = 100;
-  el.innerHTML = mostrar.slice(0, max).map(m => {
-    const n = String(m['Apellidos y Nombres'] || '').trim();
-    const col = avatarColor(n);
-    const dept = String(m['Departamento'] || '').trim();
-    const clasif = String(m['Clasificación'] || '').trim();
-    const niv = calcNivel(m);
-    const sm = semaforo(Math.round((niv.min+niv.mis)/2));
+
+  // Alertas especiales
+  let alertaHTML='';
+  if(filtroNivel==='joven'){
+    alertaHTML=`<div class="alerta alerta-azul" style="margin-bottom:12px;">🧑 ${mostrar.length} hermano(s) entre 12-19 años — sugeridos para acompañamiento en visitas y estudios bíblicos</div>`;
+  } else if(filtroNivel==='bautizado'){
+    alertaHTML=`<div class="alerta alerta-verde" style="margin-bottom:12px;">🆕 ${mostrar.length} hermano(s) recién bautizados (últimos 60 días) — priorizar para acompañamiento pastoral</div>`;
+  }
+
+  const max=100;
+  el.innerHTML=alertaHTML+mostrar.slice(0,max).map(m=>{
+    const n=String(m['Apellidos y Nombres']||'').trim();
+    const col=avatarColor(n);
+    const dept=getDept(m)||'Sin departamento';
+    const clasif=getClasif(m);
+    const niv=calcNivel(m);
+    const sm=semaforo(Math.round((niv.min+niv.mis)/2));
+    const edad=calcEdad(m);
+    const diasBaut=diasDesdeBautismo(m);
+    let extras='';
+    if(edad!==null&&edad>=12&&edad<=19) extras+=' · <span style="color:#1D4ED8;font-size:11px;">🧑 Joven</span>';
+    if(diasBaut!==null&&diasBaut<=60) extras+=` · <span style="color:#059669;font-size:11px;">🆕 Bautizado hace ${diasBaut}d</span>`;
     return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
       <div class="avatar" style="background:${col}25;color:${col};">${initials(n)}</div>
       <div class="member-info">
         <div class="member-name">${n}</div>
-        <div class="member-sub">${dept||'Sin departamento'}${clasif?' · '+clasif:''}</div>
+        <div class="member-sub">${dept}${clasif?' · '+clasif:''}${extras}</div>
       </div>
       <span class="badge ${sm.cls}">${sm.label}</span>
     </div>`;
-  }).join('') + (mostrar.length > max ? `<div class="empty-state" style="padding:12px;">Mostrando ${max} de ${mostrar.length}. Use el buscador.</div>` : '');
+  }).join('')+(mostrar.length>max?`<div class="empty-state" style="padding:12px;">Mostrando ${max} de ${mostrar.length}. Use el buscador.</div>`:'');
 }
 
-function filtrarMiembros() {
-  const q = document.getElementById('search-miembro').value.toLowerCase();
-  const lista = q ? MIEMBROS.filter(m => String(m['Apellidos y Nombres']||'').toLowerCase().includes(q)) : MIEMBROS;
+function filtrarMiembros(){
+  const q=document.getElementById('search-miembro').value.toLowerCase();
+  const lista=q?MIEMBROS.filter(m=>String(m['Apellidos y Nombres']||'').toLowerCase().includes(q)):MIEMBROS;
   renderMiembros(lista);
 }
 
-// Nombres exactos de columnas en Google Sheets (confirmados por el usuario)
-// MIEMBROS: 'Apellidos y Nombres', 'Edad', 'Bautizado', 'Fecha de Bautismo',
-//           'Clasificación', 'Registro Iglesia', 'Departamento'
-
-// MODIFICACIÓN 3: Calcular días desde bautismo
-// La columna en Sheets se llama exactamente: 'Fecha de Bautismo'
-// Formato esperado: DD/MM/YYYY  (ej: 15/03/2025) o YYYY-MM-DD
-// También maneja fechas numéricas seriales de Google Sheets (número de días desde 30/12/1899)
-function diasDesdeBautismo(m) {
-  const raw = m['Fecha de Bautismo'];
-  if (raw === '' || raw === null || raw === undefined) return null;
-
-  let fecha = null;
-
-  // Caso 1: número serial de Google Sheets (ej: 45730)
-  if (typeof raw === 'number') {
-    // Sheets cuenta días desde 30/12/1899
-    fecha = new Date(Math.round((raw - 25569) * 86400 * 1000));
+function validarLeccion(input){
+  const v=parseInt(input.value);
+  const err=document.getElementById('leccion-error');
+  if(isNaN(v)||v<1||v>20){
+    err.style.display='block';
+    input.style.borderColor='#DC2626';
   } else {
-    const fechaBaut = String(raw).trim();
-    if (!fechaBaut) return null;
-    const partes = fechaBaut.split(/[\/\-]/);
-    if (partes.length === 3) {
-      if (partes[0].length === 4) {
-        // YYYY-MM-DD
-        fecha = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
-      } else {
-        // DD/MM/YYYY
-        fecha = new Date(parseInt(partes[2]), parseInt(partes[1])-1, parseInt(partes[0]));
-      }
-    }
+    err.style.display='none';
+    input.style.borderColor='';
   }
-
-  if (!fecha || isNaN(fecha.getTime())) return null;
-  const hoy = new Date();
-  const diff = Math.floor((hoy - fecha) / (1000*60*60*24));
-  return diff >= 0 ? diff : null;
 }
 
-function verPerfil(nombreEnc) {
-  const nombre = decodeURIComponent(nombreEnc);
-  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
-  if (!m) return;
-  const niv = calcNivel(m);
-  const smMin = semaforo(niv.min);
-  const smMis = semaforo(niv.mis);
-  const smGen = semaforo(Math.round((niv.min+niv.mis)/2));
-  const col = avatarColor(nombre);
-  const cargo = getCargo(m) || 'Sin cargo';
-  const dept = String(m['Departamento']||'Sin departamento').trim();
-  const dones = String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
-  const talentos = String(m['Talentos\nPrácticos']||m['Talentos Prácticos']||'').trim();
-  const clasif = String(m['Clasificación']||'').trim();
-  const estado = String(m['Estado']||'').trim();
-  const bautizado = String(m['Bautizado']||'').trim();
-  const edad = parseInt(m['Edad'] || 0) || 0;
-  const regIglesia = String(m['Registro Iglesia']||'').trim();
-  const fechaBautRaw = m['Fecha de Bautismo'];
-  let fechaBautDisplay = '';
-  if (fechaBautRaw !== '' && fechaBautRaw !== null && fechaBautRaw !== undefined) {
-    if (typeof fechaBautRaw === 'number') {
-      const d = new Date(Math.round((fechaBautRaw - 25569) * 86400 * 1000));
-      fechaBautDisplay = d.toLocaleDateString('es-BO', {day:'2-digit', month:'2-digit', year:'numeric'});
-    } else {
-      fechaBautDisplay = String(fechaBautRaw).trim();
-    }
+function verPerfil(nombreEnc){
+  const nombre=decodeURIComponent(nombreEnc);
+  const m=MIEMBROS.find(x=>String(x['Apellidos y Nombres']||'').trim()===nombre);
+  if(!m) return;
+  const niv=calcNivel(m);
+  const smMin=semaforo(niv.min);
+  const smMis=semaforo(niv.mis);
+  const smGen=semaforo(Math.round((niv.min+niv.mis)/2));
+  const col=avatarColor(nombre);
+  const cargo=getCargo(m)||'Sin cargo';
+  const dept=getDept(m)||'Sin departamento';
+  const dones=String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
+  const talentos=String(m['Talentos\nPrácticos']||m['Talentos Prácticos']||'').trim();
+  const clasif=getClasif(m);
+  const estado=String(m['Estado']||'').trim();
+  const bautizado=String(m['Bautizado']||'').trim();
+  const claseEESS=getClaseEESS(m);
+  const edad=calcEdad(m);
+  const diasBaut=diasDesdeBautismo(m);
+
+  const estudios=MISIONERO.filter(r=>getNombreHermano(r)===nombre);
+  const activos=estudios.filter(r=>String(r['Estado']||'')==='En Curso');
+  const disponibilidad=activos.length===0?'Disponible':activos.length<3?`${activos.length}/3 estudios`:'Consultar';
+
+  let alertasHTML='';
+  if(edad!==null&&edad>=12&&edad<=19){
+    alertasHTML+=`<div class="alerta alerta-azul" style="margin-bottom:8px;">🧑 Joven (${edad} años) — Sugerido para acompañamiento en visitas y estudios bíblicos</div>`;
+  }
+  if(diasBaut!==null&&diasBaut<=60){
+    alertasHTML+=`<div class="alerta alerta-verde" style="margin-bottom:8px;">🆕 Recién bautizado hace ${diasBaut} días — Priorizar para acompañamiento pastoral</div>`;
   }
 
-  // MODIFICACIÓN 3: badge de recién bautizado
-  const diasBaut = diasDesdeBautismo(m);
-  let recienBautizadoBadge = '';
-  if (diasBaut !== null && diasBaut <= 60) {
-    recienBautizadoBadge = `<span class="badge b-naranja">🌟 Recién bautizado (${diasBaut}d)</span>`;
-  }
-  // MODIFICACIÓN 2: badge de joven adolescente
-  let jovenBadge = '';
-  if (edad >= 12 && edad <= 19) {
-    jovenBadge = `<span class="badge b-morado">🧑 Joven (${edad} años)</span>`;
-  }
-
-  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
-  const activos = estudios.filter(r => String(r['Estado']||'') === 'En Curso');
-  const disponibilidad = activos.length === 0 ? 'Disponible' : activos.length < 3 ? `${activos.length}/3 estudios` : 'Consultar';
-  const dispBadge = activos.length < 3 ? 'b-verde' : 'b-amarillo';
-
-  const estudiosHTML = activos.length > 0
-    ? activos.map(e => {
-        const est = String(e['Nombre del\nEstudiante']||e['Nombre del Estudiante']||'Sin nombre').trim();
-        const lec = parseInt(e['Lección\nActual (1-20)']||e['Lección Actual (1-20)']||0)||0;
+  const estudiosHTML=activos.length>0
+    ?activos.map(e=>{
+        const est=String(e['Nombre del\nEstudiante']||e['Nombre del Estudiante']||'Sin nombre').trim();
+        const lec=parseInt(e['Lección\nActual (1-20)']||e['Lección Actual (1-20)']||0)||0;
         return `<div class="estudio-item">
           <div class="estudio-top">
             <span class="estudio-name">${est}</span>
@@ -741,509 +721,372 @@ function verPerfil(nombreEnc) {
           <div class="leccion-bar"><div class="leccion-fill" style="width:${Math.round(lec/20*100)}%"></div></div>
         </div>`;
       }).join('')
-    : '<div style="font-size:13px;color:var(--text2);padding:8px 0 4px;">Sin estudios bíblicos activos registrados</div>';
+    :'<div style="font-size:13px;color:var(--text2);padding:8px 0 4px;">Sin estudios bíblicos activos registrados</div>';
 
-  document.getElementById('perfil-contenido').innerHTML = `
+  document.getElementById('perfil-contenido').innerHTML=`
+    ${alertasHTML}
     <div class="card">
       <div class="profile-header">
         <div class="avatar-xl" style="background:${col}25;color:${col};">${initials(nombre)}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:16px;font-weight:700;color:var(--text);">${nombre}</div>
+          <div style="font-size:16px;font-weight:700;">${nombre}</div>
           <div style="font-size:12px;color:var(--text2);margin-top:2px;">${cargo}</div>
-          <div style="font-size:12px;color:var(--text2);">${dept}</div>
+          <div style="font-size:12px;color:var(--text2);">${dept}${claseEESS?' · '+claseEESS:''}</div>
           <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
             <span class="badge ${smGen.cls}">${smGen.label}</span>
-            ${clasif ? `<span class="badge b-gris">${clasif}</span>` : ''}
-            ${estado ? `<span class="badge b-azul">${estado}</span>` : ''}
-            ${recienBautizadoBadge}
-            ${jovenBadge}
+            ${clasif?`<span class="badge b-gris">${clasif}</span>`:''}
+            ${estado?`<span class="badge b-azul">${estado}</span>`:''}
+            ${bautizado==='Sí'?`<span class="badge b-verde">✓ Bautizado</span>`:''}
           </div>
         </div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- ESTADO ESPIRITUAL: Bautizado + Fecha de Bautismo -->
-      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
-        ${bautizado ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Bautizado</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${bautizado}</div></div>` : ''}
-        ${fechaBautDisplay ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Fecha de Bautismo</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${fechaBautDisplay}${diasBaut !== null ? `<span style="font-size:11px;font-weight:400;color:var(--text2);margin-left:6px;">(hace ${diasBaut} días)</span>` : ''}</div></div>` : ''}
-        ${regIglesia ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Registro Iglesia</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${regIglesia}</div></div>` : ''}
-        ${edad ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Edad</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${edad} años</div></div>` : ''}
-      </div>
-
-      <div class="divider"></div>
-
       <div class="progress-section">
         <div class="progress-label">
           <span>🏛️ Nivel ministerial</span>
-          <strong>${niv.min} / 100</strong>
+          <strong>${niv.min}/100</strong>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill fill-${niv.min>=70?'verde':niv.min>=40?'amber':'rojo'}" style="width:${niv.min}%"></div>
-        </div>
-        <div style="margin-top:5px;"><span class="badge ${smMin.cls}">${smMin.label}</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-${niv.min>=70?'verde':niv.min>=40?'amber':'rojo'}" style="width:${niv.min}%"></div></div>
+        <div style="margin-top:5px;font-size:11px;color:var(--text2);">Basado en: cargo activo (+40pts) + otros cargos (+10pts) + actividades del mes (+10pts c/u)</div>
+        <div style="margin-top:4px;"><span class="badge ${smMin.cls}">Ministerial: ${smMin.label}</span></div>
       </div>
-
       <div class="progress-section">
         <div class="progress-label">
           <span>🌍 Nivel misionero</span>
-          <strong>${niv.mis} / 100</strong>
+          <strong>${niv.mis}/100</strong>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill fill-${niv.mis>=70?'azul':niv.mis>=40?'amber':'rojo'}" style="width:${niv.mis}%"></div>
-        </div>
-        <div style="margin-top:5px;"><span class="badge ${smMis.cls}">${smMis.label}</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-${niv.mis>=70?'azul':niv.mis>=40?'amber':'rojo'}" style="width:${niv.mis}%"></div></div>
+        <div style="margin-top:5px;font-size:11px;color:var(--text2);">Basado en: estudios activos (+20pts c/u) + bautizados histórico (+15pts c/u)</div>
+        <div style="margin-top:4px;"><span class="badge ${smMis.cls}">Misionero: ${smMis.label}</span></div>
       </div>
-
       <div class="points-grid">
-        <div class="point-card">
-          <div class="point-val">${niv.actsMin}</div>
-          <div class="point-lbl">Actividades ministeriales</div>
-        </div>
-        <div class="point-card">
-          <div class="point-val">${activos.length}</div>
-          <div class="point-lbl">Estudios activos</div>
-        </div>
-        <div class="point-card">
-          <div class="point-val">${niv.bautizados}</div>
-          <div class="point-lbl">Personas bautizadas</div>
-        </div>
-        <div class="point-card">
-          <div class="point-val" style="font-size:16px;">${disponibilidad}</div>
-          <div class="point-lbl">Disponibilidad misionera</div>
-        </div>
+        <div class="point-card"><div class="point-val">${niv.actsMin}</div><div class="point-lbl">Actividades ministeriales</div></div>
+        <div class="point-card"><div class="point-val">${activos.length}</div><div class="point-lbl">Estudios activos</div></div>
+        <div class="point-card"><div class="point-val">${niv.bautizados}</div><div class="point-lbl">Personas bautizadas</div></div>
+        <div class="point-card"><div class="point-val" style="font-size:14px;">${disponibilidad}</div><div class="point-lbl">Disponibilidad misionera</div></div>
       </div>
-
-      ${dones || talentos ? `<div class="divider"></div>
-      ${dones ? `<div style="margin-bottom:6px;"><span style="font-size:12px;font-weight:600;color:var(--text2);">DONES: </span>${dones.split(',').map(d=>`<span class="tag">${d.trim()}</span>`).join('')}</div>` : ''}
-      ${talentos ? `<div><span style="font-size:12px;font-weight:600;color:var(--text2);">TALENTOS: </span>${talentos.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>` : ''}` : ''}
+      ${dones||talentos?`<div class="divider"></div>
+      ${dones?`<div style="margin-bottom:6px;"><span style="font-size:12px;font-weight:600;color:var(--text2);">DONES: </span>${dones.split(',').map(d=>`<span class="tag">${d.trim()}</span>`).join('')}</div>`:''}
+      ${talentos?`<div><span style="font-size:12px;font-weight:600;color:var(--text2);">TALENTOS: </span>${talentos.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>`:''}`:''}
     </div>
-
     <div class="section-title">Estudios bíblicos activos</div>
     ${estudiosHTML}
   `;
   showPage('perfil');
 }
 
-function renderInteresados() {
-  const el = document.getElementById('lista-interesados');
-  if (!INTERESADOS.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No hay interesados registrados aún.</div>';
+function renderInteresados(){
+  const el=document.getElementById('lista-interesados');
+  if(!INTERESADOS.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>No hay interesados registrados aún.</div>';
     return;
   }
-  el.innerHTML = INTERESADOS.map(int => `
+  el.innerHTML=INTERESADOS.map(int=>`
     <div class="card">
       <div class="int-header">
         <div>
           <div class="int-name">${int.nombre}</div>
-          <div class="int-sub">${[int.tel, int.dir].filter(Boolean).join(' · ')}</div>
+          <div class="int-sub">${[int.tel,int.dir].filter(Boolean).join(' · ')}</div>
         </div>
-        <span class="badge ${int.hermano ? 'b-verde' : 'b-amarillo'}">${int.hermano ? 'Asignado' : 'En espera'}</span>
+        <span class="badge ${int.hermano?'b-verde':'b-amarillo'}">${int.hermano?'Asignado':'En espera'}</span>
       </div>
-      ${int.hermano ? `<div style="font-size:13px;color:var(--text2);">Hermano: <strong style="color:var(--text);">${int.hermano}</strong></div>` : ''}
-      ${int.obs ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${int.obs}</div>` : ''}
+      ${int.hermano?`<div style="font-size:13px;color:var(--text2);">Hermano: <strong style="color:var(--text);">${int.hermano}</strong></div>`:''}
+      ${int.obs?`<div style="font-size:12px;color:var(--text2);margin-top:4px;">${int.obs}</div>`:''}
     </div>
   `).join('');
 }
 
-// MODIFICACIÓN 6: Dashboard con big numbers de clasificación
-function renderDashboard() {
-  const total = MIEMBROS.length;
-  if (!total) return;
-  let verdes=0, amarillos=0, rojos=0, sinCargo=0, disponibles=0;
+function renderDashboard(){
+  const total=MIEMBROS.length;
+  if(!total) return;
+  let verdesMin=0,amarillosMin=0,rojosMin=0;
+  let verdesMis=0,amarillosMis=0,rojosMis=0;
+  let verdesGen=0,amarillosGen=0,rojosGen=0;
+  let sinCargo=0,disponibles=0;
+  let frecuentes=0,noFrecuentes=0,aRescatar=0,aTransferir=0;
 
-  // MODIFICACIÓN 6: contadores de clasificación
-  let rescatar=0, transferir=0, frecuentes=0, noFrecuentes=0;
-
-  MIEMBROS.forEach(m => {
-    const niv = calcNivel(m);
-    const sm = semaforo(Math.round((niv.min+niv.mis)/2));
-    if (sm.key==='verde') verdes++;
-    else if (sm.key==='amarillo') amarillos++;
-    else rojos++;
-    if (!getCargo(m) || getCargo(m)==='-') sinCargo++;
-    if (niv.activos < 3) disponibles++;
-
-    const clasif = String(m['Clasificación'] || '').trim().toLowerCase();
-    if (clasif.includes('rescatar')) rescatar++;
-    else if (clasif.includes('transferir')) transferir++;
-    else if (clasif === 'frecuente') frecuentes++;
-    else if (clasif.includes('no frecuente') || clasif === 'no frecuentes') noFrecuentes++;
+  MIEMBROS.forEach(m=>{
+    const niv=calcNivel(m);
+    const smMin=semaforo(niv.min);
+    const smMis=semaforo(niv.mis);
+    const smGen=semaforo(Math.round((niv.min+niv.mis)/2));
+    if(smMin.key==='verde') verdesMin++; else if(smMin.key==='amarillo') amarillosMin++; else rojosMin++;
+    if(smMis.key==='verde') verdesMis++; else if(smMis.key==='amarillo') amarillosMis++; else rojosMis++;
+    if(smGen.key==='verde') verdesGen++; else if(smGen.key==='amarillo') amarillosGen++; else rojosGen++;
+    if(!getCargo(m)||getCargo(m)==='-') sinCargo++;
+    if(niv.activos<3) disponibles++;
+    const cl=getClasif(m);
+    if(cl==='Frecuente') frecuentes++;
+    else if(cl==='No Frecuente') noFrecuentes++;
+    else if(cl==='A Rescatar') aRescatar++;
+    else if(cl==='A Transferir') aTransferir++;
   });
 
-  const totalEst = MISIONERO.filter(r => String(r['Estado']||'').trim()==='En Curso').length;
-  const totalBaut = MISIONERO.filter(r => String(r['Estado']||'').trim()==='Bautizado').length;
+  const totalEst=MISIONERO.filter(r=>String(r['Estado']||'').trim()==='En Curso').length;
+  const totalBaut=MISIONERO.filter(r=>String(r['Estado']||'').trim()==='Bautizado').length;
+  const jovenes=MIEMBROS.filter(m=>{const e=calcEdad(m);return e!==null&&e>=12&&e<=19;}).length;
+  const recienBaut=MIEMBROS.filter(m=>{const d=diasDesdeBautismo(m);return d!==null&&d<=60;}).length;
 
-  // MODIFICACIONES 2 y 3: contar jóvenes y recién bautizados
-  const jovenes = MIEMBROS.filter(m => {
-    const edad = parseInt(m['Edad'] || 0) || 0;
-    return edad >= 12 && edad <= 19;
-  }).length;
-
-  const recienBautizados = MIEMBROS.filter(m => {
-    const d = diasDesdeBautismo(m);
-    return d !== null && d <= 60;
-  }).length;
-
-  document.getElementById('dashboard-contenido').innerHTML = `
-
-    <!-- MODIFICACIÓN 6: Números destacados grandes -->
-    <div class="section-title" style="margin-top:8px;">📊 Datos destacados de la congregación</div>
-    <div class="big-stats-grid">
-      <div class="big-stat-card bsc-rescatar">
-        <div class="big-stat-val">${rescatar}</div>
-        <div class="big-stat-lbl">A Rescatar</div>
-      </div>
-      <div class="big-stat-card bsc-transferir">
-        <div class="big-stat-val">${transferir}</div>
-        <div class="big-stat-lbl">A Transferir</div>
-      </div>
-      <div class="big-stat-card bsc-frecuente">
-        <div class="big-stat-val">${frecuentes}</div>
-        <div class="big-stat-lbl">Frecuentes</div>
-      </div>
-      <div class="big-stat-card bsc-nofrecuente">
-        <div class="big-stat-val">${noFrecuentes}</div>
-        <div class="big-stat-lbl">No Frecuentes</div>
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total miembros registrados</div></div>
-      <div class="stat-card"><div class="stat-val">${totalEst}</div><div class="stat-lbl">Estudios bíblicos activos</div></div>
-      <div class="stat-card"><div class="stat-val">${totalBaut}</div><div class="stat-lbl">Bautizados históricamente</div></div>
+  document.getElementById('dashboard-contenido').innerHTML=`
+    <div class="stats-grid" style="margin-top:8px;">
+      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total miembros</div></div>
+      <div class="stat-card"><div class="stat-val">${totalEst}</div><div class="stat-lbl">Estudios activos</div></div>
+      <div class="stat-card"><div class="stat-val">${totalBaut}</div><div class="stat-lbl">Bautizados histórico</div></div>
       <div class="stat-card"><div class="stat-val">${disponibles}</div><div class="stat-lbl">Disponibles para estudiar</div></div>
     </div>
 
-    <div class="section-title" style="margin-top:4px;">Nivel espiritual de la congregación</div>
-    <div class="card">
-      <div class="progress-section">
-        <div class="progress-label"><span>🟢 Activos</span><strong>${verdes} (${Math.round(verdes/total*100)}%)</strong></div>
-        <div class="progress-bar"><div class="progress-fill fill-verde" style="width:${Math.round(verdes/total*100)}%"></div></div>
-      </div>
-      <div class="progress-section" style="margin-top:10px;">
-        <div class="progress-label"><span>🟡 En desarrollo</span><strong>${amarillos} (${Math.round(amarillos/total*100)}%)</strong></div>
-        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillos/total*100)}%"></div></div>
-      </div>
-      <div class="progress-section" style="margin-top:10px;">
-        <div class="progress-label"><span>🔴 Necesitan atención</span><strong>${rojos} (${Math.round(rojos/total*100)}%)</strong></div>
-        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojos/total*100)}%"></div></div>
-      </div>
-    </div>
-
-    <div class="section-title">Grupos especiales</div>
+    <div class="section-title">📊 Clasificación mayordomía</div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val" style="color:#5B21B6;">${jovenes}</div><div class="stat-lbl">🧑 Jóvenes (12–19 años)</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:#B45309;">${recienBautizados}</div><div class="stat-lbl">🌟 Recién bautizados (≤60 días)</div></div>
+      <div class="stat-card"><div class="stat-val big" style="color:#059669;">${frecuentes}</div><div class="stat-lbl">Frecuentes</div></div>
+      <div class="stat-card"><div class="stat-val big" style="color:#D97706;">${noFrecuentes}</div><div class="stat-lbl">No Frecuentes</div></div>
+      <div class="stat-card"><div class="stat-val big" style="color:#DC2626;">${aRescatar}</div><div class="stat-lbl">A Rescatar</div></div>
+      <div class="stat-card"><div class="stat-val big" style="color:#7C3AED;">${aTransferir}</div><div class="stat-lbl">A Transferir</div></div>
     </div>
 
-    <div class="section-title">Oportunidades de crecimiento</div>
-    <div class="card" style="margin-bottom:10px;">
-      <div style="font-size:15px;font-weight:700;color:var(--azul);">${sinCargo}</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Hermanos sin cargo ministerial activo</div>
-    </div>
+    <div class="section-title">🏛️ Nivel ministerial de la congregación</div>
     <div class="card">
-      <div style="font-size:15px;font-weight:700;color:var(--verde);">${disponibles}</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Hermanos disponibles para dar estudios bíblicos</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Mide la actividad <strong>dentro</strong> de la iglesia: cargos + actividades departamentales</div>
+      <div class="progress-section">
+        <div class="progress-label"><span>🟢 Activos ministerialmente</span><strong>${verdesMin} (${Math.round(verdesMin/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-verde" style="width:${Math.round(verdesMin/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🟡 En desarrollo ministerial</span><strong>${amarillosMin} (${Math.round(amarillosMin/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillosMin/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🔴 Sin actividad ministerial</span><strong>${rojosMin} (${Math.round(rojosMin/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojosMin/total*100)}%"></div></div>
+      </div>
     </div>
 
-    <div class="section-title" style="margin-top:4px;">Interesados en espera</div>
+    <div class="section-title">🌍 Nivel misionero de la congregación</div>
     <div class="card">
-      <div style="font-size:15px;font-weight:700;color:var(--text);">${INTERESADOS.filter(i=>!i.hermano).length}</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Sin asignar — ${INTERESADOS.filter(i=>i.hermano).length} asignados</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Mide la actividad <strong>fuera</strong> de la iglesia: estudios bíblicos + personas bautizadas</div>
+      <div class="progress-section">
+        <div class="progress-label"><span>🟢 Activos misioneramente</span><strong>${verdesMis} (${Math.round(verdesMis/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-azul" style="width:${Math.round(verdesMis/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🟡 En desarrollo misionero</span><strong>${amarillosMis} (${Math.round(amarillosMis/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillosMis/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🔴 Sin actividad misionera</span><strong>${rojosMis} (${Math.round(rojosMis/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojosMis/total*100)}%"></div></div>
+      </div>
+    </div>
+
+    <div class="section-title">⚡ Nivel espiritual general</div>
+    <div class="card">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Promedio combinado de nivel ministerial + misionero</div>
+      <div class="progress-section">
+        <div class="progress-label"><span>🟢 Activos (ambas áreas)</span><strong>${verdesGen} (${Math.round(verdesGen/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-verde" style="width:${Math.round(verdesGen/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🟡 En desarrollo</span><strong>${amarillosGen} (${Math.round(amarillosGen/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillosGen/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🔴 Necesitan atención</span><strong>${rojosGen} (${Math.round(rojosGen/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojosGen/total*100)}%"></div></div>
+      </div>
+    </div>
+
+    <div class="section-title">🎯 Grupos de atención especial</div>
+    <div class="stats-grid">
+      <div class="stat-card" onclick="setFiltroNivel('joven',document.querySelectorAll('.filter-chip')[4]);showPage('miembros');" style="cursor:pointer;">
+        <div class="stat-val" style="color:#1D4ED8;">${jovenes}</div><div class="stat-lbl">Jóvenes 12-19 años para acompañamiento</div>
+      </div>
+      <div class="stat-card" onclick="setFiltroNivel('bautizado',document.querySelectorAll('.filter-chip')[5]);showPage('miembros');" style="cursor:pointer;">
+        <div class="stat-val" style="color:#059669;">${recienBaut}</div><div class="stat-lbl">Recién bautizados (últimos 60 días)</div>
+      </div>
+      <div class="stat-card"><div class="stat-val">${sinCargo}</div><div class="stat-lbl">Sin cargo ministerial activo</div></div>
+      <div class="stat-card"><div class="stat-val">${disponibles}</div><div class="stat-lbl">Disponibles para dar estudios</div></div>
+    </div>
+
+    <div class="section-title">📬 Interesados</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val">${INTERESADOS.length}</div><div class="stat-lbl">Total interesados</div></div>
+      <div class="stat-card"><div class="stat-val">${INTERESADOS.filter(i=>!i.hermano).length}</div><div class="stat-lbl">En lista de espera</div></div>
     </div>
   `;
 }
 
-// MODIFICACIÓN 5: Validar lección entre 1 y 20
-function validarLeccion(input) {
-  const val = parseInt(input.value);
-  const error = document.getElementById('rmi-leccion-error');
-  if (isNaN(val) || val < 1 || val > 20) {
-    error.style.display = 'block';
-    input.style.borderColor = '#DC2626';
-  } else {
-    error.style.display = 'none';
-    input.style.borderColor = '';
-    if (val > 20) input.value = 20;
-    if (val < 1) input.value = 1;
-  }
-}
+function poblarSelectores(){
+  const nombres=[...new Set(MIEMBROS.map(m=>String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
+  const depts=[...new Set(MIEMBROS.map(m=>getDept(m)).filter(Boolean))].sort();
+  const clases=[...new Set(MIEMBROS.map(m=>getClaseEESS(m)).filter(Boolean))].sort();
 
-function poblarSelectores() {
-  const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
-
-  // MODIFICACIÓN 4 FIX: Poblar Departamento desde los datos reales de MIEMBROS
-  // Combinar departamentos de la hoja + áreas definidas en la constante
-  const deptsHoja = [...new Set(MIEMBROS.map(m => String(m['Departamento']||'').trim()).filter(Boolean))].sort();
-  // Unir ambas fuentes y eliminar duplicados
-  const todosLosDepts = [...new Set([...deptsHoja, ...AREAS_IGLESIA])].sort();
-
-  // MODIFICACIÓN 1: Poblar checkboxes de áreas de apoyo en form ministerial
-  const areasContainer = document.getElementById('rm-areas-apoyo');
-  if (areasContainer) {
-    areasContainer.innerHTML = todosLosDepts.map((area, i) => `
-      <div class="checkbox-item">
-        <input type="checkbox" id="area-${i}" name="area-apoyo" value="${area}">
-        <label for="area-${i}">${area}</label>
-      </div>
-    `).join('');
-  }
-
-  // Selectores de hermanos para actividad ministerial y estudio bíblico (todos los hermanos)
-  ['rm-hermano'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    nombres.forEach(n => { const o = document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+  ['rm-hermano','rmi-hermano','rv-hermano'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel) return;
+    nombres.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
   });
 
-  // MODIFICACIÓN 4 FIX: Poblar select de departamento con valores reales
-  const ds = document.getElementById('rm-dept');
-  if (ds) {
-    todosLosDepts.forEach(d => {
-      const o = document.createElement('option');
-      o.value = d;
-      o.textContent = d;
-      ds.appendChild(o);
+  ['rm-dept','rep-dept2'].forEach(id=>{
+    const ds=document.getElementById(id);
+    if(ds) depts.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});
+  });
+
+  const repClase=document.getElementById('rep-clase');
+  if(repClase) clases.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;repClase.appendChild(o);});
+
+  // Selector interesados — solo Frecuentes con Registro Iglesia = Sí
+  const niSel=document.getElementById('ni-hermano');
+  if(niSel){
+    const disp=MIEMBROS.filter(m=>{
+      const n=String(m['Apellidos y Nombres']||'').trim();
+      const act=MISIONERO.filter(r=>getNombreHermano(r)===n&&String(r['Estado']||'')==='En Curso').length;
+      const esFrecuente=getClasif(m)==='Frecuente';
+      const tieneRegistro=getRegIglesia(m)==='Sí'||getRegIglesia(m)==='Si'||getRegIglesia(m)==='SI';
+      return act<3&&esFrecuente&&tieneRegistro;
+    }).sort((a,b)=>{
+      const na=String(a['Apellidos y Nombres']||'').trim();
+      const nb=String(b['Apellidos y Nombres']||'').trim();
+      const aa=MISIONERO.filter(r=>getNombreHermano(r)===na&&String(r['Estado']||'')==='En Curso').length;
+      const ab=MISIONERO.filter(r=>getNombreHermano(r)===nb&&String(r['Estado']||'')==='En Curso').length;
+      return aa-ab;
     });
-  }
-
-  // MODIFICACIÓN 7: Solo hermanos Frecuentes + Registro Iglesia = Sí para estudio bíblico
-  // Columnas confirmadas: 'Clasificación' y 'Registro Iglesia'
-  const hermanosMisionero = MIEMBROS.filter(m => {
-    const clasif = String(m['Clasificación'] || '').trim().toLowerCase();
-    const regIglesia = String(m['Registro Iglesia'] || m['Registro\nIglesia'] || '').trim().toLowerCase();
-    return clasif === 'frecuente' && (regIglesia === 'si' || regIglesia === 'sí' || regIglesia === 'yes');
-  });
-
-  // Selector para estudio bíblico y visitación
-  ['rmi-hermano', 'rv-hermano'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    const lista = id === 'rmi-hermano' ? hermanosMisionero : MIEMBROS;
-    const listaNombres = [...new Set(lista.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
-    listaNombres.forEach(n => { const o = document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
-  });
-
-  // Asignar interesados: MODIFICACIONES 2 y 3 aplicadas
-  const niSel = document.getElementById('ni-hermano');
-  if (niSel) {
-    // MODIFICACIÓN 7: Solo frecuentes con Registro Iglesia = Sí para asignación
-    const disp = hermanosMisionero.filter(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
-      return act < 3;
-    }).sort((a,b) => {
-      const na = String(a['Apellidos y Nombres']||'').trim();
-      const nb = String(b['Apellidos y Nombres']||'').trim();
-      // MODIFICACIÓN 3: priorizar recién bautizados
-      const diasA = diasDesdeBautismo(a);
-      const diasB = diasDesdeBautismo(b);
-      const esRecienA = diasA !== null && diasA <= 60 ? 1 : 0;
-      const esRecienB = diasB !== null && diasB <= 60 ? 1 : 0;
-      if (esRecienB !== esRecienA) return esRecienB - esRecienA;
-      // MODIFICACIÓN 2: priorizar jóvenes 12-19
-      const edadA = parseInt(a['Edad']||0)||0;
-      const edadB = parseInt(b['Edad']||0)||0;
-      const esJovenA = edadA >= 12 && edadA <= 19 ? 1 : 0;
-      const esJovenB = edadB >= 12 && edadB <= 19 ? 1 : 0;
-      if (esJovenB !== esJovenA) return esJovenB - esJovenA;
-      // Luego por cantidad de estudios (menos primero)
-      const aa = MISIONERO.filter(r => getNombreHermano(r)===na && String(r['Estado']||'')==='En Curso').length;
-      const ab = MISIONERO.filter(r => getNombreHermano(r)===nb && String(r['Estado']||'')==='En Curso').length;
-      return aa - ab;
-    });
-
-    disp.forEach(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
-      const edad = parseInt(m['Edad']||0)||0;
-      const diasBaut = diasDesdeBautismo(m);
-      const esJoven = edad >= 12 && edad <= 19;
-      const esRecien = diasBaut !== null && diasBaut <= 60;
-      let etiquetas = act===0?'sin estudios':act+' estudio(s)';
-      if (esJoven) etiquetas += ' · 🧑 Joven';
-      if (esRecien) etiquetas += ' · 🌟 Recién bautizado';
-      const o = document.createElement('option');
-      o.value = n;
-      o.textContent = `${n} (${etiquetas})`;
+    disp.forEach(m=>{
+      const n=String(m['Apellidos y Nombres']||'').trim();
+      const act=MISIONERO.filter(r=>getNombreHermano(r)===n&&String(r['Estado']||'')==='En Curso').length;
+      const o=document.createElement('option');
+      o.value=n;
+      o.textContent=`${n} (${act===0?'sin estudios':act+' estudio(s)'})`;
       niSel.appendChild(o);
     });
-
-    niSel.onchange = () => {
-      const sel = niSel.value;
-      const boxSug = document.getElementById('ni-sugerencia');
-      const boxJov = document.getElementById('ni-sugerencia-jovenes');
-      const boxBaut = document.getElementById('ni-sugerencia-bautizados');
-      if (!sel) {
-        boxSug.style.display='none';
-        boxJov.style.display='none';
-        boxBaut.style.display='none';
-        return;
-      }
-      const miembro = MIEMBROS.find(m => String(m['Apellidos y Nombres']||'').trim()===sel);
-      const act = MISIONERO.filter(r => getNombreHermano(r)===sel && String(r['Estado']||'')==='En Curso').length;
-
-      boxSug.style.display = 'block';
-      boxSug.innerHTML = act===0
-        ? `✅ ${sel} no tiene estudios activos. ¡Candidato ideal para este interesado!`
-        : act<3 ? `ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
-        : `⚠️ ${sel} ya tiene 3 estudios activos. Se recomienda consultar con él/ella antes de asignar.`;
-
-      // MODIFICACIÓN 2: aviso joven
-      if (miembro) {
-        const edad = parseInt(miembro['Edad']||0)||0;
-        if (edad >= 12 && edad <= 19) {
-          boxJov.style.display = 'block';
-          boxJov.innerHTML = `🧑 ${sel} es un joven de ${edad} años. ¡Ideal para acompañamiento con un adulto tutor en visitas y estudios bíblicos!`;
-        } else {
-          boxJov.style.display = 'none';
-        }
-        // MODIFICACIÓN 3: aviso recién bautizado
-        const dias = diasDesdeBautismo(miembro);
-        if (dias !== null && dias <= 60) {
-          boxBaut.style.display = 'block';
-          boxBaut.innerHTML = `🌟 ${sel} tiene solo ${dias} día(s) de bautizado. ¡Prioridad para acompañamiento y mentoría espiritual!`;
-        } else {
-          boxBaut.style.display = 'none';
-        }
-      }
+    niSel.onchange=()=>{
+      const sel=niSel.value;
+      const box=document.getElementById('ni-sugerencia');
+      if(!sel){box.style.display='none';return;}
+      const act=MISIONERO.filter(r=>getNombreHermano(r)===sel&&String(r['Estado']||'')==='En Curso').length;
+      box.style.display='block';
+      box.innerHTML=act===0
+        ?`✅ ${sel} no tiene estudios activos. ¡Candidato ideal!`
+        :act<3?`ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
+        :`⚠️ ${sel} ya tiene 3 estudios. Se recomienda consultar antes de asignar.`;
     };
   }
 
-  // Fecha por defecto en formularios de fecha
-  ['rm-fecha','rv-fecha'].forEach(id => {
-    const f = document.getElementById(id);
-    if (f) f.value = new Date().toISOString().split('T')[0];
-  });
+  const f=document.getElementById('rm-fecha');
+  if(f) f.value=new Date().toISOString().split('T')[0];
+  const rf=document.getElementById('rv-fecha');
+  if(rf) rf.value=new Date().toISOString().split('T')[0];
 }
 
-function guardarInteresado() {
-  const nombre = document.getElementById('ni-nombre').value.trim();
-  if (!nombre) { showToast('⚠️ Ingrese el nombre del interesado'); return; }
+function setTabMis(tab,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-estudio').style.display=tab==='estudio'?'block':'none';
+  document.getElementById('tab-visita').style.display=tab==='visita'?'block':'none';
+}
+
+function guardarInteresado(){
+  const nombre=document.getElementById('ni-nombre').value.trim();
+  if(!nombre){showToast('⚠️ Ingrese el nombre del interesado');return;}
   INTERESADOS.push({
     nombre,
-    tel: document.getElementById('ni-tel').value.trim(),
-    dir: document.getElementById('ni-dir').value.trim(),
-    hermano: document.getElementById('ni-hermano').value,
-    obs: document.getElementById('ni-obs').value.trim(),
-    fecha: new Date().toLocaleDateString('es-BO'),
+    tel:document.getElementById('ni-tel').value.trim(),
+    dir:document.getElementById('ni-dir').value.trim(),
+    hermano:document.getElementById('ni-hermano').value,
+    obs:document.getElementById('ni-obs').value.trim(),
+    fecha:new Date().toLocaleDateString('es-BO'),
   });
-  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id => document.getElementById(id).value='');
+  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ni-hermano').value='';
   document.getElementById('ni-sugerencia').style.display='none';
-  document.getElementById('ni-sugerencia-jovenes').style.display='none';
-  document.getElementById('ni-sugerencia-bautizados').style.display='none';
   renderInteresados();
   renderDashboard();
   showToast('✅ Interesado guardado correctamente');
   showPage('interesados');
 }
 
-function guardarMinisterial() {
-  const h = document.getElementById('rm-hermano').value;
-  if (!h) { showToast('⚠️ Seleccione un hermano'); return; }
-
-  // MODIFICACIÓN 1: Recopilar áreas seleccionadas
-  const areasSeleccionadas = Array.from(
-    document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]:checked')
-  ).map(cb => cb.value);
-
-  MINISTERIAL.push({
-    'Apellidos y Nombres': h,
-    'Departamento': document.getElementById('rm-dept').value,
-    'Tipo': document.getElementById('rm-tipo').value,
-    'Fecha': document.getElementById('rm-fecha').value,
-    'Descripcion': document.getElementById('rm-desc').value.trim(),
-    'Areas de Apoyo': areasSeleccionadas.join(', '),
-    'Registrado por': document.getElementById('rm-registrador').value.trim(),
-  });
-
-  // Limpiar checkboxes
-  document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => cb.checked = false);
-  document.getElementById('rm-desc').value = '';
-  document.getElementById('rm-registrador').value = '';
-
-  showToast('✅ Actividad registrada. Guárdela también en Google Sheets.');
+function guardarMinisterial(){
+  const h=document.getElementById('rm-hermano').value;
+  if(!h){showToast('⚠️ Seleccione un hermano');return;}
+  const areas=Array.from(document.querySelectorAll('#areas-check input:checked')).map(c=>c.value).join(', ');
+  MINISTERIAL.push({'Apellidos y Nombres':h});
+  showToast('✅ Actividad registrada. Ingrese también en Google Sheets → CRECIMIENTO_MINISTERIAL');
   showPage('registro');
 }
 
-function guardarMisionero() {
-  const h = document.getElementById('rmi-hermano').value;
-  const est = document.getElementById('rmi-estudiante').value.trim();
-  if (!h || !est) { showToast('⚠️ Complete los campos obligatorios'); return; }
-
-  // MODIFICACIÓN 5: Validar lección
-  const lecVal = parseInt(document.getElementById('rmi-leccion').value);
-  if (isNaN(lecVal) || lecVal < 1 || lecVal > 20) {
-    showToast('⚠️ La lección debe estar entre 1 y 20');
-    return;
-  }
-
-  MISIONERO.push({
-    'Nombre del\nHermano': h,
-    'Nombre del\nEstudiante': est,
-    'Teléfono': document.getElementById('rmi-tel').value.trim(),
-    'Estado Civil': document.getElementById('rmi-estado-civil').value, // MOD 9
-    'Lección\nActual (1-20)': lecVal,
-    'Estado': document.getElementById('rmi-estado').value,
-    'Observaciones': document.getElementById('rmi-obs').value.trim(),
-    'Registrado por': document.getElementById('rmi-registrador').value.trim(),
-  });
-
-  // Limpiar
-  ['rmi-estudiante','rmi-tel','rmi-obs','rmi-registrador'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('rmi-leccion').value = '1';
-  document.getElementById('rmi-estado-civil').value = '';
-  document.getElementById('rmi-leccion-error').style.display='none';
-  document.getElementById('rmi-leccion').style.borderColor='';
-
-  showToast('✅ Estudio registrado. Guárdelo también en Google Sheets.');
+function guardarEstudio(){
+  const h=document.getElementById('rmi-hermano').value;
+  const est=document.getElementById('rmi-estudiante').value.trim();
+  if(!h||!est){showToast('⚠️ Complete los campos obligatorios');return;}
+  const lec=parseInt(document.getElementById('rmi-leccion').value);
+  if(isNaN(lec)||lec<1||lec>20){showToast('⚠️ La lección debe ser entre 1 y 20');return;}
+  MISIONERO.push({'Nombre del\nHermano':h,'Estado':document.getElementById('rmi-estado').value});
+  showToast('✅ Estudio registrado. Ingrese también en Google Sheets → CRECIMIENTO_MISIONERO');
   showPage('registro');
 }
 
-// MODIFICACIÓN 8: Guardar visitación
-function guardarVisitacion() {
-  const h = document.getElementById('rv-hermano').value;
-  const nombre = document.getElementById('rv-nombre').value.trim();
-  if (!h || !nombre) { showToast('⚠️ Complete los campos obligatorios'); return; }
-
-  // Se guarda el registro de visitación (en producción habría que enviarlo a Google Sheets también)
-  const visita = {
-    hermano: h,
-    nombre,
-    tel: document.getElementById('rv-tel').value.trim(),
-    dir: document.getElementById('rv-dir').value.trim(),
-    relacion: document.getElementById('rv-relacion').value,
-    fecha: document.getElementById('rv-fecha').value,
-    estado: document.getElementById('rv-estado').value,
-    material: document.getElementById('rv-material').value,
-    obs: document.getElementById('rv-obs').value.trim(),
-    registrador: document.getElementById('rv-registrador').value.trim(),
-  };
-
-  console.log('Visita registrada:', visita); // Para debugging
-
-  // Limpiar formulario
-  ['rv-nombre','rv-tel','rv-dir','rv-obs','rv-registrador'].forEach(id => document.getElementById(id).value='');
-  ['rv-hermano','rv-relacion','rv-estado','rv-material'].forEach(id => document.getElementById(id).value='');
-
-  showToast('✅ Visita registrada. Guárdela también en Google Sheets.');
+function guardarVisita(){
+  const h=document.getElementById('rv-hermano').value;
+  const nombre=document.getElementById('rv-nombre').value.trim();
+  if(!h||!nombre){showToast('⚠️ Complete los campos obligatorios');return;}
+  VISITACIONES.push({hermano:h,nombre,estado:document.getElementById('rv-estado').value});
+  showToast('✅ Visita registrada. Ingrese también en Google Sheets → VISITAS');
   showPage('registro');
 }
 
-const NAV_MAP = {
-  'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,
-  'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,'dashboard':3
-};
+function generarReporte(){
+  const anio=document.getElementById('rep-anio').value;
+  const clase=document.getElementById('rep-clase').value;
+  const dept=document.getElementById('rep-dept2').value;
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.style.display='none');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const p = document.getElementById('page-'+id);
-  if (p) p.style.display='block';
-  const idx = NAV_MAP[id];
-  if (idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  let miembrosFiltrados=MIEMBROS;
+  if(clase) miembrosFiltrados=miembrosFiltrados.filter(m=>getClaseEESS(m)===clase);
+  if(dept) miembrosFiltrados=miembrosFiltrados.filter(m=>getDept(m)===dept);
+
+  const nombres=new Set(miembrosFiltrados.map(m=>String(m['Apellidos y Nombres']||'').trim()));
+  let visitasFiltradas=VISITAS.filter(r=>nombres.has(String(r['Apellidos y Nombres']||'').trim()));
+  if(anio) visitasFiltradas=visitasFiltradas.filter(r=>String(r['Año']||'')===anio);
+
+  const v1=visitasFiltradas.filter(r=>String(r['Visita 1 (Sí/No)']||r['Visitado\n(S/N)']||'').toLowerCase()==='sí'||String(r['Visita 1 (Sí/No)']||r['Visitado\n(S/N)']||'').toLowerCase()==='si').length;
+  const v2=visitasFiltradas.filter(r=>String(r['Visita 2 (Sí/N)']||'').toLowerCase()==='sí'||String(r['Visita 2 (Sí/N)']||'').toLowerCase()==='si').length;
+  const v3=visitasFiltradas.filter(r=>String(r['Visita 3 (Sí/N)']||'').toLowerCase()==='sí'||String(r['Visita 3 (Sí/N)']||'').toLowerCase()==='si').length;
+
+  document.getElementById('reporte-resultado').innerHTML=`
+    <div class="section-title">Resultado del reporte</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">
+        ${anio?`Gestión: ${anio} · `:''}${clase?`Clase: ${clase} · `:''}${dept?`Departamento: ${dept}`:'Todos los departamentos'}
+      </div>
+      <div class="reporte-row"><span class="reporte-label">Miembros en el filtro</span><span class="reporte-val">${miembrosFiltrados.length}</span></div>
+      <div class="reporte-row"><span class="reporte-label">Registros de visitas</span><span class="reporte-val">${visitasFiltradas.length}</span></div>
+      <div class="reporte-row"><span class="reporte-label">✅ 1ra visita realizada</span><span class="reporte-val">${v1}</span></div>
+      <div class="reporte-row"><span class="reporte-label">✅ 2da visita realizada</span><span class="reporte-val">${v2}</span></div>
+      <div class="reporte-row"><span class="reporte-label">✅ 3ra visita realizada</span><span class="reporte-val">${v3}</span></div>
+      <div class="reporte-row"><span class="reporte-label">❌ Sin visitas registradas</span><span class="reporte-val">${miembrosFiltrados.length-visitasFiltradas.length}</span></div>
+    </div>
+    ${visitasFiltradas.length>0?`
+    <div class="section-title">Detalle por miembro</div>
+    ${visitasFiltradas.slice(0,30).map(v=>`
+      <div class="card" style="padding:10px 14px;">
+        <div style="font-size:13px;font-weight:600;">${String(v['Apellidos y Nombres']||'').trim()}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px;">
+          V1: ${String(v['Visita 1 (Sí/No)']||v['Visitado\n(S/N)']||'—')} &nbsp;|&nbsp;
+          Año: ${String(v['Año']||'—')}
+        </div>
+      </div>
+    `).join('')}
+    ${visitasFiltradas.length>30?`<div class="empty-state" style="padding:10px;">Mostrando 30 de ${visitasFiltradas.length} registros</div>`:''}
+    `:''}
+  `;
+}
+
+const NAV_MAP={'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,'registro':2,'reg-ministerial':2,'reg-misionero':2,'reporte-visitas':2,'dashboard':3};
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('page-'+id);
+  if(p) p.style.display='block';
+  const idx=NAV_MAP[id];
+  if(idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   window.scrollTo(0,0);
 }
 
