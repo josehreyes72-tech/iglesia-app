@@ -39,9 +39,9 @@
 
   /* SEARCH */
   .search-wrap { position: relative; margin-bottom: 12px; }
-  .search-wrap input { width: 100%; padding: 10px 12px 10px 36px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
+  .search-wrap input { width: 100%; padding: 10px 12px 10px 40px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
   .search-wrap input:focus { border-color: var(--azul); }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
 
   /* FILTERS */
   .filters { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
@@ -227,6 +227,7 @@
 <div id="page-nuevo-interesado" class="page">
   <button class="back-btn" onclick="showPage('interesados')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Nuevo interesado</div>
+
   <div class="form-group">
     <label>Nombre completo *</label>
     <input type="text" id="ni-nombre" placeholder="Apellido, Nombre">
@@ -239,15 +240,54 @@
     <label>Dirección / Referencia</label>
     <input type="text" id="ni-dir" placeholder="Barrio, zona, referencia...">
   </div>
+
+  <!-- TIPO DE ACTIVIDAD PARA EL INTERESADO -->
   <div class="form-group">
-    <label>Asignar a hermano</label>
-    <select id="ni-hermano">
+    <label>Tipo de actividad *</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px;">
+      <div id="ni-tipo-estudio" onclick="selTipoInteresado('estudio')"
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
+        <div style="font-size:22px;">📖</div>
+        <div style="font-size:11px;font-weight:600;margin-top:4px;">Estudio<br>Bíblico</div>
+      </div>
+      <div id="ni-tipo-visita" onclick="selTipoInteresado('visita')"
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
+        <div style="font-size:22px;">🚶</div>
+        <div style="font-size:11px;font-weight:600;margin-top:4px;">Visita</div>
+      </div>
+      <div id="ni-tipo-ambos" onclick="selTipoInteresado('ambos')"
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
+        <div style="font-size:22px;">📖🚶</div>
+        <div style="font-size:11px;font-weight:600;margin-top:4px;">Ambos</div>
+      </div>
+    </div>
+    <input type="hidden" id="ni-tipo-valor">
+  </div>
+
+  <!-- ASIGNAR HERMANOS: JOVEN + ADULTO -->
+  <div class="form-group">
+    <label>Hermano joven acompañante (12–19 años)</label>
+    <select id="ni-hermano-joven" onchange="validarSexoHermanos()">
+      <option value="">— Ninguno / No aplica —</option>
+    </select>
+    <div id="ni-joven-info" style="display:none;" class="alerta-joven" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Hermano adulto asignado *</label>
+    <select id="ni-hermano" onchange="onChangeHermanoAdulto()">
       <option value="">— Dejar en lista de espera —</option>
     </select>
+    <div id="ni-adulto-info" style="display:none;" class="sugerencia-box" style="margin-top:6px;"></div>
   </div>
+
   <div id="ni-sugerencia" style="display:none;" class="sugerencia-box"></div>
   <div id="ni-sugerencia-jovenes" style="display:none;" class="alerta-joven"></div>
   <div id="ni-sugerencia-bautizados" style="display:none;" class="alerta-bautizado"></div>
+  <div id="ni-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-top:6px;">
+    ⚠️ El hermano joven y el adulto deben ser del mismo sexo.
+  </div>
+
   <div class="form-group" style="margin-top:10px;">
     <label>Observaciones</label>
     <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
@@ -365,19 +405,27 @@
   <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
 </div>
 
-<!-- ESTUDIO BÍBLICO MISIONERO (MODIFICACIONES 5, 7, 9) -->
+<!-- ESTUDIO BÍBLICO MISIONERO -->
 <div id="page-reg-misionero" class="page">
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Registro — Estudio Bíblico</div>
+
+  <!-- Datos del hermano (readonly si viene de interesado) -->
   <div class="form-group">
     <label>Hermano que da el estudio *</label>
     <select id="rmi-hermano"><option value="">Seleccionar hermano...</option></select>
   </div>
+
+  <!-- Datos del estudiante (pueden venir precargados) -->
+  <div id="rmi-datos-interesado" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;">
+    <div style="font-weight:600;color:#065F46;margin-bottom:4px;">📋 Datos del interesado (precargados)</div>
+    <div id="rmi-resumen-interesado" style="color:#166534;line-height:1.6;"></div>
+  </div>
+
   <div class="form-group">
     <label>Nombre del estudiante *</label>
     <input type="text" id="rmi-estudiante" placeholder="Apellido, Nombre">
   </div>
-  <!-- MODIFICACIÓN 9: Teléfono + Estado civil -->
   <div class="form-group">
     <label>Teléfono del estudiante</label>
     <input type="tel" id="rmi-tel" placeholder="+591 7...">
@@ -393,7 +441,6 @@
       <option>Viudo/a</option>
     </select>
   </div>
-  <!-- MODIFICACIÓN 5: Validación 1-20 estricta -->
   <div class="form-group">
     <label>Lección actual (1-20)</label>
     <input type="number" id="rmi-leccion" min="1" max="20" value="1" oninput="validarLeccion(this)">
@@ -421,21 +468,27 @@
   <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
 </div>
 
-<!-- MODIFICACIÓN 8: VISITACIÓN -->
+<!-- VISITACIÓN -->
 <div id="page-reg-visitacion" class="page">
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Registro — Visitación</div>
 
-  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">👤 Datos del hermano visitador</div>
+  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">👤 Hermano visitador</div>
   <div class="form-group">
     <label>Hermano que realiza la visita *</label>
     <select id="rv-hermano"><option value="">Seleccionar hermano...</option></select>
   </div>
 
+  <!-- Datos precargados del interesado -->
+  <div id="rv-datos-interesado" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;">
+    <div style="font-weight:600;color:#065F46;margin-bottom:4px;">📋 Datos del interesado (precargados)</div>
+    <div id="rv-resumen-interesado" style="color:#166534;line-height:1.6;"></div>
+  </div>
+
   <div class="divider"></div>
   <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">🏠 Datos de la persona visitada</div>
   <div class="form-group">
-    <label>Nombre de la persona visitada *</label>
+    <label>Nombre *</label>
     <input type="text" id="rv-nombre" placeholder="Apellido, Nombre">
   </div>
   <div class="form-group">
@@ -991,13 +1044,18 @@ function poblarSelectores() {
   // CORRECCIÓN 2: Departamento solo desde los datos REALES de la hoja (sin mezclar hardcoded)
   const deptsHoja = [...new Set(MIEMBROS.map(m => String(m['Departamento']||'').trim()).filter(Boolean))].sort();
 
-  // CORRECCIÓN 3: Áreas de apoyo desde 'Talentos Prácticos' (no Departamento)
-  const todosLosTalentos = [...new Set(
+  // CORRECCIÓN 3: Áreas de apoyo desde 'Talentos Prácticos'
+  // Detectar el nombre real de la columna (puede venir con \n o espacio según Sheets)
+  const colTalentos = MIEMBROS.length > 0
+    ? Object.keys(MIEMBROS[0]).find(k => k.toLowerCase().replace(/\s|\n/g,'').includes('talentosprcticos') || k.toLowerCase().replace(/\s|\n/g,'').includes('talentospracticos') || k.toLowerCase().includes('talentos'))
+    : null;
+
+  const todosLosTalentos = colTalentos ? [...new Set(
     MIEMBROS.flatMap(m => {
-      const t = String(m['Talentos\nPrácticos'] || m['Talentos Prácticos'] || '').trim();
+      const t = String(m[colTalentos] || '').trim();
       return t ? t.split(',').map(x => x.trim()).filter(Boolean) : [];
     })
-  )].sort();
+  )].sort() : [];
 
   // Poblar checkboxes de áreas de apoyo con Talentos Prácticos
   const areasContainer = document.getElementById('rm-areas-apoyo');
@@ -1047,90 +1105,56 @@ function poblarSelectores() {
     listaNombres.forEach(n => { const o = document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
   });
 
-  // Asignar interesados: MODIFICACIONES 2 y 3 aplicadas
+  // Poblar selector de hermano ADULTO (frecuentes, registro iglesia = sí, con < 3 estudios)
   const niSel = document.getElementById('ni-hermano');
-  if (niSel) {
-    // MODIFICACIÓN 7: Solo frecuentes con Registro Iglesia = Sí para asignación
-    const disp = hermanosMisionero.filter(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
-      return act < 3;
-    }).sort((a,b) => {
-      const na = String(a['Apellidos y Nombres']||'').trim();
-      const nb = String(b['Apellidos y Nombres']||'').trim();
-      // MODIFICACIÓN 3: priorizar recién bautizados
-      const diasA = diasDesdeBautismo(a);
-      const diasB = diasDesdeBautismo(b);
-      const esRecienA = diasA !== null && diasA <= 60 ? 1 : 0;
-      const esRecienB = diasB !== null && diasB <= 60 ? 1 : 0;
-      if (esRecienB !== esRecienA) return esRecienB - esRecienA;
-      // MODIFICACIÓN 2: priorizar jóvenes 12-19
-      const edadA = parseInt(a['Edad']||0)||0;
-      const edadB = parseInt(b['Edad']||0)||0;
-      const esJovenA = edadA >= 12 && edadA <= 19 ? 1 : 0;
-      const esJovenB = edadB >= 12 && edadB <= 19 ? 1 : 0;
-      if (esJovenB !== esJovenA) return esJovenB - esJovenA;
-      // Luego por cantidad de estudios (menos primero)
-      const aa = MISIONERO.filter(r => getNombreHermano(r)===na && String(r['Estado']||'')==='En Curso').length;
-      const ab = MISIONERO.filter(r => getNombreHermano(r)===nb && String(r['Estado']||'')==='En Curso').length;
-      return aa - ab;
-    });
+  const niJovenSel = document.getElementById('ni-hermano-joven');
 
-    disp.forEach(m => {
+  const dispAdultos = hermanosMisionero.filter(m => {
+    const n = String(m['Apellidos y Nombres']||'').trim();
+    const edad = parseInt(m['Edad']||0)||0;
+    const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
+    return act < 3 && edad > 19; // adultos
+  }).sort((a,b) => {
+    const diasA = diasDesdeBautismo(a), diasB = diasDesdeBautismo(b);
+    const rA = diasA!==null&&diasA<=60?1:0, rB = diasB!==null&&diasB<=60?1:0;
+    if (rB!==rA) return rB-rA;
+    const actA = MISIONERO.filter(r=>getNombreHermano(r)===String(a['Apellidos y Nombres']||'').trim()&&String(r['Estado']||'')==='En Curso').length;
+    const actB = MISIONERO.filter(r=>getNombreHermano(r)===String(b['Apellidos y Nombres']||'').trim()&&String(r['Estado']||'')==='En Curso').length;
+    return actA-actB;
+  });
+
+  if (niSel) {
+    dispAdultos.forEach(m => {
       const n = String(m['Apellidos y Nombres']||'').trim();
-      const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
-      const edad = parseInt(m['Edad']||0)||0;
-      const diasBaut = diasDesdeBautismo(m);
-      const esJoven = edad >= 12 && edad <= 19;
-      const esRecien = diasBaut !== null && diasBaut <= 60;
-      let etiquetas = act===0?'sin estudios':act+' estudio(s)';
-      if (esJoven) etiquetas += ' · 🧑 Joven';
-      if (esRecien) etiquetas += ' · 🌟 Recién bautizado';
+      const act = MISIONERO.filter(r=>getNombreHermano(r)===n&&String(r['Estado']||'')==='En Curso').length;
+      const dias = diasDesdeBautismo(m);
+      const esRecien = dias!==null&&dias<=60;
+      let etq = act===0?'disponible':act+' estudio(s)';
+      if (esRecien) etq += ' · 🌟 Recién bautizado';
+      const sexo = String(m['Sexo']||m['sexo']||'').trim();
       const o = document.createElement('option');
-      o.value = n;
-      o.textContent = `${n} (${etiquetas})`;
+      o.value=n; o.dataset.sexo=sexo;
+      o.textContent=`${n} (${etq})`;
       niSel.appendChild(o);
     });
+  }
 
-    niSel.onchange = () => {
-      const sel = niSel.value;
-      const boxSug = document.getElementById('ni-sugerencia');
-      const boxJov = document.getElementById('ni-sugerencia-jovenes');
-      const boxBaut = document.getElementById('ni-sugerencia-bautizados');
-      if (!sel) {
-        boxSug.style.display='none';
-        boxJov.style.display='none';
-        boxBaut.style.display='none';
-        return;
-      }
-      const miembro = MIEMBROS.find(m => String(m['Apellidos y Nombres']||'').trim()===sel);
-      const act = MISIONERO.filter(r => getNombreHermano(r)===sel && String(r['Estado']||'')==='En Curso').length;
+  // Poblar selector de hermano JOVEN (12-19 años, frecuentes)
+  const dispJovenes = hermanosMisionero.filter(m => {
+    const edad = parseInt(m['Edad']||0)||0;
+    return edad >= 12 && edad <= 19;
+  }).sort((a,b) => String(a['Apellidos y Nombres']||'').localeCompare(String(b['Apellidos y Nombres']||'')));
 
-      boxSug.style.display = 'block';
-      boxSug.innerHTML = act===0
-        ? `✅ ${sel} no tiene estudios activos. ¡Candidato ideal para este interesado!`
-        : act<3 ? `ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
-        : `⚠️ ${sel} ya tiene 3 estudios activos. Se recomienda consultar con él/ella antes de asignar.`;
-
-      // MODIFICACIÓN 2: aviso joven
-      if (miembro) {
-        const edad = parseInt(miembro['Edad']||0)||0;
-        if (edad >= 12 && edad <= 19) {
-          boxJov.style.display = 'block';
-          boxJov.innerHTML = `🧑 ${sel} es un joven de ${edad} años. ¡Ideal para acompañamiento con un adulto tutor en visitas y estudios bíblicos!`;
-        } else {
-          boxJov.style.display = 'none';
-        }
-        // MODIFICACIÓN 3: aviso recién bautizado
-        const dias = diasDesdeBautismo(miembro);
-        if (dias !== null && dias <= 60) {
-          boxBaut.style.display = 'block';
-          boxBaut.innerHTML = `🌟 ${sel} tiene solo ${dias} día(s) de bautizado. ¡Prioridad para acompañamiento y mentoría espiritual!`;
-        } else {
-          boxBaut.style.display = 'none';
-        }
-      }
-    };
+  if (niJovenSel) {
+    dispJovenes.forEach(m => {
+      const n = String(m['Apellidos y Nombres']||'').trim();
+      const edad = parseInt(m['Edad']||0)||0;
+      const sexo = String(m['Sexo']||m['sexo']||'').trim();
+      const o = document.createElement('option');
+      o.value=n; o.dataset.sexo=sexo; o.dataset.edad=edad;
+      o.textContent=`${n} (${edad} años)`;
+      niJovenSel.appendChild(o);
+    });
   }
 
   // Fecha por defecto en formularios de fecha
@@ -1140,26 +1164,135 @@ function poblarSelectores() {
   });
 }
 
+// ── TIPO DE INTERESADO ──────────────────────────────────────────
+function selTipoInteresado(tipo) {
+  ['estudio','visita','ambos'].forEach(t => {
+    const el = document.getElementById(`ni-tipo-${t}`);
+    if (el) {
+      el.style.borderColor = t===tipo ? 'var(--azul)' : 'var(--border)';
+      el.style.background  = t===tipo ? '#EFF6FF'    : 'white';
+    }
+  });
+  document.getElementById('ni-tipo-valor').value = tipo;
+}
+
+// ── VALIDACIÓN SEXO HERMANOS ─────────────────────────────────────
+function getSexoOpcion(selectEl) {
+  if (!selectEl || !selectEl.value) return '';
+  const opt = selectEl.options[selectEl.selectedIndex];
+  return opt ? (opt.dataset.sexo || '').toLowerCase() : '';
+}
+
+function validarSexoHermanos() {
+  const jovenSel  = document.getElementById('ni-hermano-joven');
+  const adultoSel = document.getElementById('ni-hermano');
+  const errEl     = document.getElementById('ni-error-sexo');
+  if (!jovenSel.value || !adultoSel.value) { errEl.style.display='none'; return true; }
+  const sexoJoven  = getSexoOpcion(jovenSel);
+  const sexoAdulto = getSexoOpcion(adultoSel);
+  // Si ambos tienen sexo registrado y son distintos → error
+  if (sexoJoven && sexoAdulto && sexoJoven !== sexoAdulto) {
+    errEl.style.display='block'; return false;
+  }
+  errEl.style.display='none'; return true;
+}
+
+function onChangeHermanoAdulto() {
+  validarSexoHermanos();
+  const sel = document.getElementById('ni-hermano').value;
+  const box = document.getElementById('ni-sugerencia');
+  if (!sel) { box.style.display='none'; return; }
+  const act = MISIONERO.filter(r=>getNombreHermano(r)===sel&&String(r['Estado']||'')==='En Curso').length;
+  box.style.display='block';
+  box.innerHTML = act===0
+    ? `✅ ${sel} no tiene estudios activos. ¡Candidato ideal!`
+    : act<3 ? `ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
+    : `⚠️ ${sel} ya tiene 3 estudios activos. Consultar antes de asignar.`;
+}
+
+// ── GUARDAR INTERESADO Y AUTOCOMPLETAR FORMULARIOS MISIONEROS ───
 function guardarInteresado() {
   const nombre = document.getElementById('ni-nombre').value.trim();
   if (!nombre) { showToast('⚠️ Ingrese el nombre del interesado'); return; }
-  INTERESADOS.push({
-    nombre,
-    tel: document.getElementById('ni-tel').value.trim(),
-    dir: document.getElementById('ni-dir').value.trim(),
-    hermano: document.getElementById('ni-hermano').value,
-    obs: document.getElementById('ni-obs').value.trim(),
+  const tipo   = document.getElementById('ni-tipo-valor').value;
+  if (!tipo)   { showToast('⚠️ Seleccione el tipo de actividad'); return; }
+  if (!validarSexoHermanos()) { showToast('⚠️ El joven y el adulto deben ser del mismo sexo'); return; }
+
+  const tel       = document.getElementById('ni-tel').value.trim();
+  const dir       = document.getElementById('ni-dir').value.trim();
+  const hermano   = document.getElementById('ni-hermano').value;
+  const jovenH    = document.getElementById('ni-hermano-joven').value;
+  const obs       = document.getElementById('ni-obs').value.trim();
+
+  const registro = {
+    nombre, tel, dir, tipo,
+    hermano, jovenH, obs,
     fecha: new Date().toLocaleDateString('es-BO'),
-  });
-  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id => document.getElementById(id).value='');
+  };
+  INTERESADOS.push(registro);
+
+  // ── AUTOCOMPLETAR formularios misioneros según tipo ──
+  if (tipo === 'estudio' || tipo === 'ambos') {
+    // Precargar datos en formulario Estudio Bíblico
+    const sel = document.getElementById('rmi-hermano');
+    if (sel && hermano) {
+      // Seleccionar el hermano adulto
+      Array.from(sel.options).forEach(o => { if(o.value===hermano) sel.value=hermano; });
+    }
+    document.getElementById('rmi-estudiante').value = nombre;
+    document.getElementById('rmi-tel').value = tel;
+    // Mostrar caja de datos precargados
+    const box = document.getElementById('rmi-datos-interesado');
+    const res = document.getElementById('rmi-resumen-interesado');
+    if (box && res) {
+      box.style.display='block';
+      res.innerHTML = `<b>Nombre:</b> ${nombre}${tel?` · <b>Tel:</b> ${tel}`:''}${dir?`<br><b>Dirección:</b> ${dir}`:''}${jovenH?`<br><b>Joven acompañante:</b> ${jovenH}`:''}`;
+    }
+  }
+
+  if (tipo === 'visita' || tipo === 'ambos') {
+    // Precargar datos en formulario Visitación
+    const selV = document.getElementById('rv-hermano');
+    if (selV && hermano) {
+      Array.from(selV.options).forEach(o => { if(o.value===hermano) selV.value=hermano; });
+    }
+    document.getElementById('rv-nombre').value = nombre;
+    document.getElementById('rv-tel').value    = tel;
+    document.getElementById('rv-dir').value    = dir;
+    const box = document.getElementById('rv-datos-interesado');
+    const res = document.getElementById('rv-resumen-interesado');
+    if (box && res) {
+      box.style.display='block';
+      res.innerHTML = `<b>Nombre:</b> ${nombre}${tel?` · <b>Tel:</b> ${tel}`:''}${dir?`<br><b>Dirección:</b> ${dir}`:''}${jovenH?`<br><b>Joven acompañante:</b> ${jovenH}`:''}`;
+    }
+  }
+
+  // Limpiar formulario de interesado
+  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ni-hermano').value='';
-  document.getElementById('ni-sugerencia').style.display='none';
-  document.getElementById('ni-sugerencia-jovenes').style.display='none';
-  document.getElementById('ni-sugerencia-bautizados').style.display='none';
+  document.getElementById('ni-hermano-joven').value='';
+  document.getElementById('ni-tipo-valor').value='';
+  ['ni-sugerencia','ni-sugerencia-jovenes','ni-sugerencia-bautizados','ni-error-sexo']
+    .forEach(id=>document.getElementById(id).style.display='none');
+  ['estudio','visita','ambos'].forEach(t=>{
+    const el=document.getElementById(`ni-tipo-${t}`);
+    if(el){el.style.borderColor='var(--border)';el.style.background='white';}
+  });
+
   renderInteresados();
   renderDashboard();
-  showToast('✅ Interesado guardado correctamente');
-  showPage('interesados');
+
+  // Redirigir según tipo
+  if (tipo==='estudio') {
+    showToast('✅ Interesado guardado — Complete el estudio bíblico');
+    showPage('reg-misionero');
+  } else if (tipo==='visita') {
+    showToast('✅ Interesado guardado — Complete la visitación');
+    showPage('reg-visitacion');
+  } else {
+    showToast('✅ Interesado guardado — Complete el estudio bíblico primero');
+    showPage('reg-misionero');
+  }
 }
 
 // CORRECCIÓN 1: Buscador de hermano en Actividad Ministerial
