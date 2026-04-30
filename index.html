@@ -608,15 +608,14 @@ function showToast(msg) {
 }
 
 function gvizFetch(sheet) {
-  // headers=3 indica que las primeras 3 filas son encabezados (título, sección, nombre columna)
-  return fetch(BASE + encodeURIComponent(sheet) + '&headers=3')
+  return fetch(BASE + encodeURIComponent(sheet))
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
       const cols = json.table.cols.map(c => c.label);
-      // DEBUG: mostrar nombres de columnas en consola para verificar
+      // DEBUG: ver nombres exactos de columnas que devuelve Sheets
       if (sheet === 'MIEMBROS') {
-        console.log('📋 Columnas detectadas en MIEMBROS:', cols);
+        console.log('📋 Columnas MIEMBROS:', JSON.stringify(cols));
       }
       return (json.table.rows || []).map(r =>
         Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
@@ -626,10 +625,11 @@ function gvizFetch(sheet) {
 
 async function cargarDatos() {
   try {
-    const [m, min, mis] = await Promise.all([
+    const [m, min, mis, cat] = await Promise.all([
       gvizFetch('MIEMBROS'),
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
+      gvizFetch('CATALOGOS'),
     ]);
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
@@ -637,6 +637,27 @@ async function cargarDatos() {
     });
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
+
+    // Extraer departamentos y talentos desde CATALOGOS
+    // Fila 2 es cabecera: col A = DEPARTAMENTOS, col D = TALENTOS PRÁCTICOS
+    // Los datos reales vienen desde fila 3 en adelante
+    const colDeptCat = Object.keys(cat[0] || {}).find(k =>
+      k.toUpperCase().includes('DEPARTAMENTO')
+    );
+    const colTalCat = Object.keys(cat[0] || {}).find(k =>
+      k.toUpperCase().includes('TALENTO')
+    );
+
+    window.CATALOGOS_DEPT = colDeptCat
+      ? [...new Set(cat.map(r => String(r[colDeptCat]||'').trim()).filter(Boolean))].sort()
+      : [];
+    window.CATALOGOS_TAL = colTalCat
+      ? [...new Set(cat.map(r => String(r[colTalCat]||'').trim()).filter(Boolean))].sort()
+      : [];
+
+    console.log('📋 Departamentos del catálogo:', window.CATALOGOS_DEPT);
+    console.log('📋 Talentos del catálogo:', window.CATALOGOS_TAL);
+
     renderMiembros(MIEMBROS);
     renderInteresados();
     renderDashboard();
@@ -1065,36 +1086,16 @@ function validarLeccion(input) {
 function poblarSelectores() {
   const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
 
-  // Helper: normalizar nombre de columna quitando tildes, espacios, saltos de línea
-  function normCol(s) {
-    return s.toLowerCase()
-      .replace(/\n/g,'')
-      .replace(/\s+/g,'')
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  }
+  // Departamentos y Talentos desde hoja CATALOGOS (fuente correcta)
+  const deptsHoja = window.CATALOGOS_DEPT || [];
+  const todosLosTalentos = window.CATALOGOS_TAL || [];
 
-  // Detectar columna Departamento (puede venir como 'Departamento', 'Departamento\n', etc.)
-  const colDept = MIEMBROS.length > 0
-    ? Object.keys(MIEMBROS[0]).find(k => normCol(k) === 'departamento')
-    : null;
-
-  // Detectar columna Talentos Prácticos (puede venir con tilde, salto de línea, etc.)
-  const colTalentos = MIEMBROS.length > 0
-    ? Object.keys(MIEMBROS[0]).find(k => normCol(k).includes('talentos'))
-    : null;
-
-  // Departamentos reales de la hoja
-  const deptsHoja = colDept ? [...new Set(
-    MIEMBROS.map(m => String(m[colDept]||'').trim()).filter(Boolean)
-  )].sort() : [];
-
-  // Talentos Prácticos de la hoja
-  const todosLosTalentos = colTalentos ? [...new Set(
-    MIEMBROS.flatMap(m => {
-      const t = String(m[colTalentos] || '').trim();
-      return t ? t.split(',').map(x => x.trim()).filter(Boolean) : [];
-    })
-  )].sort() : [];
+  // Departamento de cada miembro sigue leyéndose de MIEMBROS col 'Departamento'
+  const colDept = Object.keys(MIEMBROS[0] || {}).find(k =>
+    k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento'
+  );
+  window._colDept = colDept;
+  window._colTalentos = null; // ya no se necesita desde MIEMBROS
 
   // Actualizar lista de hermanos para buscador ministerial con departamento correcto
   window._hermanosMinistrialLista = MIEMBROS.map(m => ({
@@ -1102,7 +1103,7 @@ function poblarSelectores() {
     dept: colDept ? String(m[colDept]||'').trim() : '',
   })).filter(x => x.nombre);
 
-  // Poblar checkboxes de áreas de apoyo con Talentos Prácticos
+  // Poblar checkboxes de Talentos Prácticos desde CATALOGOS
   const areasContainer = document.getElementById('rm-areas-apoyo');
   if (areasContainer) {
     if (todosLosTalentos.length > 0) {
@@ -1113,13 +1114,11 @@ function poblarSelectores() {
         </div>
       `).join('');
     } else {
-      areasContainer.innerHTML = `<div style="font-size:13px;color:var(--text2);padding:4px 0;">
-        ${colTalentos ? 'No hay talentos registrados aún.' : '⚠️ Columna "Talentos Prácticos" no encontrada en la hoja.'}
-      </div>`;
+      areasContainer.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:4px 0;">⚠️ No se encontraron talentos en el catálogo.</div>';
     }
   }
 
-  // Poblar select de Departamento
+  // Poblar select de Departamento desde CATALOGOS
   const ds = document.getElementById('rm-dept');
   if (ds) {
     deptsHoja.forEach(d => {
@@ -1130,14 +1129,10 @@ function poblarSelectores() {
     if (deptsHoja.length === 0) {
       const o = document.createElement('option');
       o.disabled = true;
-      o.textContent = colDept ? 'Sin departamentos registrados' : '⚠️ Columna "Departamento" no encontrada';
+      o.textContent = '⚠️ No se encontraron departamentos en el catálogo';
       ds.appendChild(o);
     }
   }
-
-  // Autocompletar departamento al seleccionar hermano en ministerial usa colDept
-  window._colDept = colDept;
-  window._colTalentos = colTalentos;
 
   // MODIFICACIÓN 7: Solo hermanos Frecuentes + Registro Iglesia = Sí para estudio bíblico
   const hermanosMisionero = MIEMBROS.filter(m => {
