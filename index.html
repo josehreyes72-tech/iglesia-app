@@ -638,26 +638,21 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // CATALOGOS: labels vacíos, fila 0 = cabeceras, resto = datos
-    // Col A = DEPARTAMENTOS DE LA IGLESIA, Col D = TALENTOS PRÁCTICOS (confirmado del JSON)
-    const catDatos = cat.slice(1);
+    // CATALOGOS: usar posición numérica — confirmado del JSON:
+    // índice 0 = DEPARTAMENTOS DE LA IGLESIA
+    // índice 3 = TALENTOS PRÁCTICOS
+    const catDatos = cat.slice(1); // saltar fila de cabeceras
 
     window.CATALOGOS_DEPT = [...new Set(
-      catDatos.map(r => String(r['A']||r['DEPARTAMENTOS DE LA IGLESIA']||Object.values(r)[0]||'').trim()).filter(Boolean)
+      catDatos.map(r => String(Object.values(r)[0]||'').trim()).filter(Boolean)
     )].sort();
 
     window.CATALOGOS_TAL = [...new Set(
-      catDatos.map(r => String(r['D']||r['TALENTOS PRÁCTICOS']||Object.values(r)[3]||'').trim()).filter(Boolean)
+      catDatos.map(r => String(Object.values(r)[3]||'').trim()).filter(Boolean)
     )].sort();
-
-    // Departamento en MIEMBROS viene como 'Departa\nmento' — detectar dinámicamente
-    window._colDeptMiembros = MIEMBROS.length > 0
-      ? Object.keys(MIEMBROS[0]).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento')
-      : null;
 
     console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
     console.log('📋 Talentos:', window.CATALOGOS_TAL);
-    console.log('📋 ColDept en MIEMBROS:', window._colDeptMiembros);
 
     renderMiembros(MIEMBROS);
     renderInteresados();
