@@ -638,32 +638,32 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // Extraer departamentos y talentos desde CATALOGOS
-    // Fila 2 es cabecera: col A = DEPARTAMENTOS, col D = TALENTOS PRÁCTICOS
-    // Los datos reales vienen desde fila 3 en adelante
-    // Normalizar: quitar tildes, mayúsculas, espacios para comparar
-    function normCat(s) {
-      return s.toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/\s+/g,'').replace(/\n/g,'');
-    }
+    // CATALOGOS: todas las columnas tienen label vacío ("")
+    // La fila 0 contiene los nombres reales: A=DEPARTAMENTOS, D=TALENTOS PRÁCTICOS
+    // Las filas siguientes son los datos reales
+    const catKeys = Object.keys(cat[0] || {}); // ['A','B','C','D',...]
+    // Buscar índice correcto leyendo la primera fila como cabecera
+    const cabecera = cat[0] || {};
+    let colDeptKey = null, colTalKey = null;
+    catKeys.forEach(k => {
+      const val = String(cabecera[k]||'').toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
+      if (val.includes('DEPARTAMENTO')) colDeptKey = k;
+      if (val.includes('TALENTO')) colTalKey = k;
+    });
 
-    const colDeptCat = Object.keys(cat[0] || {}).find(k =>
-      normCat(k).includes('DEPARTAMENTO')
-    );
-    const colTalCat = Object.keys(cat[0] || {}).find(k =>
-      normCat(k).includes('TALENTO')
-    );
+    const catDatos = cat.slice(1); // datos reales sin fila de cabecera
 
-    window.CATALOGOS_DEPT = colDeptCat
-      ? [...new Set(cat.map(r => String(r[colDeptCat]||'').trim()).filter(v => v && !v.toUpperCase().includes('DEPARTAMENTO')))].sort()
-      : [];
-    window.CATALOGOS_TAL = colTalCat
-      ? [...new Set(cat.map(r => String(r[colTalCat]||'').trim()).filter(v => v && !v.toUpperCase().includes('TALENTO')))].sort()
-      : [];
+    window.CATALOGOS_DEPT = colDeptKey ? [...new Set(
+      catDatos.map(r => String(r[colDeptKey]||'').trim()).filter(Boolean)
+    )].sort() : [];
 
-    console.log('📋 Departamentos del catálogo:', window.CATALOGOS_DEPT);
-    console.log('📋 Talentos del catálogo:', window.CATALOGOS_TAL);
+    window.CATALOGOS_TAL = colTalKey ? [...new Set(
+      catDatos.map(r => String(r[colTalKey]||'').trim()).filter(Boolean)
+    )].sort() : [];
+
+    console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
+    console.log('📋 Talentos:', window.CATALOGOS_TAL);
 
     renderMiembros(MIEMBROS);
     renderInteresados();
