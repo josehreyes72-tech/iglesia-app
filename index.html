@@ -285,7 +285,21 @@
   <div id="ni-sugerencia-jovenes" style="display:none;" class="alerta-joven"></div>
   <div id="ni-sugerencia-bautizados" style="display:none;" class="alerta-bautizado"></div>
   <div id="ni-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-top:6px;">
-    ⚠️ El hermano joven y el adulto deben ser del mismo sexo.
+    ⚠️ El hermano joven y el adulto son de diferente género.
+  </div>
+
+  <!-- EXCEPCIÓN FAMILIAR -->
+  <div id="ni-familiar-box" style="display:none;margin-top:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#92400E;cursor:pointer;">
+      <input type="checkbox" id="ni-son-familiares" onchange="toggleFamiliarExcepcion()"
+        style="width:16px;height:16px;accent-color:var(--azul);flex-shrink:0;">
+      Son familiares — permitir excepción
+    </label>
+    <div id="ni-parentesco-box" style="display:none;margin-top:8px;">
+      <input type="text" id="ni-parentesco"
+        placeholder="Ej: esposo/a, padre e hija, hermanos..."
+        style="width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);outline:none;">
+    </div>
   </div>
 
   <div class="form-group" style="margin-top:10px;">
@@ -1123,18 +1137,23 @@ function poblarSelectores() {
     return actA-actB;
   });
 
+  // Helper para obtener Género del miembro (columna 'Género' con valores Masculino/Femenino)
+  const getColGen = (m) => Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').includes('gnero') || k.toLowerCase().replace(/\s|\n/g,'').includes('genero')) || null;
+
   if (niSel) {
     dispAdultos.forEach(m => {
       const n = String(m['Apellidos y Nombres']||'').trim();
       const act = MISIONERO.filter(r=>getNombreHermano(r)===n&&String(r['Estado']||'')==='En Curso').length;
       const dias = diasDesdeBautismo(m);
       const esRecien = dias!==null&&dias<=60;
+      const colGen = getColGen(m);
+      const gen = colGen ? String(m[colGen]||'').trim() : '';
       let etq = act===0?'disponible':act+' estudio(s)';
+      if (gen) etq += ` · ${gen}`;
       if (esRecien) etq += ' · 🌟 Recién bautizado';
-      const sexo = String(m['Sexo']||m['sexo']||'').trim();
       const o = document.createElement('option');
-      o.value=n; o.dataset.sexo=sexo;
-      o.textContent=`${n} (${etq})`;
+      o.value = n;
+      o.textContent = `${n} (${etq})`;
       niSel.appendChild(o);
     });
   }
@@ -1149,10 +1168,11 @@ function poblarSelectores() {
     dispJovenes.forEach(m => {
       const n = String(m['Apellidos y Nombres']||'').trim();
       const edad = parseInt(m['Edad']||0)||0;
-      const sexo = String(m['Sexo']||m['sexo']||'').trim();
+      const colGen = getColGen(m);
+      const gen = colGen ? String(m[colGen]||'').trim() : '';
       const o = document.createElement('option');
-      o.value=n; o.dataset.sexo=sexo; o.dataset.edad=edad;
-      o.textContent=`${n} (${edad} años)`;
+      o.value = n;
+      o.textContent = `${n} (${edad} años${gen?' · '+gen:''})`;
       niJovenSel.appendChild(o);
     });
   }
@@ -1177,24 +1197,76 @@ function selTipoInteresado(tipo) {
 }
 
 // ── VALIDACIÓN SEXO HERMANOS ─────────────────────────────────────
+function getGenero(nombre) {
+  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+  if (!m) return '';
+  const col = Object.keys(m).find(k =>
+    k.toLowerCase().replace(/\s|\n/g,'').includes('gnero') ||
+    k.toLowerCase().replace(/\s|\n/g,'').includes('genero')
+  );
+  if (!col) return '';
+  return String(m[col] || '').trim().toLowerCase(); // 'masculino' o 'femenino'
+}
+
 function getSexoOpcion(selectEl) {
   if (!selectEl || !selectEl.value) return '';
-  const opt = selectEl.options[selectEl.selectedIndex];
-  return opt ? (opt.dataset.sexo || '').toLowerCase() : '';
+  return getGenero(selectEl.value);
 }
 
 function validarSexoHermanos() {
-  const jovenSel  = document.getElementById('ni-hermano-joven');
-  const adultoSel = document.getElementById('ni-hermano');
-  const errEl     = document.getElementById('ni-error-sexo');
-  if (!jovenSel.value || !adultoSel.value) { errEl.style.display='none'; return true; }
-  const sexoJoven  = getSexoOpcion(jovenSel);
-  const sexoAdulto = getSexoOpcion(adultoSel);
-  // Si ambos tienen sexo registrado y son distintos → error
-  if (sexoJoven && sexoAdulto && sexoJoven !== sexoAdulto) {
-    errEl.style.display='block'; return false;
+  const jovenSel   = document.getElementById('ni-hermano-joven');
+  const adultoSel  = document.getElementById('ni-hermano');
+  const errEl      = document.getElementById('ni-error-sexo');
+  const familiarBox = document.getElementById('ni-familiar-box');
+  const esFamiliar = document.getElementById('ni-son-familiares');
+
+  // Si no hay ambos seleccionados, ocultar todo
+  if (!jovenSel.value || !adultoSel.value) {
+    errEl.style.display = 'none';
+    familiarBox.style.display = 'none';
+    return true;
   }
-  errEl.style.display='none'; return true;
+
+  const genJoven  = getGenero(jovenSel.value);
+  const genAdulto = getGenero(adultoSel.value);
+  const sonDiferente = genJoven && genAdulto && genJoven !== genAdulto;
+
+  if (sonDiferente) {
+    // Mostrar error y caja de excepción familiar
+    errEl.style.display = 'block';
+    errEl.innerHTML = `⚠️ <b>${jovenSel.value}</b> (${genJoven}) y <b>${adultoSel.value}</b> (${genAdulto}) son de diferente género.`;
+    familiarBox.style.display = 'block';
+    // Si ya marcó la excepción de familiar, permitir continuar
+    if (esFamiliar && esFamiliar.checked) return true;
+    return false;
+  }
+
+  // Mismo género: ocultar error y caja familiar
+  errEl.style.display = 'none';
+  familiarBox.style.display = 'none';
+  if (esFamiliar) { esFamiliar.checked = false; }
+  const parentescoBox = document.getElementById('ni-parentesco-box');
+  if (parentescoBox) parentescoBox.style.display = 'none';
+  return true;
+}
+
+function toggleFamiliarExcepcion() {
+  const cb = document.getElementById('ni-son-familiares');
+  const parentescoBox = document.getElementById('ni-parentesco-box');
+  const errEl = document.getElementById('ni-error-sexo');
+  if (cb.checked) {
+    // Mostrar campo de parentesco y quitar el error visual
+    parentescoBox.style.display = 'block';
+    errEl.style.background = '#FEF3C7';
+    errEl.style.borderColor = '#FDE68A';
+    errEl.style.color = '#92400E';
+    errEl.innerHTML = errEl.innerHTML.replace('⚠️','ℹ️') ;
+  } else {
+    parentescoBox.style.display = 'none';
+    errEl.style.background = '#FEE2E2';
+    errEl.style.borderColor = '#FECACA';
+    errEl.style.color = '#991B1B';
+  }
 }
 
 function onChangeHermanoAdulto() {
@@ -1224,9 +1296,13 @@ function guardarInteresado() {
   const jovenH    = document.getElementById('ni-hermano-joven').value;
   const obs       = document.getElementById('ni-obs').value.trim();
 
+  const esFamiliar  = document.getElementById('ni-son-familiares')?.checked || false;
+  const parentesco  = document.getElementById('ni-parentesco')?.value.trim() || '';
+
   const registro = {
     nombre, tel, dir, tipo,
     hermano, jovenH, obs,
+    esFamiliar, parentesco,
     fecha: new Date().toLocaleDateString('es-BO'),
   };
   INTERESADOS.push(registro);
@@ -1268,12 +1344,14 @@ function guardarInteresado() {
   }
 
   // Limpiar formulario de interesado
-  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id=>document.getElementById(id).value='');
+  ['ni-nombre','ni-tel','ni-dir','ni-obs','ni-parentesco'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  const esFamiliarCb = document.getElementById('ni-son-familiares');
+  if (esFamiliarCb) esFamiliarCb.checked = false;
   document.getElementById('ni-hermano').value='';
   document.getElementById('ni-hermano-joven').value='';
   document.getElementById('ni-tipo-valor').value='';
-  ['ni-sugerencia','ni-sugerencia-jovenes','ni-sugerencia-bautizados','ni-error-sexo']
-    .forEach(id=>document.getElementById(id).style.display='none');
+  ['ni-sugerencia','ni-sugerencia-jovenes','ni-sugerencia-bautizados','ni-error-sexo','ni-familiar-box','ni-parentesco-box']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
   ['estudio','visita','ambos'].forEach(t=>{
     const el=document.getElementById(`ni-tipo-${t}`);
     if(el){el.style.borderColor='var(--border)';el.style.background='white';}
