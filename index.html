@@ -362,10 +362,11 @@
   <!-- BUSCADOR DE HERMANO CON LUPA -->
   <div class="form-group">
     <label>Hermano *</label>
-    <div class="search-wrap" style="margin-bottom:0;">
-      <span class="search-icon">🔍</span>
+    <div style="position:relative;margin-bottom:0;">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;z-index:1;">🔍</span>
       <input type="text" id="rm-hermano-input" placeholder="Escribir nombre del hermano..."
-        oninput="buscarHermanoMinisterial(this.value)" autocomplete="off">
+        oninput="buscarHermanoMinisterial(this.value)" autocomplete="off"
+        style="width:100%;padding:11px 12px 11px 38px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text);outline:none;">
     </div>
     <div id="rm-hermano-lista" style="display:none; background:white; border:1px solid var(--border);
       border-radius:10px; margin-top:4px; max-height:200px; overflow-y:auto;
@@ -705,7 +706,9 @@ function renderMiembros(lista) {
   el.innerHTML = mostrar.slice(0, max).map(m => {
     const n = String(m['Apellidos y Nombres'] || '').trim();
     const col = avatarColor(n);
-    const dept = String(m['Departamento'] || '').trim();
+    // Usar colDept dinámico si ya está disponible, sino intentar el nombre exacto
+    const deptCol = window._colDept || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento');
+    const dept = deptCol ? String(m[deptCol] || '').trim() : '';
     const clasif = String(m['Clasificación'] || '').trim();
     const niv = calcNivel(m);
     const sm = semaforo(Math.round((niv.min+niv.mis)/2));
@@ -775,9 +778,11 @@ function verPerfil(nombreEnc) {
   const smGen = semaforo(Math.round((niv.min+niv.mis)/2));
   const col = avatarColor(nombre);
   const cargo = getCargo(m) || 'Sin cargo';
-  const dept = String(m['Departamento']||'Sin departamento').trim();
+  const deptCol = window._colDept || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento');
+  const dept = deptCol ? String(m[deptCol]||'').trim() : '';
+  const talCol = window._colTalentos || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes('talentos'));
+  const talentos = talCol ? String(m[talCol]||'').trim() : '';
   const dones = String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
-  const talentos = String(m['Talentos\nPrácticos']||m['Talentos Prácticos']||'').trim();
   const clasif = String(m['Clasificación']||'').trim();
   const estado = String(m['Estado']||'').trim();
   const bautizado = String(m['Bautizado']||'').trim();
@@ -1055,21 +1060,42 @@ function validarLeccion(input) {
 function poblarSelectores() {
   const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
 
-  // CORRECCIÓN 2: Departamento solo desde los datos REALES de la hoja (sin mezclar hardcoded)
-  const deptsHoja = [...new Set(MIEMBROS.map(m => String(m['Departamento']||'').trim()).filter(Boolean))].sort();
+  // Helper: normalizar nombre de columna quitando tildes, espacios, saltos de línea
+  function normCol(s) {
+    return s.toLowerCase()
+      .replace(/\n/g,'')
+      .replace(/\s+/g,'')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
 
-  // CORRECCIÓN 3: Áreas de apoyo desde 'Talentos Prácticos'
-  // Detectar el nombre real de la columna (puede venir con \n o espacio según Sheets)
-  const colTalentos = MIEMBROS.length > 0
-    ? Object.keys(MIEMBROS[0]).find(k => k.toLowerCase().replace(/\s|\n/g,'').includes('talentosprcticos') || k.toLowerCase().replace(/\s|\n/g,'').includes('talentospracticos') || k.toLowerCase().includes('talentos'))
+  // Detectar columna Departamento (puede venir como 'Departamento', 'Departamento\n', etc.)
+  const colDept = MIEMBROS.length > 0
+    ? Object.keys(MIEMBROS[0]).find(k => normCol(k) === 'departamento')
     : null;
 
+  // Detectar columna Talentos Prácticos (puede venir con tilde, salto de línea, etc.)
+  const colTalentos = MIEMBROS.length > 0
+    ? Object.keys(MIEMBROS[0]).find(k => normCol(k).includes('talentos'))
+    : null;
+
+  // Departamentos reales de la hoja
+  const deptsHoja = colDept ? [...new Set(
+    MIEMBROS.map(m => String(m[colDept]||'').trim()).filter(Boolean)
+  )].sort() : [];
+
+  // Talentos Prácticos de la hoja
   const todosLosTalentos = colTalentos ? [...new Set(
     MIEMBROS.flatMap(m => {
       const t = String(m[colTalentos] || '').trim();
       return t ? t.split(',').map(x => x.trim()).filter(Boolean) : [];
     })
   )].sort() : [];
+
+  // Actualizar lista de hermanos para buscador ministerial con departamento correcto
+  window._hermanosMinistrialLista = MIEMBROS.map(m => ({
+    nombre: String(m['Apellidos y Nombres']||'').trim(),
+    dept: colDept ? String(m[colDept]||'').trim() : '',
+  })).filter(x => x.nombre);
 
   // Poblar checkboxes de áreas de apoyo con Talentos Prácticos
   const areasContainer = document.getElementById('rm-areas-apoyo');
@@ -1082,11 +1108,13 @@ function poblarSelectores() {
         </div>
       `).join('');
     } else {
-      areasContainer.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:4px 0;">No hay talentos registrados en la hoja de miembros.</div>';
+      areasContainer.innerHTML = `<div style="font-size:13px;color:var(--text2);padding:4px 0;">
+        ${colTalentos ? 'No hay talentos registrados aún.' : '⚠️ Columna "Talentos Prácticos" no encontrada en la hoja.'}
+      </div>`;
     }
   }
 
-  // CORRECCIÓN 2: Poblar select de Departamento solo con valores reales de la hoja
+  // Poblar select de Departamento
   const ds = document.getElementById('rm-dept');
   if (ds) {
     deptsHoja.forEach(d => {
@@ -1094,14 +1122,17 @@ function poblarSelectores() {
       o.value = d; o.textContent = d;
       ds.appendChild(o);
     });
+    if (deptsHoja.length === 0) {
+      const o = document.createElement('option');
+      o.disabled = true;
+      o.textContent = colDept ? 'Sin departamentos registrados' : '⚠️ Columna "Departamento" no encontrada';
+      ds.appendChild(o);
+    }
   }
 
-  // CORRECCIÓN 1: Buscador de hermano en Actividad Ministerial
-  // Se inicializa la lista completa para el buscador
-  window._hermanosMinistrialLista = MIEMBROS.map(m => ({
-    nombre: String(m['Apellidos y Nombres']||'').trim(),
-    dept: String(m['Departamento']||'').trim(),
-  })).filter(x => x.nombre);
+  // Autocompletar departamento al seleccionar hermano en ministerial usa colDept
+  window._colDept = colDept;
+  window._colTalentos = colTalentos;
 
   // MODIFICACIÓN 7: Solo hermanos Frecuentes + Registro Iglesia = Sí para estudio bíblico
   const hermanosMisionero = MIEMBROS.filter(m => {
@@ -1416,7 +1447,8 @@ function seleccionarHermanoMinisterial(nombreEnc) {
     <span onclick="limpiarHermanoMinisterial()" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
 
   // CORRECCIÓN 2: Autocompletar Departamento con el del hermano seleccionado
-  const dept = miembro?.dept || '';
+  const miembroData = MIEMBROS.find(m => String(m['Apellidos y Nombres']||'').trim() === nombre);
+  const dept = (miembroData && window._colDept) ? String(miembroData[window._colDept]||'').trim() : (miembro?.dept || '');
   const deptSelect = document.getElementById('rm-dept');
   if (deptSelect && dept) {
     // Buscar la opción que coincida y seleccionarla
