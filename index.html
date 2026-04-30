@@ -641,18 +641,25 @@ async function cargarDatos() {
     // Extraer departamentos y talentos desde CATALOGOS
     // Fila 2 es cabecera: col A = DEPARTAMENTOS, col D = TALENTOS PRÁCTICOS
     // Los datos reales vienen desde fila 3 en adelante
+    // Normalizar: quitar tildes, mayúsculas, espacios para comparar
+    function normCat(s) {
+      return s.toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/\s+/g,'').replace(/\n/g,'');
+    }
+
     const colDeptCat = Object.keys(cat[0] || {}).find(k =>
-      k.toUpperCase().includes('DEPARTAMENTO')
+      normCat(k).includes('DEPARTAMENTO')
     );
     const colTalCat = Object.keys(cat[0] || {}).find(k =>
-      k.toUpperCase().includes('TALENTO')
+      normCat(k).includes('TALENTO')
     );
 
     window.CATALOGOS_DEPT = colDeptCat
-      ? [...new Set(cat.map(r => String(r[colDeptCat]||'').trim()).filter(Boolean))].sort()
+      ? [...new Set(cat.map(r => String(r[colDeptCat]||'').trim()).filter(v => v && !v.toUpperCase().includes('DEPARTAMENTO')))].sort()
       : [];
     window.CATALOGOS_TAL = colTalCat
-      ? [...new Set(cat.map(r => String(r[colTalCat]||'').trim()).filter(Boolean))].sort()
+      ? [...new Set(cat.map(r => String(r[colTalCat]||'').trim()).filter(v => v && !v.toUpperCase().includes('TALENTO')))].sort()
       : [];
 
     console.log('📋 Departamentos del catálogo:', window.CATALOGOS_DEPT);
