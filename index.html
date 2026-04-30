@@ -608,11 +608,16 @@ function showToast(msg) {
 }
 
 function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet))
+  // headers=3 indica que las primeras 3 filas son encabezados (título, sección, nombre columna)
+  return fetch(BASE + encodeURIComponent(sheet) + '&headers=3')
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
       const cols = json.table.cols.map(c => c.label);
+      // DEBUG: mostrar nombres de columnas en consola para verificar
+      if (sheet === 'MIEMBROS') {
+        console.log('📋 Columnas detectadas en MIEMBROS:', cols);
+      }
       return (json.table.rows || []).map(r =>
         Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
       );
