@@ -638,32 +638,26 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // CATALOGOS: todas las columnas tienen label vacío ("")
-    // La fila 0 contiene los nombres reales: A=DEPARTAMENTOS, D=TALENTOS PRÁCTICOS
-    // Las filas siguientes son los datos reales
-    const catKeys = Object.keys(cat[0] || {}); // ['A','B','C','D',...]
-    // Buscar índice correcto leyendo la primera fila como cabecera
-    const cabecera = cat[0] || {};
-    let colDeptKey = null, colTalKey = null;
-    catKeys.forEach(k => {
-      const val = String(cabecera[k]||'').toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
-      if (val.includes('DEPARTAMENTO')) colDeptKey = k;
-      if (val.includes('TALENTO')) colTalKey = k;
-    });
+    // CATALOGOS: labels vacíos, fila 0 = cabeceras, resto = datos
+    // Col A = DEPARTAMENTOS DE LA IGLESIA, Col D = TALENTOS PRÁCTICOS (confirmado del JSON)
+    const catDatos = cat.slice(1);
 
-    const catDatos = cat.slice(1); // datos reales sin fila de cabecera
+    window.CATALOGOS_DEPT = [...new Set(
+      catDatos.map(r => String(r['A']||r['DEPARTAMENTOS DE LA IGLESIA']||Object.values(r)[0]||'').trim()).filter(Boolean)
+    )].sort();
 
-    window.CATALOGOS_DEPT = colDeptKey ? [...new Set(
-      catDatos.map(r => String(r[colDeptKey]||'').trim()).filter(Boolean)
-    )].sort() : [];
+    window.CATALOGOS_TAL = [...new Set(
+      catDatos.map(r => String(r['D']||r['TALENTOS PRÁCTICOS']||Object.values(r)[3]||'').trim()).filter(Boolean)
+    )].sort();
 
-    window.CATALOGOS_TAL = colTalKey ? [...new Set(
-      catDatos.map(r => String(r[colTalKey]||'').trim()).filter(Boolean)
-    )].sort() : [];
+    // Departamento en MIEMBROS viene como 'Departa\nmento' — detectar dinámicamente
+    window._colDeptMiembros = MIEMBROS.length > 0
+      ? Object.keys(MIEMBROS[0]).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento')
+      : null;
 
     console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
     console.log('📋 Talentos:', window.CATALOGOS_TAL);
+    console.log('📋 ColDept en MIEMBROS:', window._colDeptMiembros);
 
     renderMiembros(MIEMBROS);
     renderInteresados();
@@ -740,7 +734,7 @@ function renderMiembros(lista) {
     const n = String(m['Apellidos y Nombres'] || '').trim();
     const col = avatarColor(n);
     // Usar colDept dinámico si ya está disponible, sino intentar el nombre exacto
-    const deptCol = window._colDept || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento');
+    const deptCol = window._colDept || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
     const dept = deptCol ? String(m[deptCol] || '').trim() : '';
     const clasif = String(m['Clasificación'] || '').trim();
     const niv = calcNivel(m);
@@ -811,9 +805,9 @@ function verPerfil(nombreEnc) {
   const smGen = semaforo(Math.round((niv.min+niv.mis)/2));
   const col = avatarColor(nombre);
   const cargo = getCargo(m) || 'Sin cargo';
-  const deptCol = window._colDept || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento');
+  const deptCol = window._colDept || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
   const dept = deptCol ? String(m[deptCol]||'').trim() : '';
-  const talCol = window._colTalentos || Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes('talentos'));
+  const talCol = window._colTalentos || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase().includes('talentos'));
   const talentos = talCol ? String(m[talCol]||'').trim() : '';
   const dones = String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
   const clasif = String(m['Clasificación']||'').trim();
@@ -1098,9 +1092,8 @@ function poblarSelectores() {
   const todosLosTalentos = window.CATALOGOS_TAL || [];
 
   // Departamento de cada miembro sigue leyéndose de MIEMBROS col 'Departamento'
-  const colDept = Object.keys(MIEMBROS[0] || {}).find(k =>
-    k.toLowerCase().replace(/\s|\n/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'') === 'departamento'
-  );
+  const colDept = window._colDeptMiembros ||
+    Object.keys(MIEMBROS[0] || {}).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
   window._colDept = colDept;
   window._colTalentos = null; // ya no se necesita desde MIEMBROS
 
