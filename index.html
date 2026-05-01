@@ -612,11 +612,10 @@ function gvizFetch(sheet) {
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-      const cols = json.table.cols.map(c => c.label);
-      // DEBUG: ver nombres exactos de columnas que devuelve Sheets
-      if (sheet === 'MIEMBROS') {
-        console.log('📋 Columnas MIEMBROS:', JSON.stringify(cols));
-      }
+      // Usar label si existe, si no usar id (A, B, C, D...)
+      const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols);
+      if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
       return (json.table.rows || []).map(r =>
         Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
       );
@@ -638,17 +637,30 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // CATALOGOS: la API ya reconoce fila 1 como cabecera
-    // cat[0] = primera fila de datos reales (Mayordomía, Canto, etc.)
-    // keys confirmadas del JSON: 'A' = Departamentos, 'D' = Talentos Prácticos
-    window.CATALOGOS_DEPT = [...new Set(
-      cat.map(r => String(r['A']||'').trim()).filter(Boolean)
-    )].sort();
+    // CATALOGOS: parsedNumHeaders=0 — ninguna fila es cabecera automática
+    // Fila 0 del array = títulos (DEPARTAMENTOS, TALENTOS PRÁCTICOS, etc.)
+    // Fila 1+ = datos reales
+    // Las claves del objeto son 'A','B','C','D'... pero los VALORES de fila 0 son los títulos
+    // Buscar qué clave tiene 'DEPARTAMENTOS' y cuál tiene 'TALENTOS' en la fila 0
+    const catFila0 = cat[0] || {};
+    let keyDept = null, keyTal = null;
+    Object.entries(catFila0).forEach(([k, v]) => {
+      const val = String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (val.includes('DEPARTAMENTO')) keyDept = k;
+      if (val.includes('TALENTO')) keyTal = k;
+    });
 
-    window.CATALOGOS_TAL = [...new Set(
-      cat.map(r => String(r['D']||'').trim()).filter(Boolean)
-    )].sort();
+    const catDatos = cat.slice(1); // datos reales desde fila 1
 
+    window.CATALOGOS_DEPT = keyDept ? [...new Set(
+      catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean)
+    )].sort() : [];
+
+    window.CATALOGOS_TAL = keyTal ? [...new Set(
+      catDatos.map(r => String(r[keyTal]||'').trim()).filter(Boolean)
+    )].sort() : [];
+
+    console.log('🔑 keyDept:', keyDept, '| keyTal:', keyTal);
     console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
     console.log('📋 Talentos:', window.CATALOGOS_TAL);
 
