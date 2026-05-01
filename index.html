@@ -638,16 +638,15 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // CATALOGOS confirmado: keys son 'A','B','C','D'...
-    // fila 0 = cabeceras (DEPARTAMENTOS, TALENTOS...), fila 1+ = datos
-    const catDatos = cat.slice(1);
-
+    // CATALOGOS: la API ya reconoce fila 1 como cabecera
+    // cat[0] = primera fila de datos reales (Mayordomía, Canto, etc.)
+    // keys confirmadas del JSON: 'A' = Departamentos, 'D' = Talentos Prácticos
     window.CATALOGOS_DEPT = [...new Set(
-      catDatos.map(r => String(r['A']||'').trim()).filter(Boolean)
+      cat.map(r => String(r['A']||'').trim()).filter(Boolean)
     )].sort();
 
     window.CATALOGOS_TAL = [...new Set(
-      catDatos.map(r => String(r['D']||'').trim()).filter(Boolean)
+      cat.map(r => String(r['D']||'').trim()).filter(Boolean)
     )].sort();
 
     console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
