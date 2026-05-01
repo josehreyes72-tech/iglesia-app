@@ -638,17 +638,16 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
 
-    // CATALOGOS: usar posición numérica — confirmado del JSON:
-    // índice 0 = DEPARTAMENTOS DE LA IGLESIA
-    // índice 3 = TALENTOS PRÁCTICOS
-    const catDatos = cat.slice(1); // saltar fila de cabeceras
+    // CATALOGOS confirmado: keys son 'A','B','C','D'...
+    // fila 0 = cabeceras (DEPARTAMENTOS, TALENTOS...), fila 1+ = datos
+    const catDatos = cat.slice(1);
 
     window.CATALOGOS_DEPT = [...new Set(
-      catDatos.map(r => String(Object.values(r)[0]||'').trim()).filter(Boolean)
+      catDatos.map(r => String(r['A']||'').trim()).filter(Boolean)
     )].sort();
 
     window.CATALOGOS_TAL = [...new Set(
-      catDatos.map(r => String(Object.values(r)[3]||'').trim()).filter(Boolean)
+      catDatos.map(r => String(r['D']||'').trim()).filter(Boolean)
     )].sort();
 
     console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
