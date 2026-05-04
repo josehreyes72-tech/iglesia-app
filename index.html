@@ -422,6 +422,71 @@
   <button class="btn-primary" onclick="guardarMinisterial()">Guardar actividad</button>
   <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
 </div>
+  <div class="divider"></div>
+  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Información adicional del hermano</div>
+
+  <div class="form-group">
+    <label>Día disponible para obra misionera</label>
+    <select id="rm-dia">
+      <option value="">Seleccionar...</option>
+      <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+      <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+      <option>Cualquier día</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Horario disponible</label>
+    <select id="rm-horario">
+      <option value="">Seleccionar...</option>
+      <option>Mañana (8am–12pm)</option><option>Tarde (12pm–6pm)</option>
+      <option>Noche (6pm–9pm)</option><option>Todo el día</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>¿Conoce las doctrinas de la iglesia?</label>
+    <select id="rm-doctrinas">
+      <option value="">Seleccionar...</option>
+      <option>Sí, las conoce bien</option>
+      <option>Parcialmente</option>
+      <option>No las conoce</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>¿Conoce la estructura mundial de la iglesia?</label>
+    <select id="rm-estructura">
+      <option value="">Seleccionar...</option>
+      <option>Sí</option><option>No</option><option>Parcialmente</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Tema espiritual en que le gustaría capacitarse</label>
+    <input type="text" id="rm-capacitacion" placeholder="Ej: Evangelismo, Mayordomía, Liderazgo...">
+  </div>
+  <div class="form-group">
+    <label>¿Completó el estudio Fe de Jesús?</label>
+    <select id="rm-fe-jesus" onchange="toggleFeJesus(this)">
+      <option value="">Seleccionar...</option>
+      <option value="si">Sí, lo completó</option>
+      <option value="no">No lo completó</option>
+      <option value="no-sabe">No sabe / No recuerda</option>
+    </select>
+  </div>
+  <div id="rm-fe-jesus-detalle" style="display:none;">
+    <div class="form-group">
+      <label>Lecciones faltantes (marcar las que no recibió)</label>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px;">
+        ${Array.from({length:20},(_,i)=>`
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;">
+            <input type="checkbox" id="lec-${i+1}" value="${i+1}" style="width:14px;height:14px;accent-color:#1F3864;">
+            <label for="lec-${i+1}" style="font-size:12px;cursor:pointer;">${i+1}</label>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Nombre del instructor bíblico</label>
+      <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
+    </div>
+  </div>
 
 <!-- ESTUDIO BÍBLICO MISIONERO -->
 <div id="page-reg-misionero" class="page">
@@ -1624,14 +1689,23 @@ function limpiarHermanoMinisterial() {
 }
 
 
+function toggleFeJesus(sel) {
+  const detalle = document.getElementById('rm-fe-jesus-detalle');
+  if (detalle) detalle.style.display = sel.value === 'no' ? 'block' : 'none';
+}
+
+
 function guardarMinisterial() {
   const h = document.getElementById('rm-hermano-valor').value;
   if (!h) { showToast('⚠️ Busque y seleccione un hermano'); return; }
 
-  // MODIFICACIÓN 1: Recopilar áreas seleccionadas
   const areasSeleccionadas = Array.from(
     document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]:checked')
   ).map(cb => cb.value);
+
+  const lecFaltantes = Array.from(
+    document.querySelectorAll('[id^="lec-"]:checked')
+  ).map(cb => cb.value).join(', ');
 
   MINISTERIAL.push({
     'Apellidos y Nombres': h,
@@ -1640,13 +1714,24 @@ function guardarMinisterial() {
     'Fecha': document.getElementById('rm-fecha').value,
     'Descripcion': document.getElementById('rm-desc').value.trim(),
     'Areas de Apoyo': areasSeleccionadas.join(', '),
+    'Dia Disponible': document.getElementById('rm-dia')?.value || '',
+    'Horario Disponible': document.getElementById('rm-horario')?.value || '',
+    'Conoce Doctrinas': document.getElementById('rm-doctrinas')?.value || '',
+    'Conoce Estructura': document.getElementById('rm-estructura')?.value || '',
+    'Capacitacion': document.getElementById('rm-capacitacion')?.value.trim() || '',
+    'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
+    'Lecciones Faltantes': lecFaltantes,
+    'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
     'Registrado por': document.getElementById('rm-registrador').value.trim(),
   });
 
-  // Limpiar checkboxes
+  // Limpiar todos los campos
   document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => cb.checked = false);
-  document.getElementById('rm-desc').value = '';
-  document.getElementById('rm-registrador').value = '';
+  document.querySelectorAll('[id^="lec-"]').forEach(cb => cb.checked = false);
+  ['rm-desc','rm-registrador','rm-capacitacion'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['rm-dia','rm-horario','rm-doctrinas','rm-estructura','rm-fe-jesus'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  if(document.getElementById('rm-instructor')) document.getElementById('rm-instructor').value='';
+  if(document.getElementById('rm-fe-jesus-detalle')) document.getElementById('rm-fe-jesus-detalle').style.display='none';
   limpiarHermanoMinisterial();
 
   showToast('✅ Actividad registrada. Guárdela también en Google Sheets.');
@@ -1654,66 +1739,91 @@ function guardarMinisterial() {
 }
 
 function guardarMisionero() {
-  const h = document.getElementById('rmi-hermano').value;
-  const est = document.getElementById('rmi-estudiante').value.trim();
+  const h       = document.getElementById('rmi-hermano').value;
+  const jovenH  = document.getElementById('rmi-hermano-joven').value;
+  const est     = document.getElementById('rmi-estudiante').value.trim();
   if (!h || !est) { showToast('⚠️ Complete los campos obligatorios'); return; }
 
-  // MODIFICACIÓN 5: Validar lección
-  const lecVal = parseInt(document.getElementById('rmi-leccion').value);
-  if (isNaN(lecVal) || lecVal < 1 || lecVal > 20) {
-    showToast('⚠️ La lección debe estar entre 1 y 20');
+  // Validar género
+  if (!validarSexoMisionero('rmi')) {
+    showToast('⚠️ Corrija la asignación de género antes de guardar');
     return;
   }
 
-  MISIONERO.push({
+  // Validar lección
+  const lecVal = parseInt(document.getElementById('rmi-leccion').value);
+  if (isNaN(lecVal) || lecVal < 1 || lecVal > 20) {
+    showToast('⚠️ La lección debe estar entre 1 y 20'); return;
+  }
+
+  const parentesco = document.getElementById('rmi-parentesco')?.value.trim() || '';
+  const registro = {
     'Nombre del\nHermano': h,
+    'Joven Acompañante': jovenH,
+    'Parentesco': parentesco,
     'Nombre del\nEstudiante': est,
     'Teléfono': document.getElementById('rmi-tel').value.trim(),
-    'Estado Civil': document.getElementById('rmi-estado-civil').value, // MOD 9
+    'Estado Civil': document.getElementById('rmi-estado-civil').value,
     'Lección\nActual (1-20)': lecVal,
     'Estado': document.getElementById('rmi-estado').value,
     'Observaciones': document.getElementById('rmi-obs').value.trim(),
     'Registrado por': document.getElementById('rmi-registrador').value.trim(),
-  });
+    'Fecha': new Date().toLocaleDateString('es-BO'),
+  };
+  MISIONERO.push(registro);
 
   // Limpiar
   ['rmi-estudiante','rmi-tel','rmi-obs','rmi-registrador'].forEach(id => document.getElementById(id).value='');
   document.getElementById('rmi-leccion').value = '1';
   document.getElementById('rmi-estado-civil').value = '';
+  document.getElementById('rmi-hermano').value = '';
+  document.getElementById('rmi-hermano-joven').value = '';
   document.getElementById('rmi-leccion-error').style.display='none';
   document.getElementById('rmi-leccion').style.borderColor='';
+  ['rmi-error-sexo','rmi-familiar-wrap'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+  const esFam = document.getElementById('rmi-es-familiar'); if(esFam) esFam.checked=false;
+  const pw = document.getElementById('rmi-parentesco-wrap'); if(pw) pw.style.display='none';
+  if(document.getElementById('rmi-parentesco')) document.getElementById('rmi-parentesco').value='';
 
-  showToast('✅ Estudio registrado. Guárdelo también en Google Sheets.');
+  showToast('✅ Estudio registrado. Recuerde añadirlo en la hoja ESTUDIOS de Sheets.');
   showPage('registro');
 }
 
-// MODIFICACIÓN 8: Guardar visitación
 function guardarVisitacion() {
-  const h = document.getElementById('rv-hermano').value;
+  const h      = document.getElementById('rv-hermano').value;
+  const jovenH = document.getElementById('rv-hermano-joven').value;
   const nombre = document.getElementById('rv-nombre').value.trim();
   if (!h || !nombre) { showToast('⚠️ Complete los campos obligatorios'); return; }
 
-  // Se guarda el registro de visitación (en producción habría que enviarlo a Google Sheets también)
+  // Validar género
+  if (!validarSexoMisionero('rv')) {
+    showToast('⚠️ Corrija la asignación de género antes de guardar');
+    return;
+  }
+
+  const parentesco = document.getElementById('rv-parentesco')?.value.trim() || '';
   const visita = {
-    hermano: h,
-    nombre,
-    tel: document.getElementById('rv-tel').value.trim(),
-    dir: document.getElementById('rv-dir').value.trim(),
-    relacion: document.getElementById('rv-relacion').value,
-    fecha: document.getElementById('rv-fecha').value,
-    estado: document.getElementById('rv-estado').value,
-    material: document.getElementById('rv-material').value,
-    obs: document.getElementById('rv-obs').value.trim(),
-    registrador: document.getElementById('rv-registrador').value.trim(),
+    hermano: h, jovenH, parentesco, nombre,
+    tel:        document.getElementById('rv-tel').value.trim(),
+    dir:        document.getElementById('rv-dir').value.trim(),
+    relacion:   document.getElementById('rv-relacion').value,
+    fecha:      document.getElementById('rv-fecha').value,
+    estado:     document.getElementById('rv-estado').value,
+    material:   document.getElementById('rv-material').value,
+    obs:        document.getElementById('rv-obs').value.trim(),
+    registrador:document.getElementById('rv-registrador').value.trim(),
   };
+  VISITAS.push(visita);
 
-  console.log('Visita registrada:', visita); // Para debugging
-
-  // Limpiar formulario
+  // Limpiar
   ['rv-nombre','rv-tel','rv-dir','rv-obs','rv-registrador'].forEach(id => document.getElementById(id).value='');
-  ['rv-hermano','rv-relacion','rv-estado','rv-material'].forEach(id => document.getElementById(id).value='');
+  ['rv-hermano','rv-hermano-joven','rv-relacion','rv-estado','rv-material'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['rv-error-sexo','rv-familiar-wrap'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+  const esFam = document.getElementById('rv-es-familiar'); if(esFam) esFam.checked=false;
+  const pw = document.getElementById('rv-parentesco-wrap'); if(pw) pw.style.display='none';
+  if(document.getElementById('rv-parentesco')) document.getElementById('rv-parentesco').value='';
 
-  showToast('✅ Visita registrada. Guárdela también en Google Sheets.');
+  showToast('✅ Visita registrada. Recuerde añadirla en la hoja VISITAS de Sheets.');
   showPage('registro');
 }
 
