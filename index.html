@@ -371,15 +371,9 @@
         oninput="buscarHermanoMinisterial(this.value)" autocomplete="off"
         style="width:100%;padding:11px 12px 11px 38px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text);outline:none;">
     </div>
-    <div id="rm-hermano-lista" style="display:none; background:white; border:1px solid var(--border);
-      border-radius:10px; margin-top:4px; max-height:200px; overflow-y:auto;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:50; position:relative;">
-    </div>
+    <div id="rm-hermano-lista" style="display:none;background:white;border:1px solid var(--border);border-radius:10px;margin-top:4px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:50;position:relative;"></div>
     <input type="hidden" id="rm-hermano-valor">
-    <div id="rm-hermano-seleccionado" style="display:none; margin-top:6px; background:#EFF6FF;
-      border:1px solid #BFDBFE; border-radius:8px; padding:8px 12px; font-size:13px;
-      color:#1E40AF; display:flex; align-items:center; justify-content:space-between;">
-    </div>
+    <div id="rm-hermano-seleccionado" style="display:none;margin-top:6px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px 12px;font-size:13px;color:#1E40AF;align-items:center;justify-content:space-between;"></div>
   </div>
 
   <div class="form-group">
@@ -389,13 +383,9 @@
   <div class="form-group">
     <label>Tipo de actividad</label>
     <select id="rm-tipo">
-      <option>Reunión Departamental</option>
-      <option>Evento Especial</option>
-      <option>Capacitación</option>
-      <option>Servicio</option>
-      <option>Programa</option>
-      <option>Seminario</option>
-      <option>Otro</option>
+      <option>Reunión Departamental</option><option>Evento Especial</option>
+      <option>Capacitación</option><option>Servicio</option>
+      <option>Programa</option><option>Seminario</option><option>Otro</option>
     </select>
   </div>
   <div class="form-group">
@@ -407,21 +397,12 @@
     <textarea id="rm-desc" placeholder="Describa la actividad realizada..."></textarea>
   </div>
 
-  <!-- MODIFICACIÓN 1: Áreas en las que le gustaría apoyar -->
+  <!-- Áreas en las que le gustaría apoyar -->
   <div class="form-group">
     <label>Áreas en las que le gustaría apoyar</label>
-    <div class="checkbox-grid" id="rm-areas-apoyo">
-      <!-- Se poblará dinámicamente con las áreas/departamentos existentes -->
-    </div>
+    <div class="checkbox-grid" id="rm-areas-apoyo"></div>
   </div>
 
-  <div class="form-group">
-    <label>Registrado por</label>
-    <input type="text" id="rm-registrador" placeholder="Su nombre">
-  </div>
-  <button class="btn-primary" onclick="guardarMinisterial()">Guardar actividad</button>
-  <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
-</div>
   <div class="divider"></div>
   <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Información adicional del hermano</div>
 
@@ -430,8 +411,8 @@
     <select id="rm-dia">
       <option value="">Seleccionar...</option>
       <option>Lunes</option><option>Martes</option><option>Miércoles</option>
-      <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
-      <option>Cualquier día</option>
+      <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+      <option>Domingo</option><option>Cualquier día</option>
     </select>
   </div>
   <div class="form-group">
@@ -446,9 +427,7 @@
     <label>¿Conoce las doctrinas de la iglesia?</label>
     <select id="rm-doctrinas">
       <option value="">Seleccionar...</option>
-      <option>Sí, las conoce bien</option>
-      <option>Parcialmente</option>
-      <option>No las conoce</option>
+      <option>Sí, las conoce bien</option><option>Parcialmente</option><option>No las conoce</option>
     </select>
   </div>
   <div class="form-group">
@@ -475,11 +454,26 @@
     <div class="form-group">
       <label>Lecciones faltantes (marcar las que no recibió)</label>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px;">
-        ${Array.from({length:20},(_,i)=>`
-          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;">
-            <input type="checkbox" id="lec-${i+1}" value="${i+1}" style="width:14px;height:14px;accent-color:#1F3864;">
-            <label for="lec-${i+1}" style="font-size:12px;cursor:pointer;">${i+1}</label>
-          </div>`).join('')}
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-1" value="1" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-1" style="font-size:12px;cursor:pointer;">1</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-2" value="2" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-2" style="font-size:12px;cursor:pointer;">2</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-3" value="3" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-3" style="font-size:12px;cursor:pointer;">3</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-4" value="4" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-4" style="font-size:12px;cursor:pointer;">4</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-5" value="5" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-5" style="font-size:12px;cursor:pointer;">5</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-6" value="6" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-6" style="font-size:12px;cursor:pointer;">6</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-7" value="7" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-7" style="font-size:12px;cursor:pointer;">7</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-8" value="8" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-8" style="font-size:12px;cursor:pointer;">8</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-9" value="9" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-9" style="font-size:12px;cursor:pointer;">9</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-10" value="10" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-10" style="font-size:12px;cursor:pointer;">10</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-11" value="11" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-11" style="font-size:12px;cursor:pointer;">11</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-12" value="12" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-12" style="font-size:12px;cursor:pointer;">12</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-13" value="13" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-13" style="font-size:12px;cursor:pointer;">13</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-14" value="14" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-14" style="font-size:12px;cursor:pointer;">14</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-15" value="15" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-15" style="font-size:12px;cursor:pointer;">15</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-16" value="16" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-16" style="font-size:12px;cursor:pointer;">16</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-17" value="17" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-17" style="font-size:12px;cursor:pointer;">17</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-18" value="18" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-18" style="font-size:12px;cursor:pointer;">18</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-19" value="19" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-19" style="font-size:12px;cursor:pointer;">19</label></div>
+        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-20" value="20" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-20" style="font-size:12px;cursor:pointer;">20</label></div>
       </div>
     </div>
     <div class="form-group">
@@ -487,6 +481,15 @@
       <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
     </div>
   </div>
+
+  <div class="divider"></div>
+  <div class="form-group">
+    <label>Registrado por</label>
+    <input type="text" id="rm-registrador" placeholder="Su nombre">
+  </div>
+  <button class="btn-primary" onclick="guardarMinisterial()">Guardar actividad</button>
+  <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
+</div>
 
 <!-- ESTUDIO BÍBLICO MISIONERO -->
 <div id="page-reg-misionero" class="page">
