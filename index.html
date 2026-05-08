@@ -798,9 +798,10 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
     VISITAS = vis.filter(r => {
-      // La hoja VISITAS tiene: ID, Apellidos y Nombres, Clase EESS, Año, Visitado S/N, Fecha Visita 1...
-      const n = String(r['Apellidos y Nombres']||r['Apellidos\ny Nombres']||'').trim();
-      return Boolean(n);
+      // Nueva estructura: Fecha, Hermano Visitador, Nombre del Visitado...
+      const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
+      const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
+      return Boolean(hermano || visitado);
     });
 
     // CATALOGOS: parsedNumHeaders=0 — ninguna fila es cabecera automática
@@ -1485,66 +1486,9 @@ function poblarSelectores() {
     });
   });
 
-  // Poblar selector de hermano ADULTO (frecuentes, registro iglesia = sí, con < 3 estudios)
-  const niSel = document.getElementById('ni-hermano');
-  const niJovenSel = document.getElementById('ni-hermano-joven');
-
-  const dispAdultos = hermanosMisionero.filter(m => {
-    const n = String(m['Apellidos y Nombres']||'').trim();
-    const edad = parseInt(m['Edad']||0)||0;
-    const act = MISIONERO.filter(r => getNombreHermano(r)===n && String(r['Estado']||'')==='En Curso').length;
-    return act < 3 && edad > 19; // adultos
-  }).sort((a,b) => {
-    const diasA = diasDesdeBautismo(a), diasB = diasDesdeBautismo(b);
-    const rA = diasA!==null&&diasA<=60?1:0, rB = diasB!==null&&diasB<=60?1:0;
-    if (rB!==rA) return rB-rA;
-    const actA = MISIONERO.filter(r=>getNombreHermano(r)===String(a['Apellidos y Nombres']||'').trim()&&String(r['Estado']||'')==='En Curso').length;
-    const actB = MISIONERO.filter(r=>getNombreHermano(r)===String(b['Apellidos y Nombres']||'').trim()&&String(r['Estado']||'')==='En Curso').length;
-    return actA-actB;
-  });
-
-  // Helper para obtener Género del miembro (columna 'Género' con valores Masculino/Femenino)
-  const getColGen = (m) => Object.keys(m).find(k => k.toLowerCase().replace(/\s|\n/g,'').includes('gnero') || k.toLowerCase().replace(/\s|\n/g,'').includes('genero')) || null;
-
-  if (niSel) {
-    dispAdultos.forEach(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const act = MISIONERO.filter(r=>getNombreHermano(r)===n&&String(r['Estado']||'')==='En Curso').length;
-      const dias = diasDesdeBautismo(m);
-      const esRecien = dias!==null&&dias<=60;
-      const colGen = getColGen(m);
-      const gen = colGen ? String(m[colGen]||'').trim() : '';
-      let etq = act===0?'disponible':act+' estudio(s)';
-      if (gen) etq += ` · ${gen}`;
-      if (esRecien) etq += ' · 🌟 Recién bautizado';
-      const o = document.createElement('option');
-      o.value = n;
-      o.textContent = `${n} (${etq})`;
-      niSel.appendChild(o);
-    });
-  }
-
-  // Poblar selector de hermano JOVEN (12-19 años, frecuentes)
-  const dispJovenes = hermanosMisionero.filter(m => {
-    const edad = parseInt(m['Edad']||0)||0;
-    return edad >= 12 && edad <= 19;
-  }).sort((a,b) => String(a['Apellidos y Nombres']||'').localeCompare(String(b['Apellidos y Nombres']||'')));
-
-  if (niJovenSel) {
-    dispJovenes.forEach(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const edad = parseInt(m['Edad']||0)||0;
-      const colGen = getColGen(m);
-      const gen = colGen ? String(m[colGen]||'').trim() : '';
-      const o = document.createElement('option');
-      o.value = n;
-      o.textContent = `${n} (${edad} años${gen?' · '+gen:''})`;
-      niJovenSel.appendChild(o);
-    });
-  }
 
   // Fecha por defecto en formularios de fecha
-  ['rm-fecha','rv-fecha'].forEach(id => {
+  ['rv-fecha'].forEach(id => {
     const f = document.getElementById(id);
     if (f) f.value = new Date().toISOString().split('T')[0];
   });
@@ -1982,7 +1926,7 @@ function getHermanoVal(id) {
   return String(el.value || '').trim();
 }
 
-
+function toggleFeJesus(sel) {
   const detalle = document.getElementById('rm-fe-jesus-detalle');
   if (!detalle) return;
   // Mostrar detalle si no completó O no sabe/no recuerda
@@ -2182,7 +2126,7 @@ function toggleDetalle(id) {
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
-
+function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.style.display='none');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const p = document.getElementById('page-'+id);
