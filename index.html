@@ -160,10 +160,23 @@
 
   .tag { display: inline-block; background: #EEF2FF; color: #3730A3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin: 2px; }
 
-  /* BUSCADOR HERMANO MINISTERIAL */
-  .hermano-opcion { padding: 10px 14px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
-  .hermano-opcion:last-child { border-bottom: none; }
-  .hermano-opcion:active, .hermano-opcion:hover { background: #EFF6FF; }
+  /* BUSCADOR UNIVERSAL DE HERMANOS */
+  .hermano-search-wrap { position: relative; margin-bottom: 4px; }
+  .hermano-search-wrap input { width: 100%; padding: 11px 12px 11px 38px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
+  .hermano-search-wrap input:focus { border-color: var(--azul); }
+  .hermano-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
+  .hermano-dropdown { display:none; background:white; border:1px solid var(--border); border-radius:10px; margin-top:4px; max-height:200px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:50; position:relative; }
+  .hermano-opcion { padding:10px 14px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .hermano-opcion:last-child { border-bottom:none; }
+  .hermano-opcion:active, .hermano-opcion:hover { background:#EFF6FF; }
+  .hermano-seleccionado { display:none; margin-top:6px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:8px 12px; font-size:13px; color:#1E40AF; align-items:center; justify-content:space-between; }
+  .ver-todos-btn { width:100%; padding:8px; font-size:12px; color:var(--azul); background:#F8FAFF; border:1px dashed var(--azul); border-radius:8px; cursor:pointer; margin-top:4px; text-align:center; }
+
+  /* TIPO ACTIVIDAD MULTIPLE */
+  .multi-select-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .multi-select-item { display:flex; align-items:center; gap:6px; background:#F9FAFB; border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; font-size:13px; transition:.15s; }
+  .multi-select-item:has(input:checked) { background:#DBEAFE; border-color:var(--azul); }
+  .multi-select-item input { width:14px; height:14px; accent-color:#1F3864; flex-shrink:0; }
 
   /* CHECKBOX GRID para áreas de apoyo - #18: más pequeño, más oscuro */
   .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -267,21 +280,31 @@
     <input type="hidden" id="ni-tipo-valor">
   </div>
 
-  <!-- ASIGNAR HERMANOS: JOVEN + ADULTO -->
+  <!-- ASIGNAR HERMANOS: JOVEN + ADULTO con buscador lupita -->
   <div class="form-group">
     <label>Hermano joven acompañante (12–19 años)</label>
-    <select id="ni-hermano-joven" onchange="validarSexoHermanos()">
-      <option value="">— Ninguno / No aplica —</option>
-    </select>
-    <div id="ni-joven-info" style="display:none;" class="alerta-joven" style="margin-top:6px;"></div>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="ni-joven-input" placeholder="Buscar joven..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="ni-joven-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('ni-joven')">☰ Ver lista de jóvenes disponibles</button>
+    <input type="hidden" id="ni-hermano-joven">
+    <div class="hermano-seleccionado" id="ni-joven-seleccionado"></div>
+    <div id="ni-joven-info" style="display:none;" class="alerta-joven"></div>
   </div>
 
   <div class="form-group">
     <label>Hermano adulto asignado *</label>
-    <select id="ni-hermano" onchange="onChangeHermanoAdulto()">
-      <option value="">— Dejar en lista de espera —</option>
-    </select>
-    <div id="ni-adulto-info" style="display:none;" class="sugerencia-box" style="margin-top:6px;"></div>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="ni-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="ni-hermano-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('ni')">☰ Ver lista completa</button>
+    <input type="hidden" id="ni-hermano">
+    <div class="hermano-seleccionado" id="ni-hermano-seleccionado"></div>
+    <div id="ni-adulto-info" style="display:none;" class="sugerencia-box"></div>
   </div>
 
   <div id="ni-sugerencia" style="display:none;" class="sugerencia-box"></div>
@@ -357,138 +380,132 @@
   </div>
 </div>
 
-<!-- ACTIVIDAD MINISTERIAL -->
+<!-- ACTIVIDAD MINISTERIAL - NUEVO DISEÑO -->
 <div id="page-reg-ministerial" class="page">
   <button class="back-btn" onclick="showPage('registro')">← Volver</button>
-  <div class="section-title" style="margin-bottom:16px;">Actividad ministerial</div>
+  <div class="section-title" style="margin-bottom:4px;">Actividad ministerial</div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">Un registro por hermano — se actualiza cada visita</div>
 
-  <!-- BUSCADOR DE HERMANO CON LUPA -->
   <div class="form-group">
     <label>Hermano *</label>
-    <div style="position:relative;margin-bottom:0;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;z-index:1;">🔍</span>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
       <input type="text" id="rm-hermano-input" placeholder="Escribir nombre del hermano..."
-        oninput="buscarHermanoMinisterial(this.value)" autocomplete="off"
-        style="width:100%;padding:11px 12px 11px 38px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text);outline:none;">
+        oninput="buscarHermanoMinisterial(this.value)" autocomplete="off">
     </div>
-    <div id="rm-hermano-lista" style="display:none;background:white;border:1px solid var(--border);border-radius:10px;margin-top:4px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:50;position:relative;"></div>
+    <div class="hermano-dropdown" id="rm-hermano-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rm')">☰ Ver lista completa de hermanos</button>
     <input type="hidden" id="rm-hermano-valor">
-    <div id="rm-hermano-seleccionado" style="display:none;margin-top:6px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px 12px;font-size:13px;color:#1E40AF;align-items:center;justify-content:space-between;"></div>
+    <div class="hermano-seleccionado" id="rm-hermano-seleccionado"></div>
   </div>
 
-  <div class="form-group">
-    <label>Departamento</label>
-    <select id="rm-dept"><option value="">Seleccionar...</option></select>
-  </div>
-  <div class="form-group">
-    <label>Tipo de actividad</label>
-    <select id="rm-tipo">
-      <option>Reunión Departamental</option><option>Evento Especial</option>
-      <option>Capacitación</option><option>Servicio</option>
-      <option>Programa</option><option>Seminario</option><option>Otro</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Fecha</label>
-    <input type="date" id="rm-fecha">
-  </div>
-  <div class="form-group">
-    <label>Descripción</label>
-    <textarea id="rm-desc" placeholder="Describa la actividad realizada..."></textarea>
-  </div>
-
-  <!-- Áreas en las que le gustaría apoyar -->
-  <div class="form-group">
-    <label>Áreas en las que le gustaría apoyar</label>
-    <div class="checkbox-grid" id="rm-areas-apoyo"></div>
-  </div>
-
-  <div class="divider"></div>
-  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Información adicional del hermano</div>
-
-  <div class="form-group">
-    <label>Día disponible para obra misionera</label>
-    <select id="rm-dia">
-      <option value="">Seleccionar...</option>
-      <option>Lunes</option><option>Martes</option><option>Miércoles</option>
-      <option>Jueves</option><option>Viernes</option><option>Sábado</option>
-      <option>Domingo</option><option>Cualquier día</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Horario disponible</label>
-    <select id="rm-horario">
-      <option value="">Seleccionar...</option>
-      <option>Mañana (8am–12pm)</option><option>Tarde (12pm–6pm)</option>
-      <option>Noche (6pm–9pm)</option><option>Todo el día</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>¿Conoce las doctrinas de la iglesia?</label>
-    <select id="rm-doctrinas">
-      <option value="">Seleccionar...</option>
-      <option>Sí, las conoce bien</option><option>Parcialmente</option><option>No las conoce</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>¿Conoce la estructura mundial de la iglesia?</label>
-    <select id="rm-estructura">
-      <option value="">Seleccionar...</option>
-      <option>Sí</option><option>No</option><option>Parcialmente</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Tema espiritual en que le gustaría capacitarse</label>
-    <input type="text" id="rm-capacitacion" placeholder="Ej: Evangelismo, Mayordomía, Liderazgo...">
-  </div>
-  <div class="form-group">
-    <label>¿Completó el estudio Fe de Jesús?</label>
-    <select id="rm-fe-jesus" onchange="toggleFeJesus(this)">
-      <option value="">Seleccionar...</option>
-      <option value="si">Sí, lo completó</option>
-      <option value="no">No lo completó</option>
-      <option value="no-sabe">No sabe / No recuerda</option>
-    </select>
-  </div>
-  <div id="rm-fe-jesus-detalle" style="display:none;">
+  <div id="rm-datos-auto" style="display:none;">
     <div class="form-group">
-      <label>Lecciones faltantes (marcar las que no recibió)</label>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px;">
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-1" value="1" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-1" style="font-size:12px;cursor:pointer;">1</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-2" value="2" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-2" style="font-size:12px;cursor:pointer;">2</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-3" value="3" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-3" style="font-size:12px;cursor:pointer;">3</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-4" value="4" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-4" style="font-size:12px;cursor:pointer;">4</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-5" value="5" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-5" style="font-size:12px;cursor:pointer;">5</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-6" value="6" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-6" style="font-size:12px;cursor:pointer;">6</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-7" value="7" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-7" style="font-size:12px;cursor:pointer;">7</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-8" value="8" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-8" style="font-size:12px;cursor:pointer;">8</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-9" value="9" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-9" style="font-size:12px;cursor:pointer;">9</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-10" value="10" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-10" style="font-size:12px;cursor:pointer;">10</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-11" value="11" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-11" style="font-size:12px;cursor:pointer;">11</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-12" value="12" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-12" style="font-size:12px;cursor:pointer;">12</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-13" value="13" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-13" style="font-size:12px;cursor:pointer;">13</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-14" value="14" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-14" style="font-size:12px;cursor:pointer;">14</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-15" value="15" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-15" style="font-size:12px;cursor:pointer;">15</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-16" value="16" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-16" style="font-size:12px;cursor:pointer;">16</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-17" value="17" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-17" style="font-size:12px;cursor:pointer;">17</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-18" value="18" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-18" style="font-size:12px;cursor:pointer;">18</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-19" value="19" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-19" style="font-size:12px;cursor:pointer;">19</label></div>
-        <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-20" value="20" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-20" style="font-size:12px;cursor:pointer;">20</label></div>
+      <label>Departamento</label>
+      <select id="rm-dept"><option value="">Seleccionar...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Tipos de actividad que desarrolla</label>
+      <div class="multi-select-grid">
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-1" value="Reunión Departamental"><label for="rm-tipo-1">Reunión Departamental</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-2" value="Evento Especial"><label for="rm-tipo-2">Evento Especial</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-3" value="Capacitación"><label for="rm-tipo-3">Capacitación</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-4" value="Servicio"><label for="rm-tipo-4">Servicio</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-5" value="Programa"><label for="rm-tipo-5">Programa</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-6" value="Semana de Oración"><label for="rm-tipo-6">Semana de Oración</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-7" value="Seminario"><label for="rm-tipo-7">Seminario</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-8" value="Otro"><label for="rm-tipo-8">Otro</label></div>
       </div>
     </div>
     <div class="form-group">
-      <label>Nombre del instructor bíblico</label>
-      <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
+      <label>Áreas en las que le gustaría apoyar</label>
+      <div class="checkbox-grid" id="rm-areas-apoyo"></div>
     </div>
+    <div class="divider"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Información adicional</div>
+    <div class="form-group">
+      <label>Día disponible para obra misionera</label>
+      <select id="rm-dia">
+        <option value="">Seleccionar...</option>
+        <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+        <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+        <option>Domingo</option><option>Cualquier día</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Horario disponible</label>
+      <select id="rm-horario">
+        <option value="">Seleccionar...</option>
+        <option>Mañana (8am–12pm)</option><option>Tarde (12pm–6pm)</option>
+        <option>Noche (6pm–9pm)</option><option>Todo el día</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Conoce las doctrinas de la iglesia?</label>
+      <select id="rm-doctrinas">
+        <option value="">Seleccionar...</option>
+        <option>Sí, las conoce bien</option><option>Parcialmente</option><option>No las conoce</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Conoce la estructura mundial de la iglesia?</label>
+      <select id="rm-estructura">
+        <option value="">Seleccionar...</option>
+        <option>Sí</option><option>No</option><option>Parcialmente</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tema espiritual en que le gustaría capacitarse</label>
+      <input type="text" id="rm-capacitacion" placeholder="Ej: Evangelismo, Mayordomía, Liderazgo...">
+    </div>
+    <div class="form-group">
+      <label>¿Completó el estudio Fe de Jesús?</label>
+      <select id="rm-fe-jesus" onchange="toggleFeJesus(this)">
+        <option value="">Seleccionar...</option>
+        <option value="si">Sí, lo completó</option>
+        <option value="no">No lo completó</option>
+        <option value="no-sabe">No sabe / No recuerda</option>
+      </select>
+    </div>
+    <div id="rm-fe-jesus-detalle" style="display:none;">
+      <div class="form-group">
+        <label>Lecciones faltantes</label>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px;">
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-1" value="1" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-1" style="font-size:12px;cursor:pointer;">1</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-2" value="2" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-2" style="font-size:12px;cursor:pointer;">2</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-3" value="3" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-3" style="font-size:12px;cursor:pointer;">3</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-4" value="4" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-4" style="font-size:12px;cursor:pointer;">4</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-5" value="5" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-5" style="font-size:12px;cursor:pointer;">5</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-6" value="6" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-6" style="font-size:12px;cursor:pointer;">6</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-7" value="7" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-7" style="font-size:12px;cursor:pointer;">7</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-8" value="8" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-8" style="font-size:12px;cursor:pointer;">8</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-9" value="9" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-9" style="font-size:12px;cursor:pointer;">9</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-10" value="10" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-10" style="font-size:12px;cursor:pointer;">10</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-11" value="11" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-11" style="font-size:12px;cursor:pointer;">11</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-12" value="12" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-12" style="font-size:12px;cursor:pointer;">12</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-13" value="13" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-13" style="font-size:12px;cursor:pointer;">13</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-14" value="14" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-14" style="font-size:12px;cursor:pointer;">14</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-15" value="15" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-15" style="font-size:12px;cursor:pointer;">15</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-16" value="16" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-16" style="font-size:12px;cursor:pointer;">16</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-17" value="17" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-17" style="font-size:12px;cursor:pointer;">17</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-18" value="18" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-18" style="font-size:12px;cursor:pointer;">18</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-19" value="19" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-19" style="font-size:12px;cursor:pointer;">19</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-20" value="20" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-20" style="font-size:12px;cursor:pointer;">20</label></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nombre del instructor bíblico</label>
+        <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label>Registrado por</label>
+      <input type="text" id="rm-registrador" placeholder="Su nombre">
+    </div>
+    <button class="btn-primary" onclick="guardarMinisterial()">Guardar registro ministerial</button>
+    <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
   </div>
-
-  <div class="divider"></div>
-  <div class="form-group">
-    <label>Registrado por</label>
-    <input type="text" id="rm-registrador" placeholder="Su nombre">
-  </div>
-  <button class="btn-primary" onclick="guardarMinisterial()">Guardar actividad</button>
-  <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
 </div>
 
 <!-- ESTUDIO BÍBLICO MISIONERO -->
@@ -498,13 +515,25 @@
 
   <div class="form-group">
     <label>Hermano joven acompañante (12–19 años)</label>
-    <select id="rmi-hermano-joven" onchange="validarSexoMisionero('rmi')">
-      <option value="">— Ninguno / No aplica —</option>
-    </select>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rmi-joven-input" placeholder="Buscar joven..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rmi-joven-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rmi-joven')">☰ Ver lista de jóvenes</button>
+    <input type="hidden" id="rmi-hermano-joven">
+    <div class="hermano-seleccionado" id="rmi-joven-seleccionado"></div>
   </div>
   <div class="form-group">
     <label>Hermano adulto que da el estudio *</label>
-    <select id="rmi-hermano" onchange="validarSexoMisionero('rmi')"><option value="">Seleccionar hermano...</option></select>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rmi-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rmi-hermano-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rmi')">☰ Ver lista completa</button>
+    <input type="hidden" id="rmi-hermano">
+    <div class="hermano-seleccionado" id="rmi-hermano-seleccionado"></div>
   </div>
   <div id="rmi-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-bottom:8px;"></div>
   <div id="rmi-familiar-wrap" style="display:none;margin-bottom:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
@@ -577,13 +606,25 @@
   <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">👤 Hermano visitador</div>
   <div class="form-group">
     <label>Hermano joven acompañante (12–19 años)</label>
-    <select id="rv-hermano-joven" onchange="validarSexoMisionero('rv')">
-      <option value="">— Ninguno / No aplica —</option>
-    </select>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rv-joven-input" placeholder="Buscar joven..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rv-joven-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rv-joven')">☰ Ver lista de jóvenes</button>
+    <input type="hidden" id="rv-hermano-joven">
+    <div class="hermano-seleccionado" id="rv-joven-seleccionado"></div>
   </div>
   <div class="form-group">
     <label>Hermano adulto que realiza la visita *</label>
-    <select id="rv-hermano" onchange="validarSexoMisionero('rv')"><option value="">Seleccionar hermano...</option></select>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rv-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rv-hermano-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rv')">☰ Ver lista completa</button>
+    <input type="hidden" id="rv-hermano">
+    <div class="hermano-seleccionado" id="rv-hermano-seleccionado"></div>
   </div>
   <div id="rv-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-bottom:8px;"></div>
   <div id="rv-familiar-wrap" style="display:none;margin-bottom:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
@@ -800,7 +841,10 @@ async function cargarDatos() {
 }
 
 function getNombreHermano(r) {
-  return String(r['Nombre del\nHermano'] || r['Nombre del Hermano'] || '').trim();
+  return String(
+    r['Nombre del\nHermano'] || r['Nombre del Hermano'] ||
+    r['Hermano'] || r['Nombre Hermano'] || ''
+  ).trim();
 }
 
 function getCargo(m) {
@@ -810,33 +854,37 @@ function getCargo(m) {
 function calcNivel(m) {
   const nombre = String(m['Apellidos y Nombres'] || '').trim();
   const cargo = getCargo(m);
-  const otros = String(m['Otros\nCargos'] || m['Otros Cargos'] || '').trim();
-
-  // MINISTERIAL: tiene cargo = 60pts base, actividades adicionales hasta 40pts
   const tieneCargo = cargo && cargo !== '-' && cargo !== 'Sin Cargo Actual';
-  const tieneOtros = otros && otros !== '-';
-  const actsMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres'] || '').trim() === nombre);
-  let min = 0;
-  if (tieneCargo) min += 60; // cargo es lo principal ministerialmente
-  if (tieneOtros) min += 10;
-  min = Math.min(100, min + Math.min(30, actsMin.length * 10));
 
-  // MISIONERO: estudios activos + bautizados + visitas registradas
+  // MINISTERIAL: 60% por cargo + hasta 20% por áreas de apoyo + hasta 20% por días disponibles
+  let min = 0;
+  if (tieneCargo) min += 60;
+
+  // Buscar datos adicionales del hermano en MINISTERIAL
+  const regMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim() === nombre).slice(-1)[0];
+  if (regMin) {
+    const areas = String(regMin['Areas de Apoyo']||'').split(',').filter(a => a.trim()).length;
+    min += Math.min(20, areas * 3); // hasta 20pts por áreas (máx ~7 áreas)
+    const dia = String(regMin['Dia Disponible']||'').trim();
+    if (dia && dia !== '') min += dia === 'Cualquier día' ? 20 : 10; // hasta 20pts por días
+  }
+  min = Math.min(100, min);
+
+  // MISIONERO: estudios activos + bautizados + visitas
   const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
   const activos = estudios.filter(r => String(r['Estado'] || '') === 'En Curso');
   const bautizados = estudios.filter(r => String(r['Estado'] || '') === 'Bautizado');
-  // Visitas del hermano
   const visitas = VISITAS ? VISITAS.filter(r => {
-    const hv = String(r['Hermano'] || r['Nombre del\nHermano'] || r['Nombre del Hermano'] || '').trim();
+    const hv = String(r['Hermano Visitador'] || r['Hermano'] || r['Nombre del\nHermano'] || '').trim();
     return hv === nombre;
   }) : [];
   let mis = 0;
-  mis += Math.min(50, activos.length * 20);   // hasta 50pts por estudios activos
-  mis += Math.min(30, bautizados.length * 15); // hasta 30pts por bautizados
-  mis += Math.min(20, visitas.length * 5);     // hasta 20pts por visitas
+  mis += Math.min(50, activos.length * 20);
+  mis += Math.min(30, bautizados.length * 15);
+  mis += Math.min(20, visitas.length * 5);
   mis = Math.min(100, mis);
 
-  return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: actsMin.length, visitas: visitas.length, tieneCargo };
+  return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: regMin ? 1 : 0, visitas: visitas.length, tieneCargo };
 }
 
 function semaforo(min, mis) {
@@ -1199,34 +1247,64 @@ function renderDashboard() {
       </div>
     </div>
 
-    <!-- #20: Reporte de visitas -->
+    <!-- #20: Reporte de visitas clickable -->
     <div class="section-title">📋 Reporte de visitas</div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:13px;">Total visitas registradas</span>
-        <strong>${totalVisitas}</strong>
+    <div class="card" onclick="toggleDetalle('detalle-visitas')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${totalVisitas}</div>
+          <div style="font-size:13px;color:var(--text2);">Total visitas · <span style="color:var(--green);font-weight:600;">${visitasConcretadas} concretadas</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-        <span style="font-size:13px;">Visitas concretadas</span>
-        <strong style="color:var(--green);">${visitasConcretadas}</strong>
+      <div id="detalle-visitas" style="display:none;margin-top:12px;">
+        ${VISITAS.length > 0 ? VISITAS.map(v => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${v.nombre || v['Nombre del Visitado'] || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${v.hermano || v['Hermano Visitador'] || ''} · ${v.fecha || v['Fecha'] || ''} · <span style="color:var(--green);">${v.estado || v['Estado de la Visita'] || ''}</span></div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin visitas registradas aún</div>'}
       </div>
-      ${Object.keys(estadosVisita).length > 0 ? `
-      <div class="divider"></div>
-      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Por estado:</div>
-      ${Object.entries(estadosVisita).map(([est,cnt]) =>
-        `<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;">
-          <span>${est}</span><strong>${cnt}</strong>
-        </div>`).join('')}` : '<div style="font-size:13px;color:var(--text2);">Sin visitas registradas aún</div>'}
     </div>
 
-    <!-- #20: Reporte de estudios bíblicos -->
+    <!-- #20: Reporte de estudios clickable -->
     <div class="section-title">📖 Reporte de estudios bíblicos</div>
-    <div class="card">
-      ${Object.keys(estadosEstudio).length > 0 ? `
-      ${Object.entries(estadosEstudio).map(([est,cnt]) =>
-        `<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid var(--border);">
-          <span>${est}</span><strong>${cnt}</strong>
-        </div>`).join('')}` : '<div style="font-size:13px;color:var(--text2);">Sin estudios registrados aún</div>'}
+    <div class="card" onclick="toggleDetalle('detalle-estudios')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${totalEst}</div>
+          <div style="font-size:13px;color:var(--text2);">En curso · <span style="color:var(--green);font-weight:600;">${totalBaut} bautizados</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
+      </div>
+      <div id="detalle-estudios" style="display:none;margin-top:12px;">
+        ${MISIONERO.length > 0 ? MISIONERO.map(e => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${e['Nombre del\nEstudiante'] || e['Nombre del Estudiante'] || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${getNombreHermano(e)} · Lec. ${e['Lección\nActual (1-20)'] || e['Lección Actual (1-20)'] || '?'}/20 · <span style="color:var(--blue);">${e['Estado'] || ''}</span></div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin estudios registrados aún</div>'}
+      </div>
+    </div>
+
+    <!-- #20: Interesados clickable -->
+    <div class="section-title">👥 Interesados</div>
+    <div class="card" onclick="toggleDetalle('detalle-interesados')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${INTERESADOS.length}</div>
+          <div style="font-size:13px;color:var(--text2);">Total · <span style="color:var(--amber);font-weight:600;">${INTERESADOS.filter(i=>!i.hermano).length} sin asignar</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
+      </div>
+      <div id="detalle-interesados" style="display:none;margin-top:12px;">
+        ${INTERESADOS.length > 0 ? INTERESADOS.map(i => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${i.nombre || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${i.tel ? i.tel+' · ' : ''}${i.tipo || ''} · ${i.hermano ? '👤 '+i.hermano : '⏳ Sin asignar'}</div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin interesados registrados aún</div>'}
+      </div>
     </div>
 
     <div class="section-title">Grupos especiales</div>
@@ -1280,13 +1358,64 @@ function poblarSelectores() {
   window._colDept = colDept;
   window._colTalentos = null; // ya no se necesita desde MIEMBROS
 
-  // Actualizar lista de hermanos para buscador ministerial con departamento correcto
-  window._hermanosMinistrialLista = MIEMBROS.map(m => ({
+  // Construir listas para buscadores
+  const listaTodos = MIEMBROS.map(m => ({
     nombre: String(m['Apellidos y Nombres']||'').trim(),
     dept: colDept ? String(m[colDept]||'').trim() : '',
+    edad: parseInt(m['Edad']||0)||0,
+    gen: (() => { const col = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero')); return col ? String(m[col]||'').trim() : ''; })(),
   })).filter(x => x.nombre);
 
-  // Poblar checkboxes de Talentos Prácticos desde CATALOGOS
+  const listaJovenes = listaTodos.filter(h => h.edad >= 12 && h.edad <= 19);
+  const listaAdultosFrecuentes = MIEMBROS.filter(m => {
+    const clasif = String(m['Clasificación']||'').trim().toLowerCase();
+    const regIg = String(m['Registro Iglesia']||m['Registro\nIglesia']||'').trim().toLowerCase();
+    const edad = parseInt(m['Edad']||0)||0;
+    return clasif === 'frecuente' && (regIg === 'si' || regIg === 'sí') && edad > 19;
+  }).map(m => ({
+    nombre: String(m['Apellidos y Nombres']||'').trim(),
+    dept: colDept ? String(m[colDept]||'').trim() : '',
+    edad: parseInt(m['Edad']||0)||0,
+    gen: (() => { const col = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero')); return col ? String(m[col]||'').trim() : ''; })(),
+  }));
+
+  // Guardar listas globales para mostrarTodosHermanos
+  window._hermanosMinistrialLista = listaTodos;
+  window._lista_rm   = listaTodos;
+  window._lista_ni   = listaAdultosFrecuentes;
+  window._lista_rmi  = listaAdultosFrecuentes;
+  window._lista_rv   = listaAdultosFrecuentes;
+  window._lista_ni_joven  = listaJovenes;
+  window._lista_rmi_joven = listaJovenes;
+  window._lista_rv_joven  = listaJovenes;
+
+  // Inicializar buscadores
+  crearBuscadorHermano('rm', listaTodos);
+  crearBuscadorHermano('ni', listaAdultosFrecuentes);
+  crearBuscadorHermano('rmi', listaAdultosFrecuentes);
+  crearBuscadorHermano('rv', listaAdultosFrecuentes);
+
+  // Buscadores de jóvenes (usan IDs especiales ni-joven, rmi-joven, rv-joven)
+  ['ni-joven','rmi-joven','rv-joven'].forEach(pfx => {
+    const inputEl = document.getElementById(`${pfx}-input`);
+    const listaEl = document.getElementById(`${pfx}-lista`);
+    if (!inputEl || !listaEl) return;
+    inputEl.oninput = () => {
+      const q = inputEl.value.toLowerCase().trim();
+      document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`).value = '';
+      const selEl = document.getElementById(`${pfx}-seleccionado`);
+      if (selEl) selEl.className = 'hermano-seleccionado';
+      if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+      const hits = listaJovenes.filter(h => h.nombre.toLowerCase().includes(q)).slice(0, 10);
+      listaEl.innerHTML = hits.map(h =>
+        `<div class="hermano-opcion" onclick="seleccionarJoven('${pfx}','${encodeURIComponent(h.nombre)}')">
+          <div>${h.nombre}</div>
+          <div class="sub">${h.edad} años${h.gen ? ' · '+h.gen : ''}</div>
+        </div>`
+      ).join('');
+      listaEl.className = hits.length ? 'hermano-dropdown show' : 'hermano-dropdown';
+    };
+  });
   const areasContainer = document.getElementById('rm-areas-apoyo');
   if (areasContainer) {
     if (todosLosTalentos.length > 0) {
@@ -1629,20 +1758,33 @@ function validarSexoMisionero(prefix) {
   const errEl     = document.getElementById(`${prefix}-error-sexo`);
   const famWrap   = document.getElementById(`${prefix}-familiar-wrap`);
   const esFam     = document.getElementById(`${prefix}-es-familiar`);
+
+  // Si no hay joven seleccionado, no hay nada que validar
   if (!jovenSel || !jovenSel.value || !adultoSel || !adultoSel.value) {
     if (errEl) errEl.style.display='none';
     if (famWrap) famWrap.style.display='none';
     return true;
   }
+
   const genJoven  = getGenero(jovenSel.value);
   const genAdulto = getGenero(adultoSel.value);
-  if (genJoven && genAdulto && genJoven !== genAdulto) {
+
+  // Si no tenemos datos de género en la hoja, permitir continuar
+  if (!genJoven || !genAdulto) {
+    if (errEl) errEl.style.display='none';
+    if (famWrap) famWrap.style.display='none';
+    return true;
+  }
+
+  if (genJoven !== genAdulto) {
     errEl.style.display='block';
-    errEl.innerHTML=`⚠️ <b>${jovenSel.value}</b> (${genJoven}) y <b>${adultoSel.value}</b> (${genAdulto}) son de diferente género.`;
+    errEl.style.background='#FEE2E2'; errEl.style.borderColor='#FECACA'; errEl.style.color='#991B1B';
+    errEl.innerHTML=`⚠️ <b>${jovenSel.value}</b> (${genJoven}) y <b>${adultoSel.value}</b> (${genAdulto}) son de diferente género. Si son familiares marque la excepción.`;
     famWrap.style.display='block';
     if (esFam && esFam.checked) return true;
     return false;
   }
+
   errEl.style.display='none';
   famWrap.style.display='none';
   if (esFam) esFam.checked=false;
@@ -1663,69 +1805,184 @@ function toggleFamiliarMisionero(prefix) {
 }
 
 
-function buscarHermanoMinisterial(q) {
-  const lista = document.getElementById('rm-hermano-lista');
-  const selDiv = document.getElementById('rm-hermano-seleccionado');
-  // Si ya había uno seleccionado y borra, limpiar
-  document.getElementById('rm-hermano-valor').value = '';
-  selDiv.style.display = 'none';
+// ── BUSCADOR GENÉRICO DE HERMANO ─────────────────────────────────
+// prefix: prefijo del campo (rm, ni, rmi, rv)
+// lista: array de objetos {nombre, dept, edad, gen}
+function crearBuscadorHermano(prefix, listaHermanos) {
+  const inputEl   = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl   = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl   = document.getElementById(`${prefix}-hermano-valor`);
+  const selEl     = document.getElementById(`${prefix}-hermano-seleccionado`);
+  if (!inputEl || !listaEl) return;
 
-  if (!q || q.trim().length < 1) { lista.style.display = 'none'; return; }
-  const termino = q.toLowerCase();
-  const coincidencias = (window._hermanosMinistrialLista || [])
-    .filter(h => h.nombre.toLowerCase().includes(termino))
-    .slice(0, 8);
-
-  if (!coincidencias.length) { lista.style.display = 'none'; return; }
-
-  lista.innerHTML = coincidencias.map(h =>
-    `<div class="hermano-opcion" onclick="seleccionarHermanoMinisterial('${encodeURIComponent(h.nombre)}')">
-      ${h.nombre}${h.dept ? `<span style="font-size:11px;color:var(--text2);margin-left:8px;">${h.dept}</span>` : ''}
-    </div>`
-  ).join('');
-  lista.style.display = 'block';
+  inputEl.oninput = () => {
+    valorEl.value = '';
+    if (selEl) selEl.className = 'hermano-seleccionado';
+    const q = inputEl.value.toLowerCase().trim();
+    if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+    const hits = listaHermanos.filter(h => h.nombre.toLowerCase().includes(q)).slice(0, 10);
+    renderDropdown(prefix, listaEl, hits, listaHermanos);
+  };
 }
 
-function seleccionarHermanoMinisterial(nombreEnc) {
-  const nombre = decodeURIComponent(nombreEnc);
-  const lista = document.getElementById('rm-hermano-lista');
-  const input = document.getElementById('rm-hermano-input');
-  const valor = document.getElementById('rm-hermano-valor');
-  const selDiv = document.getElementById('rm-hermano-seleccionado');
+function renderDropdown(prefix, listaEl, hits, todos) {
+  if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+  listaEl.innerHTML = hits.map(h =>
+    `<div class="hermano-opcion" onclick="seleccionarHermano('${prefix}','${encodeURIComponent(h.nombre)}')">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
 
-  // Guardar valor seleccionado
-  valor.value = nombre;
-  input.value = nombre;
-  lista.style.display = 'none';
+function mostrarTodosHermanos(prefix) {
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
+  const lista = window[`_lista_${prefix}`] || window._hermanosMinistrialLista || [];
+  renderDropdown(prefix, listaEl, lista.slice(0, 30), lista);
+}
 
-  // Mostrar badge de seleccionado
-  const miembro = (window._hermanosMinistrialLista || []).find(h => h.nombre === nombre);
-  selDiv.style.display = 'flex';
-  selDiv.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
-    <span onclick="limpiarHermanoMinisterial()" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+function seleccionarHermano(prefix, nombreEnc) {
+  const nombre  = decodeURIComponent(nombreEnc);
+  const inputEl = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl = document.getElementById(`${prefix}-hermano-valor`);
+  const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
 
-  // CORRECCIÓN 2: Autocompletar Departamento con el del hermano seleccionado
-  const miembroData = MIEMBROS.find(m => String(m['Apellidos y Nombres']||'').trim() === nombre);
-  const dept = (miembroData && window._colDept) ? String(miembroData[window._colDept]||'').trim() : (miembro?.dept || '');
-  const deptSelect = document.getElementById('rm-dept');
-  if (deptSelect && dept) {
-    // Buscar la opción que coincida y seleccionarla
-    const opt = Array.from(deptSelect.options).find(o => o.value === dept);
-    if (opt) deptSelect.value = dept;
-    else deptSelect.value = '';
+  if (inputEl) inputEl.value = nombre;
+  if (valorEl) valorEl.value = nombre;
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarHermano('${prefix}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+
+  // Autocompletar departamento si es formulario ministerial
+  if (prefix === 'rm') {
+    const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+    const dept = (m && window._colDept) ? String(m[window._colDept]||'').trim() : '';
+    const deptSel = document.getElementById('rm-dept');
+    if (deptSel && dept) {
+      const opt = Array.from(deptSel.options).find(o => o.value === dept);
+      if (opt) deptSel.value = dept;
+    }
+    // Mostrar campos adicionales
+    const datosAuto = document.getElementById('rm-datos-auto');
+    if (datosAuto) datosAuto.style.display = 'block';
+    // Cargar datos previos del hermano si existen
+    cargarDatosMinisterialHermano(nombre);
+  }
+
+  // Validar género si hay otro hermano seleccionado
+  if (prefix === 'ni' || prefix === 'rmi' || prefix === 'rv') {
+    validarSexoHermanos();
+    validarSexoMisionero(prefix === 'ni' ? 'ni' : prefix.replace('-joven',''));
   }
 }
 
-function limpiarHermanoMinisterial() {
-  document.getElementById('rm-hermano-input').value = '';
-  document.getElementById('rm-hermano-valor').value = '';
-  document.getElementById('rm-hermano-lista').style.display = 'none';
-  document.getElementById('rm-hermano-seleccionado').style.display = 'none';
-  document.getElementById('rm-dept').value = '';
+function limpiarHermano(prefix) {
+  const inputEl = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl = document.getElementById(`${prefix}-hermano-valor`);
+  const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+  if (prefix === 'rm') {
+    const d = document.getElementById('rm-dept'); if(d) d.value = '';
+    const da = document.getElementById('rm-datos-auto'); if(da) da.style.display = 'none';
+  }
+}
+
+// Mantener compatibilidad con llamadas existentes
+function buscarHermanoMinisterial(q) {
+  const inputEl = document.getElementById('rm-hermano-input');
+  if (inputEl) inputEl.oninput && inputEl.oninput();
+}
+function seleccionarHermanoMinisterial(nombreEnc) { seleccionarHermano('rm', nombreEnc); }
+function limpiarHermanoMinisterial() { limpiarHermano('rm'); }
+
+// Cargar datos previos del hermano en Ministerial
+function cargarDatosMinisterialHermano(nombre) {
+  // Buscar en MINISTERIAL si ya existe un registro para este hermano
+  const registroMin = MINISTERIAL.filter(r =>
+    String(r['Apellidos y Nombres']||'').trim() === nombre
+  ).slice(-1)[0]; // Tomar el más reciente
+
+  if (!registroMin) return;
+
+  // Autocompletar tipos de actividad
+  const tipos = String(registroMin['Tipo'] || registroMin['Tipos'] || '').split(',').map(t => t.trim());
+  document.querySelectorAll('[id^="rm-tipo-"]').forEach(cb => {
+    cb.checked = tipos.includes(cb.value);
+  });
+
+  // Autocompletar áreas de apoyo
+  const areas = String(registroMin['Areas de Apoyo'] || '').split(',').map(a => a.trim());
+  document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => {
+    cb.checked = areas.includes(cb.value);
+  });
+
+  // Autocompletar otros campos
+  const campos = {
+    'rm-dia': registroMin['Dia Disponible'],
+    'rm-horario': registroMin['Horario Disponible'],
+    'rm-doctrinas': registroMin['Conoce Doctrinas'],
+    'rm-estructura': registroMin['Conoce Estructura'],
+    'rm-capacitacion': registroMin['Capacitacion'],
+    'rm-fe-jesus': registroMin['Fe de Jesus'],
+    'rm-registrador': registroMin['Registrado por'],
+  };
+  Object.entries(campos).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
 }
 
 
-function toggleFeJesus(sel) {
+
+
+function seleccionarJoven(pfx, nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  const inputEl = document.getElementById(`${pfx}-input`);
+  const listaEl = document.getElementById(`${pfx}-lista`);
+  const valorEl = document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`);
+  const selEl   = document.getElementById(`${pfx}-seleccionado`);
+  if (inputEl) inputEl.value = nombre;
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = nombre;
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarJoven('${pfx}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+  // Validar género
+  const formPrefix = pfx.replace('-joven','');
+  if (formPrefix === 'ni') validarSexoHermanos();
+  else validarSexoMisionero(formPrefix);
+}
+
+function limpiarJoven(pfx) {
+  const inputEl = document.getElementById(`${pfx}-input`);
+  const listaEl = document.getElementById(`${pfx}-lista`);
+  const valorEl = document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`);
+  const selEl   = document.getElementById(`${pfx}-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+}
+
+// Helper para obtener valor de hermano (funciona con hidden input o select)
+function getHermanoVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  return String(el.value || '').trim();
+}
+
+
   const detalle = document.getElementById('rm-fe-jesus-detalle');
   if (!detalle) return;
   // Mostrar detalle si no completó O no sabe/no recuerda
@@ -1799,18 +2056,15 @@ function guardarMinisterial() {
 }
 
 function guardarMisionero() {
-  const h       = document.getElementById('rmi-hermano').value;
-  const jovenH  = document.getElementById('rmi-hermano-joven').value;
-  const est     = document.getElementById('rmi-estudiante').value.trim();
+  const h      = getHermanoVal('rmi-hermano');
+  const jovenH = getHermanoVal('rmi-hermano-joven');
+  const est    = document.getElementById('rmi-estudiante').value.trim();
   if (!h || !est) { showToast('⚠️ Complete los campos obligatorios'); return; }
 
-  // Validar género
   if (!validarSexoMisionero('rmi')) {
-    showToast('⚠️ Corrija la asignación de género antes de guardar');
-    return;
+    showToast('⚠️ Corrija la asignación de género antes de guardar'); return;
   }
 
-  // Validar lección
   const lecVal = parseInt(document.getElementById('rmi-leccion').value);
   if (isNaN(lecVal) || lecVal < 1 || lecVal > 20) {
     showToast('⚠️ La lección debe estar entre 1 y 20'); return;
@@ -1818,7 +2072,7 @@ function guardarMisionero() {
 
   const parentesco = document.getElementById('rmi-parentesco')?.value.trim() || '';
   const registro = {
-    'Nombre del\nHermano': h,
+    'Nombre del Hermano': h,
     'Joven Acompañante': jovenH,
     'Parentesco': parentesco,
     'Nombre del\nEstudiante': est,
@@ -1861,19 +2115,18 @@ function guardarMisionero() {
   if(document.getElementById('rmi-parentesco')) document.getElementById('rmi-parentesco').value='';
 
   showToast('✅ Estudio guardado automáticamente en Sheets.');
+  renderDashboard();
   showPage('registro');
 }
 
 function guardarVisitacion() {
-  const h      = document.getElementById('rv-hermano').value;
-  const jovenH = document.getElementById('rv-hermano-joven').value;
+  const h      = getHermanoVal('rv-hermano');
+  const jovenH = getHermanoVal('rv-hermano-joven');
   const nombre = document.getElementById('rv-nombre').value.trim();
   if (!h || !nombre) { showToast('⚠️ Complete los campos obligatorios'); return; }
 
-  // Validar género
   if (!validarSexoMisionero('rv')) {
-    showToast('⚠️ Corrija la asignación de género antes de guardar');
-    return;
+    showToast('⚠️ Corrija la asignación de género antes de guardar'); return;
   }
 
   const parentesco = document.getElementById('rv-parentesco')?.value.trim() || '';
@@ -1915,6 +2168,7 @@ function guardarVisitacion() {
   if(document.getElementById('rv-parentesco')) document.getElementById('rv-parentesco').value='';
 
   showToast('✅ Visita guardada automáticamente en Sheets.');
+  renderDashboard();
   showPage('registro');
 }
 
@@ -1923,7 +2177,12 @@ const NAV_MAP = {
   'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,'dashboard':3
 };
 
-function showPage(id) {
+function toggleDetalle(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+
   document.querySelectorAll('.page').forEach(p => p.style.display='none');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const p = document.getElementById('page-'+id);
