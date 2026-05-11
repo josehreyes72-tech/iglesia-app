@@ -391,7 +391,7 @@
     <div class="hermano-search-wrap">
       <span class="hermano-search-icon">🔍</span>
       <input type="text" id="rm-hermano-input" placeholder="Escribir nombre del hermano..."
-        oninput="buscarHermanoMinisterial(this.value)" autocomplete="off">
+        autocomplete="off" style="width:100%;padding:11px 12px 11px 38px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rm-hermano-lista"></div>
     <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rm')">☰ Ver lista completa de hermanos</button>
@@ -1753,19 +1753,24 @@ function toggleFamiliarMisionero(prefix) {
 // prefix: prefijo del campo (rm, ni, rmi, rv)
 // lista: array de objetos {nombre, dept, edad, gen}
 function crearBuscadorHermano(prefix, listaHermanos) {
-  const inputEl   = document.getElementById(`${prefix}-hermano-input`);
-  const listaEl   = document.getElementById(`${prefix}-hermano-lista`);
-  const valorEl   = document.getElementById(`${prefix}-hermano-valor`);
-  const selEl     = document.getElementById(`${prefix}-hermano-seleccionado`);
+  const inputEl = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
   if (!inputEl || !listaEl) return;
 
   inputEl.oninput = () => {
-    valorEl.value = '';
+    const valorEl = document.getElementById(`${prefix}-hermano-valor`);
+    const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
+    if (valorEl) valorEl.value = '';
     if (selEl) selEl.className = 'hermano-seleccionado';
     const q = inputEl.value.toLowerCase().trim();
     if (!q) { listaEl.className = 'hermano-dropdown'; return; }
-    const hits = listaHermanos.filter(h => h.nombre.toLowerCase().includes(q)).slice(0, 10);
+    const hits = listaHermanos.filter(h => h.nombre && h.nombre.toLowerCase().includes(q)).slice(0, 10);
     renderDropdown(prefix, listaEl, hits, listaHermanos);
+  };
+
+  // También activar al hacer foco si ya tiene texto
+  inputEl.onfocus = () => {
+    if (inputEl.value.trim().length > 0) inputEl.oninput();
   };
 }
 
