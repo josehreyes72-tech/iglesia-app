@@ -289,7 +289,7 @@
       <input type="text" id="ni-joven-input" placeholder="Buscar joven..." autocomplete="off">
     </div>
     <div class="hermano-dropdown" id="ni-joven-lista"></div>
-    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('ni-joven')">☰ Ver lista de jóvenes disponibles</button>
+    <button class="ver-todos-btn" onclick="mostrarTodosGenerico('ni-joven','ni-hermano-joven')">☰ Ver lista de jóvenes disponibles</button>
     <input type="hidden" id="ni-hermano-joven">
     <div class="hermano-seleccionado" id="ni-joven-seleccionado"></div>
     <div id="ni-joven-info" style="display:none;" class="alerta-joven"></div>
@@ -785,12 +785,14 @@ function gvizFetch(sheet) {
 
 async function cargarDatos() {
   try {
-    const [m, min, mis, cat, vis] = await Promise.all([
+    const [m, min, mis, cat, vis, est, int] = await Promise.all([
       gvizFetch('MIEMBROS'),
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
       gvizFetch('CATALOGOS'),
       gvizFetch('VISITAS'),
+      gvizFetch('ESTUDIOS'),
+      gvizFetch('INTERESADOS'),
     ]);
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
@@ -803,6 +805,38 @@ async function cargarDatos() {
       const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
       const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
       return Boolean(hermano || visitado);
+    });
+
+    // Cargar estudios desde hoja ESTUDIOS
+    const estudiosSheets = est.filter(r => String(r['Nombre del Estudiante']||'').trim());
+    estudiosSheets.forEach(e => {
+      const nombre = String(e['Nombre del Estudiante']||'').trim();
+      const existe = MISIONERO.find(m =>
+        String(m['Nombre del\nEstudiante']||m['Nombre del Estudiante']||'').trim() === nombre
+      );
+      if (!existe) MISIONERO.push({
+        'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
+        'Nombre del\nEstudiante': nombre,
+        'Estado': String(e['Estado']||'En Curso').trim(),
+        'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
+      });
+    });
+
+    // Cargar interesados desde hoja INTERESADOS
+    const interesadosSheets = int.filter(r => String(r['Nombre']||'').trim());
+    interesadosSheets.forEach(i => {
+      const nombre = String(i['Nombre']||'').trim();
+      const existe = INTERESADOS.find(x => x.nombre === nombre);
+      if (!existe) INTERESADOS.push({
+        nombre,
+        tel: String(i['Teléfono']||'').trim(),
+        dir: String(i['Dirección']||'').trim(),
+        tipo: String(i['Tipo de Actividad']||'').trim(),
+        hermano: String(i['Hermano Adulto']||'').trim(),
+        jovenH: String(i['Joven Acompañante']||'').trim(),
+        obs: String(i['Observaciones']||'').trim(),
+        fecha: String(i['Fecha']||'').trim(),
+      });
     });
 
     // CATALOGOS: parsedNumHeaders=0 — ninguna fila es cabecera automática
@@ -1106,16 +1140,16 @@ function verPerfil(nombreEnc) {
 
       <div class="points-grid">
         <div class="point-card">
-          <div class="point-val">${niv.actsMin}</div>
-          <div class="point-lbl">Actividades ministeriales</div>
-        </div>
-        <div class="point-card">
           <div class="point-val">${activos.length}</div>
           <div class="point-lbl">Estudios activos</div>
         </div>
         <div class="point-card">
           <div class="point-val">${niv.bautizados}</div>
           <div class="point-lbl">Personas bautizadas</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val">${niv.visitas}</div>
+          <div class="point-lbl">Visitas realizadas</div>
         </div>
         <div class="point-card">
           <div class="point-val" style="font-size:16px;">${disponibilidad}</div>
@@ -1394,6 +1428,8 @@ function poblarSelectores() {
   // Inicializar buscadores
   crearBuscadorHermano('rm', listaTodos);
   crearBuscadorHermano('ni', listaAdultosFrecuentes);
+  // Buscador del joven en interesados usa ID especial
+  crearBuscadorGenerico('ni-joven', listaJovenes, 'ni-hermano-joven');
   crearBuscadorHermano('rmi', listaAdultosFrecuentes);
   crearBuscadorHermano('rv', listaAdultosFrecuentes);
 
@@ -1455,38 +1491,14 @@ function poblarSelectores() {
     return clasif === 'frecuente' && (regIglesia === 'si' || regIglesia === 'sí' || regIglesia === 'yes');
   });
 
-  // Selector hermanos para estudio bíblico y visitación (adultos frecuentes)
-  ['rmi-hermano', 'rv-hermano'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    hermanosMisionero.filter(m => (parseInt(m['Edad']||0)||0) > 19).forEach(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const colGen = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero'));
-      const gen = colGen ? String(m[colGen]||'').trim() : '';
-      const o = document.createElement('option');
-      o.value=n; o.textContent=`${n}${gen?' ('+gen+')':''}`;
-      sel.appendChild(o);
-    });
-  });
 
-  // Selector jovenes para estudio bíblico y visitación
-  ['rmi-hermano-joven','rv-hermano-joven'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    hermanosMisionero.filter(m => {
-      const edad = parseInt(m['Edad']||0)||0;
-      return edad >= 12 && edad <= 19;
-    }).forEach(m => {
-      const n = String(m['Apellidos y Nombres']||'').trim();
-      const edad = parseInt(m['Edad']||0)||0;
-      const colGen = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero'));
-      const gen = colGen ? String(m[colGen]||'').trim() : '';
-      const o = document.createElement('option');
-      o.value=n; o.textContent=`${n} (${edad} años${gen?' · '+gen:''})`;
-      sel.appendChild(o);
-    });
-  });
+  // Inicializar buscadores para estudio bíblico y visitación
+  crearBuscadorHermano('rmi', listaAdultosFrecuentes);
+  crearBuscadorHermano('rv', listaAdultosFrecuentes);
 
+  // Buscadores de jóvenes para estudio y visitación
+  crearBuscadorGenerico('rmi-joven', listaJovenes, 'rmi-hermano-joven');
+  crearBuscadorGenerico('rv-joven', listaJovenes, 'rv-hermano-joven');
 
   // Fecha por defecto en formularios de fecha
   ['rv-fecha'].forEach(id => {
@@ -1753,6 +1765,76 @@ function toggleFamiliarMisionero(prefix) {
 // ── BUSCADOR GENÉRICO DE HERMANO ─────────────────────────────────
 // prefix: prefijo del campo (rm, ni, rmi, rv)
 // lista: array de objetos {nombre, dept, edad, gen}
+// Buscador genérico para casos con IDs especiales (ej: ni-joven-input → ni-hermano-joven)
+function crearBuscadorGenerico(prefix, lista, valorId) {
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (!inputEl || !listaEl) return;
+
+  inputEl.oninput = () => {
+    const valorEl = document.getElementById(valorId);
+    if (valorEl) valorEl.value = '';
+    if (selEl) selEl.className = 'hermano-seleccionado';
+    const q = inputEl.value.toLowerCase().trim();
+    if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+    const hits = lista.filter(h => h.nombre && h.nombre.toLowerCase().includes(q)).slice(0, 10);
+    if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+    listaEl.innerHTML = hits.map(h =>
+      `<div class="hermano-opcion" onclick="seleccionarGenerico('${prefix}','${encodeURIComponent(h.nombre)}','${valorId}')">
+        <div>${h.nombre}</div>
+        <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+      </div>`
+    ).join('');
+    listaEl.className = 'hermano-dropdown show';
+  };
+
+  inputEl.onfocus = () => { if (inputEl.value.trim().length > 0) inputEl.oninput(); };
+}
+
+function seleccionarGenerico(prefix, nombreEnc, valorId) {
+  const nombre  = decodeURIComponent(nombreEnc);
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const valorEl = document.getElementById(valorId);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (inputEl) inputEl.value = nombre;
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = nombre;
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarGenerico('${prefix}','${valorId}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+  // Validar género
+  validarSexoHermanos();
+}
+
+function limpiarGenerico(prefix, valorId) {
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const valorEl = document.getElementById(valorId);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+}
+
+function mostrarTodosGenerico(prefix, valorId) {
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const lista = window[`_lista_${prefix.replace('-','')}`.replace('joven','_joven')] ||
+                window[`_lista_${prefix}`] || [];
+  if (!listaEl || !lista.length) return;
+  listaEl.innerHTML = lista.slice(0, 30).map(h =>
+    `<div class="hermano-opcion" onclick="seleccionarGenerico('${prefix}','${encodeURIComponent(h.nombre)}','${valorId}')">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
 function crearBuscadorHermano(prefix, listaHermanos) {
   const inputEl = document.getElementById(`${prefix}-hermano-input`);
   const listaEl = document.getElementById(`${prefix}-hermano-lista`);
@@ -1788,27 +1870,37 @@ function renderDropdown(prefix, listaEl, hits, todos) {
 
 function mostrarTodosHermanos(prefix) {
   const listaEl = document.getElementById(`${prefix}-hermano-lista`);
-  const lista = window[`_lista_${prefix}`] || window._hermanosMinistrialLista || [];
-  renderDropdown(prefix, listaEl, lista.slice(0, 30), lista);
+  if (!listaEl) return;
+  // Usar lista completa de todos los hermanos para "ver todos"
+  const lista = window._hermanosMinistrialLista || window[`_lista_${prefix}`] || [];
+  if (!lista.length) return;
+  listaEl.innerHTML = lista.slice(0, 50).map(h =>
+    `<div class="hermano-opcion" onclick="seleccionarHermano('${prefix}','${encodeURIComponent(h.nombre)}')">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
 }
 
 function seleccionarHermano(prefix, nombreEnc) {
-  const nombre  = decodeURIComponent(nombreEnc);
-  const inputEl = document.getElementById(`${prefix}-hermano-input`);
-  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
-  const valorEl = document.getElementById(`${prefix}-hermano-valor`);
-  const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
+  const nombre   = decodeURIComponent(nombreEnc);
+  const inputEl  = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl  = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl  = document.getElementById(`${prefix}-hermano-valor`);
+  const hiddenEl = document.getElementById(`${prefix}-hermano`); // ID directo sin -valor
+  const selEl    = document.getElementById(`${prefix}-hermano-seleccionado`);
 
-  if (inputEl) inputEl.value = nombre;
-  if (valorEl) valorEl.value = nombre;
-  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (inputEl)  inputEl.value  = nombre;
+  if (valorEl)  valorEl.value  = nombre;
+  if (hiddenEl && hiddenEl.type === 'hidden') hiddenEl.value = nombre;
+  if (listaEl)  listaEl.className = 'hermano-dropdown';
   if (selEl) {
     selEl.className = 'hermano-seleccionado show';
     selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
       <span onclick="limpiarHermano('${prefix}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
   }
 
-  // Autocompletar departamento si es formulario ministerial
   if (prefix === 'rm') {
     const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
     const dept = (m && window._colDept) ? String(m[window._colDept]||'').trim() : '';
@@ -1817,17 +1909,14 @@ function seleccionarHermano(prefix, nombreEnc) {
       const opt = Array.from(deptSel.options).find(o => o.value === dept);
       if (opt) deptSel.value = dept;
     }
-    // Mostrar campos adicionales
     const datosAuto = document.getElementById('rm-datos-auto');
     if (datosAuto) datosAuto.style.display = 'block';
-    // Cargar datos previos del hermano si existen
     cargarDatosMinisterialHermano(nombre);
   }
 
-  // Validar género si hay otro hermano seleccionado
-  if (prefix === 'ni' || prefix === 'rmi' || prefix === 'rv') {
+  if (['ni','rmi','rv'].includes(prefix)) {
     validarSexoHermanos();
-    validarSexoMisionero(prefix === 'ni' ? 'ni' : prefix.replace('-joven',''));
+    validarSexoMisionero(prefix);
   }
 }
 
@@ -2132,6 +2221,27 @@ function toggleDetalle(id) {
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
+function limpiarFormulario(id) {
+  const page = document.getElementById('page-' + id);
+  if (!page) return;
+  // Limpiar inputs de texto y textarea
+  page.querySelectorAll('input[type="text"], input[type="tel"], input[type="number"], textarea').forEach(el => {
+    if (!el.id.includes('hermano-input') && !el.id.includes('joven-input')) el.value = '';
+  });
+  // Limpiar selects
+  page.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  // Limpiar hidden inputs de hermanos
+  page.querySelectorAll('input[type="hidden"]').forEach(el => el.value = '');
+  // Limpiar buscadores de hermanos
+  page.querySelectorAll('[id$="-hermano-input"],[id$="-joven-input"]').forEach(el => el.value = '');
+  page.querySelectorAll('.hermano-dropdown').forEach(el => el.className = 'hermano-dropdown');
+  page.querySelectorAll('.hermano-seleccionado').forEach(el => el.className = 'hermano-seleccionado');
+  // Limpiar checkboxes
+  page.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  // Ocultar errores y cajas especiales
+  page.querySelectorAll('[id$="-error-sexo"],[id$="-familiar-wrap"],[id$="-familiar-box"],[id$="-fe-jesus-detalle"]').forEach(el => { if(el) el.style.display='none'; });
+}
+
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.style.display='none');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -2139,14 +2249,17 @@ function showPage(id) {
   if (p) p.style.display='block';
   const idx = NAV_MAP[id];
   if (idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
-  // #1: Limpiar selectores de hermanos al entrar a nuevo interesado
+
+  // Limpiar formularios al entrar
+  const formPages = ['reg-ministerial','reg-misionero','reg-visitacion','nuevo-interesado'];
+  if (formPages.includes(id)) limpiarFormulario(id);
+
+  // Limpiar especial para nuevo-interesado
   if (id === 'nuevo-interesado') {
-    const campos = ['ni-nombre','ni-tel','ni-dir','ni-obs','ni-parentesco'];
-    campos.forEach(c => { const el=document.getElementById(c); if(el) el.value=''; });
-    ['ni-hermano','ni-hermano-joven','ni-tipo-valor'].forEach(c => { const el=document.getElementById(c); if(el) el.value=''; });
-    ['ni-sugerencia','ni-sugerencia-jovenes','ni-sugerencia-bautizados','ni-error-sexo','ni-familiar-box','ni-parentesco-box'].forEach(c => { const el=document.getElementById(c); if(el) el.style.display='none'; });
-    ['estudio','visita','ambos'].forEach(t => { const el=document.getElementById(`ni-tipo-${t}`); if(el){el.style.borderColor='var(--border)';el.style.background='white';} });
-    const cb=document.getElementById('ni-son-familiares'); if(cb) cb.checked=false;
+    ['estudio','visita','ambos'].forEach(t => {
+      const el = document.getElementById(`ni-tipo-${t}`);
+      if (el) { el.style.borderColor='var(--border)'; el.style.background='white'; }
+    });
   }
   window.scrollTo(0,0);
 }
