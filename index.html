@@ -283,24 +283,6 @@
   <button class="btn-primary" onclick="guardarInteresado()">Guardar interesado</button>
   <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
 </div>
-      <input type="checkbox" id="ni-son-familiares" onchange="toggleFamiliarExcepcion()"
-        style="width:16px;height:16px;accent-color:var(--azul);flex-shrink:0;">
-      Son familiares — permitir excepción
-    </label>
-    <div id="ni-parentesco-box" style="display:none;margin-top:8px;">
-      <input type="text" id="ni-parentesco"
-        placeholder="Ej: esposo/a, padre e hija, hermanos..."
-        style="width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);outline:none;">
-    </div>
-  </div>
-
-  <div class="form-group" style="margin-top:10px;">
-    <label>Observaciones</label>
-    <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
-  </div>
-  <button class="btn-primary" onclick="guardarInteresado()">Guardar interesado</button>
-  <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
-</div>
 
 <!-- REGISTRO: elegir tipo -->
 <div id="page-registro" class="page">
@@ -799,25 +781,28 @@ async function cargarDatos() {
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => getNombreHermano(r));
     VISITAS = vis.filter(r => {
-      // Nueva estructura: Fecha, Hermano Visitador, Nombre del Visitado...
       const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
       const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
       return Boolean(hermano || visitado);
     });
 
-    // Cargar estudios desde hoja ESTUDIOS
-    const estudiosSheets = est.filter(r => String(r['Nombre del Estudiante']||'').trim());
-    estudiosSheets.forEach(e => {
+    // Agregar estudios desde hoja ESTUDIOS (evitar duplicados)
+    est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
       const nombre = String(e['Nombre del Estudiante']||'').trim();
       const existe = MISIONERO.find(m =>
-        String(m['Nombre del\nEstudiante']||m['Nombre del Estudiante']||'').trim() === nombre
+        String(m['Nombre del\nEstudiante'] || m['Nombre del Estudiante'] || '').trim() === nombre
       );
-      if (!existe) MISIONERO.push({
-        'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
-        'Nombre del\nEstudiante': nombre,
-        'Estado': String(e['Estado']||'En Curso').trim(),
-        'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
-      });
+      if (!existe) {
+        MISIONERO.push({
+          'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
+          'Nombre del\nEstudiante': nombre,
+          'Nombre del Estudiante': nombre,
+          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
+          'Teléfono': String(e['Teléfono']||'').trim(),
+          'Estado Civil': String(e['Estado Civil']||'').trim(),
+        });
+      }
     });
 
     // Cargar interesados desde hoja INTERESADOS (sin duplicar)
@@ -1212,7 +1197,10 @@ function renderDashboard() {
     else if (clasif.includes('no frecuente') || clasif === 'no frecuentes') noFrecuentes++;
   });
 
-  const totalEst = MISIONERO.filter(r => String(r['Estado']||'').trim()==='En Curso').length;
+  const totalEst = MISIONERO.filter(r => {
+    const est = String(r['Estado']||'').trim();
+    return est === 'En Curso' || est === '';
+  }).length;
   const totalBaut = MISIONERO.filter(r => String(r['Estado']||'').trim()==='Bautizado').length;
   const totalVisitas = VISITAS.length;
   const visitasConcretadas = VISITAS.filter(r => {
