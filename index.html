@@ -1633,6 +1633,7 @@ function guardarInteresado() {
 
   renderInteresados();
   renderDashboard();
+  poblarInteresadosEnFormularios();
   showToast('✅ Interesado guardado en Sheets');
   showPage('interesados');
 }
@@ -2183,6 +2184,9 @@ function showPage(id) {
   // Limpiar formularios al entrar
   const formPages = ['reg-ministerial','reg-misionero','reg-visitacion','nuevo-interesado'];
   if (formPages.includes(id)) limpiarFormulario(id);
+
+  // Actualizar lista de interesados al entrar a formularios misioneros
+  if (id === 'reg-misionero' || id === 'reg-visitacion') poblarInteresadosEnFormularios();
 
   // Renderizar actualizar al entrar
   if (id === 'actualizar') renderActualizar();
