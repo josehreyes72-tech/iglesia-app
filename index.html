@@ -258,66 +258,31 @@
     <input type="text" id="ni-dir" placeholder="Barrio, zona, referencia...">
   </div>
 
-  <!-- TIPO DE ACTIVIDAD PARA EL INTERESADO -->
+  <!-- TIPO DE ACTIVIDAD: solo Estudio o Visita -->
   <div class="form-group">
     <label>Tipo de actividad *</label>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
       <div id="ni-tipo-estudio" onclick="selTipoInteresado('estudio')"
-        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
-        <div style="font-size:22px;">📖</div>
-        <div style="font-size:11px;font-weight:600;margin-top:4px;">Estudio<br>Bíblico</div>
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
+        <div style="font-size:26px;">📖</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px;">Estudio Bíblico</div>
       </div>
       <div id="ni-tipo-visita" onclick="selTipoInteresado('visita')"
-        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
-        <div style="font-size:22px;">🚶</div>
-        <div style="font-size:11px;font-weight:600;margin-top:4px;">Visita</div>
-      </div>
-      <div id="ni-tipo-ambos" onclick="selTipoInteresado('ambos')"
-        style="background:white;border:2px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s;">
-        <div style="font-size:22px;">📖🚶</div>
-        <div style="font-size:11px;font-weight:600;margin-top:4px;">Ambos</div>
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
+        <div style="font-size:26px;">🚶</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px;">Visita</div>
       </div>
     </div>
     <input type="hidden" id="ni-tipo-valor">
   </div>
 
-  <!-- ASIGNAR HERMANOS: JOVEN + ADULTO con buscador lupita -->
   <div class="form-group">
-    <label>Hermano joven acompañante (12–19 años)</label>
-    <div class="hermano-search-wrap">
-      <span class="hermano-search-icon">🔍</span>
-      <input type="text" id="ni-joven-input" placeholder="Buscar joven..." autocomplete="off">
-    </div>
-    <div class="hermano-dropdown" id="ni-joven-lista"></div>
-    <button class="ver-todos-btn" onclick="mostrarTodosGenerico('ni-joven','ni-hermano-joven')">☰ Ver lista de jóvenes disponibles</button>
-    <input type="hidden" id="ni-hermano-joven">
-    <div class="hermano-seleccionado" id="ni-joven-seleccionado"></div>
-    <div id="ni-joven-info" style="display:none;" class="alerta-joven"></div>
+    <label>Observaciones</label>
+    <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
   </div>
-
-  <div class="form-group">
-    <label>Hermano adulto asignado *</label>
-    <div class="hermano-search-wrap">
-      <span class="hermano-search-icon">🔍</span>
-      <input type="text" id="ni-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
-    </div>
-    <div class="hermano-dropdown" id="ni-hermano-lista"></div>
-    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('ni')">☰ Ver lista completa</button>
-    <input type="hidden" id="ni-hermano">
-    <div class="hermano-seleccionado" id="ni-hermano-seleccionado"></div>
-    <div id="ni-adulto-info" style="display:none;" class="sugerencia-box"></div>
-  </div>
-
-  <div id="ni-sugerencia" style="display:none;" class="sugerencia-box"></div>
-  <div id="ni-sugerencia-jovenes" style="display:none;" class="alerta-joven"></div>
-  <div id="ni-sugerencia-bautizados" style="display:none;" class="alerta-bautizado"></div>
-  <div id="ni-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-top:6px;">
-    ⚠️ El hermano joven y el adulto son de diferente género.
-  </div>
-
-  <!-- EXCEPCIÓN FAMILIAR -->
-  <div id="ni-familiar-box" style="display:none;margin-top:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#92400E;cursor:pointer;">
+  <button class="btn-primary" onclick="guardarInteresado()">Guardar interesado</button>
+  <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
+</div>
       <input type="checkbox" id="ni-son-familiares" onchange="toggleFamiliarExcepcion()"
         style="width:16px;height:16px;accent-color:var(--azul);flex-shrink:0;">
       Son familiares — permitir excepción
@@ -555,7 +520,12 @@
 
   <div class="form-group">
     <label>Nombre del estudiante *</label>
-    <input type="text" id="rmi-estudiante" placeholder="Apellido, Nombre">
+    <div style="margin-bottom:6px;">
+      <select id="rmi-interesado-sel" onchange="cargarInteresadoEnEstudio(this.value)" style="width:100%;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:#F0FDF4;color:var(--text);">
+        <option value="">📋 Seleccionar de lista de interesados...</option>
+      </select>
+    </div>
+    <input type="text" id="rmi-estudiante" placeholder="O escribir nombre manualmente">
   </div>
   <div class="form-group">
     <label>Teléfono del estudiante</label>
@@ -648,7 +618,12 @@
   <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">🏠 Datos de la persona visitada</div>
   <div class="form-group">
     <label>Nombre *</label>
-    <input type="text" id="rv-nombre" placeholder="Apellido, Nombre">
+    <div style="margin-bottom:6px;">
+      <select id="rv-interesado-sel" onchange="cargarInteresadoEnVisita(this.value)" style="width:100%;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:#F0FDF4;color:var(--text);">
+        <option value="">📋 Seleccionar de lista de interesados...</option>
+      </select>
+    </div>
+    <input type="text" id="rv-nombre" placeholder="O escribir nombre manualmente">
   </div>
   <div class="form-group">
     <label>Teléfono</label>
@@ -711,6 +686,26 @@
   <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
 </div>
 
+<!-- PÁGINA ACTUALIZAR -->
+<div id="page-actualizar" class="page">
+  <div style="margin-top:8px;">
+    <div class="section-title">🔄 Actualizar registros</div>
+
+    <!-- Filtro de tipo -->
+    <div class="filters" style="margin-bottom:16px;">
+      <div class="filter-chip active" onclick="setFiltroActualizar('visitas',this)">🚶 Visitas</div>
+      <div class="filter-chip" onclick="setFiltroActualizar('estudios',this)">📖 Estudios</div>
+    </div>
+
+    <div id="act-lista-visitas">
+      <div class="loading"><div class="spinner"></div>Cargando visitas...</div>
+    </div>
+    <div id="act-lista-estudios" style="display:none;">
+      <div class="loading"><div class="spinner"></div>Cargando estudios...</div>
+    </div>
+  </div>
+</div>
+
 <div id="page-dashboard" class="page">
   <div id="dashboard-contenido">
     <div class="loading"><div class="spinner"></div>Calculando estadísticas...</div>
@@ -727,6 +722,9 @@
   </button>
   <button class="nav-btn" onclick="showPage('registro')">
     <span class="icon">✏️</span>Registrar
+  </button>
+  <button class="nav-btn" onclick="showPage('actualizar')">
+    <span class="icon">🔄</span>Actualizar
   </button>
   <button class="nav-btn" onclick="showPage('dashboard')">
     <span class="icon">📊</span>Resumen
@@ -822,18 +820,16 @@ async function cargarDatos() {
       });
     });
 
-    // Cargar interesados desde hoja INTERESADOS
+    // Cargar interesados desde hoja INTERESADOS (sin duplicar)
+    INTERESADOS = []; // Reset antes de cargar desde Sheets
     const interesadosSheets = int.filter(r => String(r['Nombre']||'').trim());
     interesadosSheets.forEach(i => {
-      const nombre = String(i['Nombre']||'').trim();
-      const existe = INTERESADOS.find(x => x.nombre === nombre);
-      if (!existe) INTERESADOS.push({
-        nombre,
+      INTERESADOS.push({
+        nombre: String(i['Nombre']||'').trim(),
         tel: String(i['Teléfono']||'').trim(),
         dir: String(i['Dirección']||'').trim(),
         tipo: String(i['Tipo de Actividad']||'').trim(),
         hermano: String(i['Hermano Adulto']||'').trim(),
-        jovenH: String(i['Joven Acompañante']||'').trim(),
         obs: String(i['Observaciones']||'').trim(),
         fecha: String(i['Fecha']||'').trim(),
       });
@@ -869,7 +865,9 @@ async function cargarDatos() {
     renderMiembros(MIEMBROS);
     renderInteresados();
     renderDashboard();
+    renderActualizar();
     poblarSelectores();
+    poblarInteresadosEnFormularios();
   } catch(e) {
     document.getElementById('lista-miembros').innerHTML =
       `<div class="empty-state"><div class="empty-icon">⚠️</div>No se pudo conectar con Google Sheets.<br><small style="color:#999;">${e.message}</small></div>`;
@@ -1217,7 +1215,10 @@ function renderDashboard() {
   const totalEst = MISIONERO.filter(r => String(r['Estado']||'').trim()==='En Curso').length;
   const totalBaut = MISIONERO.filter(r => String(r['Estado']||'').trim()==='Bautizado').length;
   const totalVisitas = VISITAS.length;
-  const visitasConcretadas = VISITAS.filter(r => String(r['Estado de la visita']||r['Estado']||'').trim()==='Concretada').length;
+  const visitasConcretadas = VISITAS.filter(r => {
+    const est = String(r['Estado de la Visita'] || r['Estado de la visita'] || r['estado'] || r['Estado'] || '').trim();
+    return est === 'Concretada';
+  }).length;
 
   const jovenes = MIEMBROS.filter(m => {
     const edad = parseInt(m['Edad'] || 0) || 0;
@@ -1608,104 +1609,44 @@ function onChangeHermanoAdulto() {
 function guardarInteresado() {
   const nombre = document.getElementById('ni-nombre').value.trim();
   if (!nombre) { showToast('⚠️ Ingrese el nombre del interesado'); return; }
-  const tipo   = document.getElementById('ni-tipo-valor').value;
-  if (!tipo)   { showToast('⚠️ Seleccione el tipo de actividad'); return; }
-  if (!validarSexoHermanos()) { showToast('⚠️ El joven y el adulto deben ser del mismo sexo'); return; }
+  const tipo = document.getElementById('ni-tipo-valor').value;
+  if (!tipo) { showToast('⚠️ Seleccione el tipo de actividad'); return; }
 
-  const tel       = document.getElementById('ni-tel').value.trim();
-  const dir       = document.getElementById('ni-dir').value.trim();
-  const hermano   = document.getElementById('ni-hermano').value;
-  const jovenH    = document.getElementById('ni-hermano-joven').value;
-  const obs       = document.getElementById('ni-obs').value.trim();
+  const tel  = document.getElementById('ni-tel').value.trim();
+  const dir  = document.getElementById('ni-dir').value.trim();
+  const obs  = document.getElementById('ni-obs').value.trim();
+  const fecha = new Date().toLocaleDateString('es-BO');
 
-  const esFamiliar  = document.getElementById('ni-son-familiares')?.checked || false;
-  const parentesco  = document.getElementById('ni-parentesco')?.value.trim() || '';
-
-  const registro = {
-    nombre, tel, dir, tipo,
-    hermano, jovenH, obs,
-    esFamiliar, parentesco,
-    fecha: new Date().toLocaleDateString('es-BO'),
-  };
+  const registro = { nombre, tel, dir, tipo, obs, fecha };
   INTERESADOS.push(registro);
 
   // Grabar automáticamente en Google Sheets
   guardarEnSheets('INTERESADOS', {
-    'Fecha': registro.fecha,
-    'Nombre': registro.nombre,
-    'Teléfono': registro.tel,
-    'Dirección': registro.dir,
-    'Tipo de Actividad': registro.tipo,
-    'Hermano Adulto': registro.hermano,
-    'Joven Acompañante': registro.jovenH,
-    'Parentesco': registro.parentesco,
-    'Observaciones': registro.obs,
+    'Fecha': fecha,
+    'Nombre': nombre,
+    'Teléfono': tel,
+    'Dirección': dir,
+    'Tipo de Actividad': tipo,
+    'Hermano Adulto': '',
+    'Joven Acompañante': '',
+    'Parentesco': '',
+    'Observaciones': obs,
   });
 
-  // ── AUTOCOMPLETAR formularios misioneros según tipo ──
-  if (tipo === 'estudio' || tipo === 'ambos') {
-    // Precargar datos en formulario Estudio Bíblico
-    const sel = document.getElementById('rmi-hermano');
-    if (sel && hermano) {
-      // Seleccionar el hermano adulto
-      Array.from(sel.options).forEach(o => { if(o.value===hermano) sel.value=hermano; });
-    }
-    document.getElementById('rmi-estudiante').value = nombre;
-    document.getElementById('rmi-tel').value = tel;
-    // Mostrar caja de datos precargados
-    const box = document.getElementById('rmi-datos-interesado');
-    const res = document.getElementById('rmi-resumen-interesado');
-    if (box && res) {
-      box.style.display='block';
-      res.innerHTML = `<b>Nombre:</b> ${nombre}${tel?` · <b>Tel:</b> ${tel}`:''}${dir?`<br><b>Dirección:</b> ${dir}`:''}${jovenH?`<br><b>Joven acompañante:</b> ${jovenH}`:''}`;
-    }
-  }
-
-  if (tipo === 'visita' || tipo === 'ambos') {
-    // Precargar datos en formulario Visitación
-    const selV = document.getElementById('rv-hermano');
-    if (selV && hermano) {
-      Array.from(selV.options).forEach(o => { if(o.value===hermano) selV.value=hermano; });
-    }
-    document.getElementById('rv-nombre').value = nombre;
-    document.getElementById('rv-tel').value    = tel;
-    document.getElementById('rv-dir').value    = dir;
-    const box = document.getElementById('rv-datos-interesado');
-    const res = document.getElementById('rv-resumen-interesado');
-    if (box && res) {
-      box.style.display='block';
-      res.innerHTML = `<b>Nombre:</b> ${nombre}${tel?` · <b>Tel:</b> ${tel}`:''}${dir?`<br><b>Dirección:</b> ${dir}`:''}${jovenH?`<br><b>Joven acompañante:</b> ${jovenH}`:''}`;
-    }
-  }
-
-  // Limpiar formulario de interesado
-  ['ni-nombre','ni-tel','ni-dir','ni-obs','ni-parentesco'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-  const esFamiliarCb = document.getElementById('ni-son-familiares');
-  if (esFamiliarCb) esFamiliarCb.checked = false;
-  document.getElementById('ni-hermano').value='';
-  document.getElementById('ni-hermano-joven').value='';
+  // Limpiar
+  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
   document.getElementById('ni-tipo-valor').value='';
-  ['ni-sugerencia','ni-sugerencia-jovenes','ni-sugerencia-bautizados','ni-error-sexo','ni-familiar-box','ni-parentesco-box']
-    .forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-  ['estudio','visita','ambos'].forEach(t=>{
-    const el=document.getElementById(`ni-tipo-${t}`);
-    if(el){el.style.borderColor='var(--border)';el.style.background='white';}
+  ['estudio','visita'].forEach(t => {
+    const el = document.getElementById(`ni-tipo-${t}`);
+    if(el){ el.style.borderColor='var(--border)'; el.style.background='white'; }
   });
 
   renderInteresados();
   renderDashboard();
-
-  // Redirigir según tipo
-  if (tipo==='estudio') {
-    showToast('✅ Interesado guardado en Sheets — Complete el estudio bíblico');
-    showPage('reg-misionero');
-  } else if (tipo==='visita') {
-    showToast('✅ Interesado guardado en Sheets — Complete la visitación');
-    showPage('reg-visitacion');
-  } else {
-    showToast('✅ Interesado guardado en Sheets — Complete el estudio bíblico primero');
-    showPage('reg-misionero');
-  }
+  showToast('✅ Interesado guardado en Sheets');
+  showPage('interesados');
 }
 
 // #21 y #23: Validación género en formularios misioneros (estudio y visitación)
@@ -2213,7 +2154,8 @@ function guardarVisitacion() {
 
 const NAV_MAP = {
   'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,
-  'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,'dashboard':3
+  'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,
+  'actualizar':3,'dashboard':4
 };
 
 function toggleDetalle(id) {
@@ -2254,6 +2196,9 @@ function showPage(id) {
   const formPages = ['reg-ministerial','reg-misionero','reg-visitacion','nuevo-interesado'];
   if (formPages.includes(id)) limpiarFormulario(id);
 
+  // Renderizar actualizar al entrar
+  if (id === 'actualizar') renderActualizar();
+
   // Limpiar especial para nuevo-interesado
   if (id === 'nuevo-interesado') {
     ['estudio','visita','ambos'].forEach(t => {
@@ -2262,6 +2207,151 @@ function showPage(id) {
     });
   }
   window.scrollTo(0,0);
+}
+
+// ── CARGAR INTERESADO EN ESTUDIO BÍBLICO ────────────────────────
+function cargarInteresadoEnEstudio(nombre) {
+  if (!nombre) return;
+  const int = INTERESADOS.find(i => i.nombre === nombre);
+  if (!int) return;
+  document.getElementById('rmi-estudiante').value = int.nombre;
+  document.getElementById('rmi-tel').value = int.tel || '';
+}
+
+// ── CARGAR INTERESADO EN VISITACIÓN ─────────────────────────────
+function cargarInteresadoEnVisita(nombre) {
+  if (!nombre) return;
+  const int = INTERESADOS.find(i => i.nombre === nombre);
+  if (!int) return;
+  document.getElementById('rv-nombre').value = int.nombre;
+  document.getElementById('rv-tel').value = int.tel || '';
+  document.getElementById('rv-dir').value = int.dir || '';
+}
+
+// ── POBLAR SELECTORES DE INTERESADOS EN FORMULARIOS ─────────────
+function poblarInteresadosEnFormularios() {
+  const interesadosEstudio = INTERESADOS.filter(i => i.tipo === 'estudio' || i.tipo === 'Estudio Bíblico');
+  const interesadosVisita  = INTERESADOS.filter(i => i.tipo === 'visita' || i.tipo === 'Visita');
+  const todos = INTERESADOS;
+
+  ['rmi-interesado-sel'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">📋 Seleccionar de lista de interesados...</option>';
+    (interesadosEstudio.length ? interesadosEstudio : todos).forEach(i => {
+      const o = document.createElement('option');
+      o.value = i.nombre;
+      o.textContent = `${i.nombre}${i.dir ? ' — ' + i.dir : ''}`;
+      sel.appendChild(o);
+    });
+  });
+
+  ['rv-interesado-sel'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">📋 Seleccionar de lista de interesados...</option>';
+    (interesadosVisita.length ? interesadosVisita : todos).forEach(i => {
+      const o = document.createElement('option');
+      o.value = i.nombre;
+      o.textContent = `${i.nombre}${i.dir ? ' — ' + i.dir : ''}`;
+      sel.appendChild(o);
+    });
+  });
+}
+
+// ── PÁGINA ACTUALIZAR ────────────────────────────────────────────
+let filtroActualizarActual = 'visitas';
+
+function setFiltroActualizar(tipo, el) {
+  filtroActualizarActual = tipo;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('act-lista-visitas').style.display = tipo === 'visitas' ? 'block' : 'none';
+  document.getElementById('act-lista-estudios').style.display = tipo === 'estudios' ? 'block' : 'none';
+}
+
+function renderActualizar() {
+  // Visitas por estado
+  const estadosVisita = ['Concretada','No encontrado','Reprogramada','Cancelada',''];
+  const listV = document.getElementById('act-lista-visitas');
+  if (listV) {
+    if (!VISITAS.length) {
+      listV.innerHTML = '<div class="empty-state"><div class="empty-icon">🚶</div>Sin visitas registradas aún</div>';
+    } else {
+      listV.innerHTML = VISITAS.map((v, idx) => {
+        const estado = String(v['Estado de la Visita'] || v.estado || '').trim();
+        const nombre = String(v['Nombre del Visitado'] || v.nombre || '—').trim();
+        const hermano = String(v['Hermano Visitador'] || v.hermano || '').trim();
+        const fecha = String(v['Fecha'] || v.fecha || '').trim();
+        return `<div class="card" style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+              <div style="font-size:14px;font-weight:600;">${nombre}</div>
+              <div style="font-size:12px;color:var(--text2);">${hermano} · ${fecha}</div>
+            </div>
+            <span class="badge ${estado==='Concretada'?'b-verde':estado?'b-amarillo':'b-gris'}">${estado||'Sin estado'}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${['Concretada','No encontrado','Reprogramada','Cancelada'].map(s =>
+              `<button onclick="actualizarEstadoVisita(${idx},'${s}')" 
+                style="padding:4px 10px;font-size:11px;border-radius:99px;border:1px solid var(--border);background:${s===estado?'var(--azul)':'white'};color:${s===estado?'white':'var(--text2)'};cursor:pointer;">
+                ${s}
+              </button>`
+            ).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Estudios por estado
+  const listE = document.getElementById('act-lista-estudios');
+  if (listE) {
+    if (!MISIONERO.length) {
+      listE.innerHTML = '<div class="empty-state"><div class="empty-icon">📖</div>Sin estudios registrados aún</div>';
+    } else {
+      listE.innerHTML = MISIONERO.map((e, idx) => {
+        const estado = String(e['Estado'] || '').trim();
+        const nombre = String(e['Nombre del\nEstudiante'] || e['Nombre del Estudiante'] || '—').trim();
+        const hermano = getNombreHermano(e);
+        const lec = e['Lección\nActual (1-20)'] || e['Lección Actual (1-20)'] || '?';
+        return `<div class="card" style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+              <div style="font-size:14px;font-weight:600;">${nombre}</div>
+              <div style="font-size:12px;color:var(--text2);">${hermano} · Lec. ${lec}/20</div>
+            </div>
+            <span class="badge ${estado==='En Curso'?'b-azul':estado==='Bautizado'?'b-verde':estado?'b-amarillo':'b-gris'}">${estado||'Sin estado'}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${['En Curso','Bautizado','Pausado','Abandonó','Transferido'].map(s =>
+              `<button onclick="actualizarEstadoEstudio(${idx},'${s}')" 
+                style="padding:4px 10px;font-size:11px;border-radius:99px;border:1px solid var(--border);background:${s===estado?'var(--azul)':'white'};color:${s===estado?'white':'var(--text2)'};cursor:pointer;">
+                ${s}
+              </button>`
+            ).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function actualizarEstadoVisita(idx, nuevoEstado) {
+  if (!VISITAS[idx]) return;
+  VISITAS[idx]['Estado de la Visita'] = nuevoEstado;
+  VISITAS[idx].estado = nuevoEstado;
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Visita actualizada: ${nuevoEstado}`);
+}
+
+function actualizarEstadoEstudio(idx, nuevoEstado) {
+  if (!MISIONERO[idx]) return;
+  MISIONERO[idx]['Estado'] = nuevoEstado;
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
 }
 
 cargarDatos();
