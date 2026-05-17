@@ -502,16 +502,23 @@
 
   <div class="form-group">
     <label>Nombre del estudiante *</label>
-    <div style="margin-bottom:6px;">
-      <select id="rmi-interesado-sel" onchange="cargarInteresadoEnEstudio(this.value)" style="width:100%;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:#F0FDF4;color:var(--text);">
-        <option value="">📋 Seleccionar de lista de interesados...</option>
-      </select>
+    <div style="margin-bottom:6px;position:relative;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
+      <input type="text" id="rmi-interesado-input" placeholder="Buscar en lista de interesados..."
+        autocomplete="off" oninput="buscarEnInteresados('rmi',this.value)"
+        style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
-    <input type="text" id="rmi-estudiante" placeholder="O escribir nombre manualmente">
+    <div class="hermano-dropdown" id="rmi-interesado-lista"></div>
+    <button class="ver-todos-btn" onclick="verTodosInteresados('rmi')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
+    <input type="text" id="rmi-estudiante" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
   </div>
   <div class="form-group">
     <label>Teléfono del estudiante</label>
     <input type="tel" id="rmi-tel" placeholder="+591 7...">
+  </div>
+  <div class="form-group">
+    <label>Dirección del estudiante</label>
+    <input type="text" id="rmi-dir" placeholder="Barrio, zona, referencia...">
   </div>
   <div class="form-group">
     <label>Estado civil del estudiante</label>
@@ -600,12 +607,15 @@
   <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">🏠 Datos de la persona visitada</div>
   <div class="form-group">
     <label>Nombre *</label>
-    <div style="margin-bottom:6px;">
-      <select id="rv-interesado-sel" onchange="cargarInteresadoEnVisita(this.value)" style="width:100%;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:#F0FDF4;color:var(--text);">
-        <option value="">📋 Seleccionar de lista de interesados...</option>
-      </select>
+    <div style="margin-bottom:6px;position:relative;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
+      <input type="text" id="rv-interesado-input" placeholder="Buscar en lista de interesados..."
+        autocomplete="off" oninput="buscarEnInteresados('rv',this.value)"
+        style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
-    <input type="text" id="rv-nombre" placeholder="O escribir nombre manualmente">
+    <div class="hermano-dropdown" id="rv-interesado-lista"></div>
+    <button class="ver-todos-btn" onclick="verTodosInteresados('rv')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
+    <input type="text" id="rv-nombre" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
   </div>
   <div class="form-group">
     <label>Teléfono</label>
@@ -875,28 +885,36 @@ function calcNivel(m) {
   const cargo = getCargo(m);
   const tieneCargo = cargo && cargo !== '-' && cargo !== 'Sin Cargo Actual';
 
-  // MINISTERIAL: 60% por cargo + hasta 20% por áreas de apoyo + hasta 20% por días disponibles
+  // MINISTERIAL: 60% cargo + hasta 20% áreas + hasta 20% días
   let min = 0;
   if (tieneCargo) min += 60;
-
-  // Buscar datos adicionales del hermano en MINISTERIAL
   const regMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim() === nombre).slice(-1)[0];
   if (regMin) {
     const areas = String(regMin['Areas de Apoyo']||'').split(',').filter(a => a.trim()).length;
-    min += Math.min(20, areas * 3); // hasta 20pts por áreas (máx ~7 áreas)
+    min += Math.min(20, areas * 3);
     const dia = String(regMin['Dia Disponible']||'').trim();
-    if (dia && dia !== '') min += dia === 'Cualquier día' ? 20 : 10; // hasta 20pts por días
+    if (dia) min += dia === 'Cualquier día' ? 20 : 10;
   }
   min = Math.min(100, min);
 
-  // MISIONERO: estudios activos + bautizados + visitas
-  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
-  const activos = estudios.filter(r => String(r['Estado'] || '') === 'En Curso');
-  const bautizados = estudios.filter(r => String(r['Estado'] || '') === 'Bautizado');
-  const visitas = VISITAS ? VISITAS.filter(r => {
+  // MISIONERO: buscar estudios donde el hermano es el que da el estudio
+  const estudios = MISIONERO.filter(r => {
+    const herm = String(r['Nombre del Hermano'] || r['Nombre del\nHermano'] || '').trim();
+    return herm === nombre;
+  });
+  // #11: activos = En Curso o sin estado
+  const activos = estudios.filter(r => {
+    const est = String(r['Estado']||'').trim();
+    return est === 'En Curso' || est === '';
+  });
+  const bautizados = estudios.filter(r => String(r['Estado']||'').trim() === 'Bautizado');
+
+  // Visitas donde el hermano es el visitador
+  const visitas = VISITAS.filter(r => {
     const hv = String(r['Hermano Visitador'] || r['Hermano'] || r['Nombre del\nHermano'] || '').trim();
     return hv === nombre;
-  }) : [];
+  });
+
   let mis = 0;
   mis += Math.min(50, activos.length * 20);
   mis += Math.min(30, bautizados.length * 15);
@@ -1954,11 +1972,11 @@ function getHermanoVal(id) {
 function toggleFeJesus(sel) {
   const detalle = document.getElementById('rm-fe-jesus-detalle');
   if (!detalle) return;
-  // Mostrar detalle si no completó O no sabe/no recuerda
+  // Mostrar para ambos casos - lecciones siempre con selección múltiple
   detalle.style.display = (sel.value === 'no' || sel.value === 'no-sabe') ? 'block' : 'none';
-  // Si es no-sabe, no mostrar las lecciones, solo el instructor
+  // Siempre mostrar lecciones (múltiple)
   const lecGrid = detalle.querySelector('[style*="grid-template-columns"]');
-  if (lecGrid) lecGrid.closest('.form-group').style.display = sel.value === 'no' ? 'block' : 'none';
+  if (lecGrid) lecGrid.closest('.form-group').style.display = 'block';
 }
 
 
@@ -2201,56 +2219,135 @@ function showPage(id) {
   window.scrollTo(0,0);
 }
 
-// ── CARGAR INTERESADO EN ESTUDIO BÍBLICO ────────────────────────
-function cargarInteresadoEnEstudio(nombre) {
-  if (!nombre) return;
+// ── BUSCADOR DE INTERESADOS EN FORMULARIOS ───────────────────────
+function buscarEnInteresados(prefix, q) {
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  if (!listaEl) return;
+  // Filtrar por tipo según formulario
+  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo));
+  if (!q.trim()) { listaEl.className = 'hermano-dropdown'; return; }
+  const hits = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase())).slice(0,10);
+  if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+  listaEl.innerHTML = hits.map(i =>
+    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
+      <div>${i.nombre}</div>
+      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function verTodosInteresados(prefix) {
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  if (!listaEl) return;
+  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo));
+  if (!lista.length) {
+    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);">Sin interesados registrados para este tipo</div>';
+    listaEl.className = 'hermano-dropdown show';
+    return;
+  }
+  listaEl.innerHTML = lista.map(i =>
+    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
+      <div>${i.nombre}</div>
+      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function seleccionarInteresado(prefix, nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
   const int = INTERESADOS.find(i => i.nombre === nombre);
   if (!int) return;
-  document.getElementById('rmi-estudiante').value = int.nombre;
-  document.getElementById('rmi-tel').value = int.tel || '';
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  const inputEl = document.getElementById(`${prefix}-interesado-input`);
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (inputEl) inputEl.value = nombre;
+  // Cargar datos según formulario
+  if (prefix === 'rmi') {
+    document.getElementById('rmi-estudiante').value = int.nombre;
+    document.getElementById('rmi-tel').value = int.tel || '';
+    // #3: agregar dirección en estudio bíblico
+    const dirEl = document.getElementById('rmi-dir');
+    if (dirEl) dirEl.value = int.dir || '';
+  } else if (prefix === 'rv') {
+    document.getElementById('rv-nombre').value = int.nombre;
+    document.getElementById('rv-tel').value = int.tel || '';
+    document.getElementById('rv-dir').value = int.dir || '';
+  }
+  // Marcar interesado como asignado
+  int.hermano = int.hermano || 'Asignado';
+  renderInteresados();
 }
 
-// ── CARGAR INTERESADO EN VISITACIÓN ─────────────────────────────
-function cargarInteresadoEnVisita(nombre) {
-  if (!nombre) return;
-  const int = INTERESADOS.find(i => i.nombre === nombre);
-  if (!int) return;
-  document.getElementById('rv-nombre').value = int.nombre;
-  document.getElementById('rv-tel').value = int.tel || '';
-  document.getElementById('rv-dir').value = int.dir || '';
+// ── ACTUALIZAR CON GRABADO EN SHEETS ────────────────────────────
+function actualizarEstadoVisita(idx, nuevoEstado) {
+  if (!VISITAS[idx]) return;
+  VISITAS[idx]['Estado de la Visita'] = nuevoEstado;
+  VISITAS[idx].estado = nuevoEstado;
+  // Grabar en Sheets
+  guardarEnSheets('VISITAS', {
+    'Fecha': VISITAS[idx]['Fecha'] || VISITAS[idx].fecha || '',
+    'Hermano Visitador': VISITAS[idx]['Hermano Visitador'] || VISITAS[idx].hermano || '',
+    'Joven Acompañante': VISITAS[idx]['Joven Acompañante'] || '',
+    'Parentesco': VISITAS[idx]['Parentesco'] || '',
+    'Nombre del Visitado': VISITAS[idx]['Nombre del Visitado'] || VISITAS[idx].nombre || '',
+    'Teléfono': VISITAS[idx]['Teléfono'] || VISITAS[idx].tel || '',
+    'Dirección': VISITAS[idx]['Dirección'] || VISITAS[idx].dir || '',
+    'Relación con la Iglesia': VISITAS[idx]['Relación con la Iglesia'] || '',
+    'Estado de la Visita': nuevoEstado,
+    'Material Entregado': VISITAS[idx]['Material Entregado'] || '',
+    'Observaciones': VISITAS[idx]['Observaciones'] || '',
+    'Registrado por': VISITAS[idx]['Registrado por'] || '',
+  });
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Visita actualizada: ${nuevoEstado}`);
 }
 
-// ── POBLAR SELECTORES DE INTERESADOS EN FORMULARIOS ─────────────
-function poblarInteresadosEnFormularios() {
-  const interesadosEstudio = INTERESADOS.filter(i => i.tipo === 'estudio' || i.tipo === 'Estudio Bíblico');
-  const interesadosVisita  = INTERESADOS.filter(i => i.tipo === 'visita' || i.tipo === 'Visita');
-  const todos = INTERESADOS;
+function actualizarEstadoEstudio(idx, nuevoEstado) {
+  if (!MISIONERO[idx]) return;
+  const estudio = MISIONERO[idx];
+  estudio['Estado'] = nuevoEstado;
 
-  ['rmi-interesado-sel'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = '<option value="">📋 Seleccionar de lista de interesados...</option>';
-    (interesadosEstudio.length ? interesadosEstudio : todos).forEach(i => {
-      const o = document.createElement('option');
-      o.value = i.nombre;
-      o.textContent = `${i.nombre}${i.dir ? ' — ' + i.dir : ''}`;
-      sel.appendChild(o);
-    });
+  // #10: Si se bautiza, preguntar si registrar en MIEMBROS
+  if (nuevoEstado === 'Bautizado') {
+    const nombre = String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim();
+    const confirmar = confirm(`🎉 ¡${nombre} fue bautizado!\n\n¿Desea registrarlo como nuevo miembro en la base de datos?`);
+    if (confirmar) {
+      guardarEnSheets('MIEMBROS', {
+        'Apellidos y Nombres': nombre,
+        'Bautizado': 'Sí',
+        'Fecha de Bautismo': new Date().toLocaleDateString('es-BO'),
+        'Clasificación': 'Frecuente',
+        'Registro Iglesia': 'Sí',
+        'Estado': 'Asiste',
+      });
+      showToast(`✅ ${nombre} registrado como nuevo miembro`);
+    }
+  }
+
+  // Grabar actualización en Sheets
+  guardarEnSheets('ESTUDIOS', {
+    'Fecha': new Date().toLocaleDateString('es-BO'),
+    'Nombre del Hermano': getNombreHermano(estudio),
+    'Nombre del Estudiante': String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim(),
+    'Teléfono': estudio['Teléfono'] || '',
+    'Estado Civil': estudio['Estado Civil'] || '',
+    'Lección Actual (1-20)': estudio['Lección\nActual (1-20)'] || '',
+    'Estado': nuevoEstado,
+    'Observaciones': estudio['Observaciones'] || '',
+    'Registrado por': estudio['Registrado por'] || '',
   });
 
-  ['rv-interesado-sel'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = '<option value="">📋 Seleccionar de lista de interesados...</option>';
-    (interesadosVisita.length ? interesadosVisita : todos).forEach(i => {
-      const o = document.createElement('option');
-      o.value = i.nombre;
-      o.textContent = `${i.nombre}${i.dir ? ' — ' + i.dir : ''}`;
-      sel.appendChild(o);
-    });
-  });
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
 }
 
+// ── RENDER ACTUALIZAR con Terminado añadido ──────────────────────
 // ── PÁGINA ACTUALIZAR ────────────────────────────────────────────
 let filtroActualizarActual = 'visitas';
 
