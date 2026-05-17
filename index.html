@@ -2348,6 +2348,19 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
 }
 
 // ── RENDER ACTUALIZAR con Terminado añadido ──────────────────────
+// ── POBLAR INTERESADOS EN FORMULARIOS ───────────────────────────
+function poblarInteresadosEnFormularios() {
+  // Solo limpia los inputs de búsqueda - la lista se carga dinámicamente
+  ['rmi-interesado-input','rv-interesado-input'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['rmi-interesado-lista','rv-interesado-lista'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'hermano-dropdown';
+  });
+}
+
 // ── PÁGINA ACTUALIZAR ────────────────────────────────────────────
 let filtroActualizarActual = 'visitas';
 
