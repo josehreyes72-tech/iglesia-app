@@ -759,13 +759,13 @@ function showToast(msg) {
 }
 
 function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet))
+  // tq=select * para obtener todas las filas sin límite
+  return fetch(BASE + encodeURIComponent(sheet) + '&tq=select%20*')
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-      // Usar label si existe, si no usar id (A, B, C, D...)
       const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols);
+      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', json.table.rows?.length);
       if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
       return (json.table.rows || []).map(r =>
         Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
@@ -1428,6 +1428,7 @@ function poblarSelectores() {
   window._lista_ni   = listaAdultosFrecuentes;
   window._lista_rmi  = listaAdultosFrecuentes;
   window._lista_rv   = listaAdultosFrecuentes;
+  window._lista_jovenes   = listaJovenes;
   window._lista_ni_joven  = listaJovenes;
   window._lista_rmi_joven = listaJovenes;
   window._lista_rv_joven  = listaJovenes;
@@ -1817,13 +1818,26 @@ function renderDropdown(prefix, listaEl, hits, todos) {
 }
 
 function mostrarTodosHermanos(prefix) {
-  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
-  if (!listaEl) return;
-  // Usar lista completa de todos los hermanos para "ver todos"
-  const lista = window._hermanosMinistrialLista || window[`_lista_${prefix}`] || [];
-  if (!lista.length) return;
-  listaEl.innerHTML = lista.slice(0, 50).map(h =>
-    `<div class="hermano-opcion" onclick="seleccionarHermano('${prefix}','${encodeURIComponent(h.nombre)}')">
+  // Detectar si es un buscador de jóvenes
+  const esJoven = prefix.includes('joven');
+  let listaEl, lista, onclickFn;
+
+  if (esJoven) {
+    // Para jóvenes: rmi-joven → lista en rmi-joven-lista
+    listaEl = document.getElementById(`${prefix}-lista`);
+    lista = window._lista_jovenes || window._lista_ni_joven || [];
+    const valorId = prefix.replace('-joven','') + '-hermano-joven';
+    onclickFn = (nombre) => `seleccionarJoven('${prefix}','${encodeURIComponent(nombre)}')`;
+  } else {
+    // Para adultos: rm, ni, rmi, rv → lista en prefix-hermano-lista
+    listaEl = document.getElementById(`${prefix}-hermano-lista`);
+    lista = window._hermanosMinistrialLista || window[`_lista_${prefix}`] || [];
+    onclickFn = (nombre) => `seleccionarHermano('${prefix}','${encodeURIComponent(nombre)}')`;
+  }
+
+  if (!listaEl || !lista.length) return;
+  listaEl.innerHTML = lista.slice(0, 60).map(h =>
+    `<div class="hermano-opcion" onclick="${onclickFn(h.nombre)}">
       <div>${h.nombre}</div>
       <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
     </div>`
@@ -1984,6 +1998,11 @@ function guardarMinisterial() {
   const h = document.getElementById('rm-hermano-valor').value;
   if (!h) { showToast('⚠️ Busque y seleccione un hermano'); return; }
 
+  // Tipos de actividad - selección múltiple
+  const tiposSeleccionados = Array.from(
+    document.querySelectorAll('[id^="rm-tipo-"]:checked')
+  ).map(cb => cb.value);
+
   const areasSeleccionadas = Array.from(
     document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]:checked')
   ).map(cb => cb.value);
@@ -1992,12 +2011,12 @@ function guardarMinisterial() {
     document.querySelectorAll('[id^="lec-"]:checked')
   ).map(cb => cb.value).join(', ');
 
-  MINISTERIAL.push({
+  const fecha = new Date().toLocaleDateString('es-BO');
+  const datos = {
     'Apellidos y Nombres': h,
-    'Departamento': document.getElementById('rm-dept').value,
-    'Tipo': document.getElementById('rm-tipo').value,
-    'Fecha': document.getElementById('rm-fecha').value,
-    'Descripcion': document.getElementById('rm-desc').value.trim(),
+    'Departamento': document.getElementById('rm-dept')?.value || '',
+    'Tipo': tiposSeleccionados.join(', '),
+    'Fecha': fecha,
     'Areas de Apoyo': areasSeleccionadas.join(', '),
     'Dia Disponible': document.getElementById('rm-dia')?.value || '',
     'Horario Disponible': document.getElementById('rm-horario')?.value || '',
@@ -2007,38 +2026,25 @@ function guardarMinisterial() {
     'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
     'Lecciones Faltantes': lecFaltantes,
     'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
-    'Registrado por': document.getElementById('rm-registrador').value.trim(),
-  });
+    'Registrado por': document.getElementById('rm-registrador')?.value.trim() || '',
+  };
 
-  // Grabar automáticamente en Google Sheets
-  guardarEnSheets('CRECIMIENTO_MINISTERIAL', {
-    'Apellidos y Nombres': h,
-    'Departamento': document.getElementById('rm-dept').value,
-    'Tipo': document.getElementById('rm-tipo').value,
-    'Fecha': document.getElementById('rm-fecha').value,
-    'Descripcion': document.getElementById('rm-desc').value.trim(),
-    'Areas de Apoyo': areasSeleccionadas.join(', '),
-    'Dia Disponible': document.getElementById('rm-dia')?.value || '',
-    'Horario Disponible': document.getElementById('rm-horario')?.value || '',
-    'Conoce Doctrinas': document.getElementById('rm-doctrinas')?.value || '',
-    'Conoce Estructura': document.getElementById('rm-estructura')?.value || '',
-    'Capacitacion': document.getElementById('rm-capacitacion')?.value.trim() || '',
-    'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
-    'Lecciones Faltantes': lecFaltantes,
-    'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
-    'Registrado por': document.getElementById('rm-registrador').value.trim(),
-  });
+  MINISTERIAL.push(datos);
 
-  // Limpiar todos los campos
+  // Grabar en Sheets
+  guardarEnSheets('CRECIMIENTO_MINISTERIAL', datos);
+
+  // Limpiar
   document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => cb.checked = false);
   document.querySelectorAll('[id^="lec-"]').forEach(cb => cb.checked = false);
-  ['rm-desc','rm-registrador','rm-capacitacion'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelectorAll('[id^="rm-tipo-"]').forEach(cb => cb.checked = false);
+  ['rm-registrador','rm-capacitacion'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   ['rm-dia','rm-horario','rm-doctrinas','rm-estructura','rm-fe-jesus'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   if(document.getElementById('rm-instructor')) document.getElementById('rm-instructor').value='';
   if(document.getElementById('rm-fe-jesus-detalle')) document.getElementById('rm-fe-jesus-detalle').style.display='none';
   limpiarHermanoMinisterial();
 
-  showToast('✅ Actividad guardada automáticamente en Sheets.');
+  showToast('✅ Actividad ministerial guardada en Sheets.');
   showPage('registro');
 }
 
@@ -2046,9 +2052,10 @@ function guardarMisionero() {
   const h      = getHermanoVal('rmi-hermano');
   const jovenH = getHermanoVal('rmi-hermano-joven');
   const est    = document.getElementById('rmi-estudiante').value.trim();
-  if (!h || !est) { showToast('⚠️ Complete los campos obligatorios'); return; }
+  if (!h || !est) { showToast('⚠️ Complete hermano adulto y nombre del estudiante'); return; }
 
-  if (!validarSexoMisionero('rmi')) {
+  // Validar género si hay joven seleccionado
+  if (jovenH && !validarSexoMisionero('rmi')) {
     showToast('⚠️ Corrija la asignación de género antes de guardar'); return;
   }
 
@@ -2058,42 +2065,48 @@ function guardarMisionero() {
   }
 
   const parentesco = document.getElementById('rmi-parentesco')?.value.trim() || '';
+  const fecha = new Date().toLocaleDateString('es-BO');
+
   const registro = {
     'Nombre del Hermano': h,
     'Joven Acompañante': jovenH,
     'Parentesco': parentesco,
     'Nombre del\nEstudiante': est,
+    'Nombre del Estudiante': est,
     'Teléfono': document.getElementById('rmi-tel').value.trim(),
     'Estado Civil': document.getElementById('rmi-estado-civil').value,
     'Lección\nActual (1-20)': lecVal,
     'Estado': document.getElementById('rmi-estado').value,
     'Observaciones': document.getElementById('rmi-obs').value.trim(),
     'Registrado por': document.getElementById('rmi-registrador').value.trim(),
-    'Fecha': new Date().toLocaleDateString('es-BO'),
+    'Fecha': fecha,
   };
   MISIONERO.push(registro);
 
-  // Grabar automáticamente en Google Sheets
+  // #3: Marcar interesado como asignado para que no aparezca de nuevo
+  const intIdx = INTERESADOS.findIndex(i => i.nombre === est);
+  if (intIdx >= 0) INTERESADOS[intIdx].asignado = true;
+
+  // Grabar en Sheets - campos correctos
   guardarEnSheets('ESTUDIOS', {
-    'Fecha': registro.Fecha,
-    'Nombre del Hermano': registro['Nombre del\nHermano'],
-    'Joven Acompañante': registro['Joven Acompañante'],
-    'Parentesco': registro['Parentesco'],
-    'Nombre del Estudiante': registro['Nombre del\nEstudiante'],
+    'Fecha': fecha,
+    'Nombre del Hermano': h,
+    'Joven Acompañante': jovenH,
+    'Parentesco': parentesco,
+    'Nombre del Estudiante': est,
     'Teléfono': registro['Teléfono'],
     'Estado Civil': registro['Estado Civil'],
-    'Lección Actual (1-20)': registro['Lección\nActual (1-20)'],
+    'Lección Actual (1-20)': lecVal,
     'Estado': registro['Estado'],
     'Observaciones': registro['Observaciones'],
     'Registrado por': registro['Registrado por'],
   });
 
-  // Limpiar
-  ['rmi-estudiante','rmi-tel','rmi-obs','rmi-registrador'].forEach(id => document.getElementById(id).value='');
+  // Limpiar formulario
+  ['rmi-estudiante','rmi-tel','rmi-obs','rmi-registrador'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const rmiDir = document.getElementById('rmi-dir'); if(rmiDir) rmiDir.value='';
   document.getElementById('rmi-leccion').value = '1';
   document.getElementById('rmi-estado-civil').value = '';
-  document.getElementById('rmi-hermano').value = '';
-  document.getElementById('rmi-hermano-joven').value = '';
   document.getElementById('rmi-leccion-error').style.display='none';
   document.getElementById('rmi-leccion').style.borderColor='';
   ['rmi-error-sexo','rmi-familiar-wrap'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
@@ -2101,8 +2114,9 @@ function guardarMisionero() {
   const pw = document.getElementById('rmi-parentesco-wrap'); if(pw) pw.style.display='none';
   if(document.getElementById('rmi-parentesco')) document.getElementById('rmi-parentesco').value='';
 
-  showToast('✅ Estudio guardado automáticamente en Sheets.');
+  showToast('✅ Estudio guardado en Sheets');
   renderDashboard();
+  poblarInteresadosEnFormularios();
   showPage('registro');
 }
 
@@ -2223,9 +2237,9 @@ function showPage(id) {
 function buscarEnInteresados(prefix, q) {
   const listaEl = document.getElementById(`${prefix}-interesado-lista`);
   if (!listaEl) return;
-  // Filtrar por tipo según formulario
   const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
-  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo));
+  // #3: excluir ya asignados
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
   if (!q.trim()) { listaEl.className = 'hermano-dropdown'; return; }
   const hits = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase())).slice(0,10);
   if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
@@ -2242,9 +2256,10 @@ function verTodosInteresados(prefix) {
   const listaEl = document.getElementById(`${prefix}-interesado-lista`);
   if (!listaEl) return;
   const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
-  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo));
+  // #3: excluir ya asignados
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
   if (!lista.length) {
-    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);">Sin interesados registrados para este tipo</div>';
+    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);">Sin interesados disponibles para este tipo</div>';
     listaEl.className = 'hermano-dropdown show';
     return;
   }
@@ -2317,10 +2332,20 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
     const nombre = String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim();
     const confirmar = confirm(`🎉 ¡${nombre} fue bautizado!\n\n¿Desea registrarlo como nuevo miembro en la base de datos?`);
     if (confirmar) {
+      const fechaBaut = new Date().toLocaleDateString('es-BO');
       guardarEnSheets('MIEMBROS', {
         'Apellidos y Nombres': nombre,
         'Bautizado': 'Sí',
-        'Fecha de Bautismo': new Date().toLocaleDateString('es-BO'),
+        'Fecha de Bautismo': fechaBaut,
+        'Clasificación': 'Frecuente',
+        'Registro Iglesia': 'Sí',
+        'Estado': 'Asiste',
+      });
+      // #7: Agregar al array MIEMBROS para actualizar contador inmediatamente
+      MIEMBROS.push({
+        'Apellidos y Nombres': nombre,
+        'Bautizado': 'Sí',
+        'Fecha de Bautismo': fechaBaut,
         'Clasificación': 'Frecuente',
         'Registro Iglesia': 'Sí',
         'Estado': 'Asiste',
