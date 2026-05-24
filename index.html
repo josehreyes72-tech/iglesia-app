@@ -758,8 +758,30 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+async function gvizFetchAll(sheet) {
+  // Cargar todas las filas en lotes de 500
+  let allRows = [];
+  let offset = 0;
+  const limit = 500;
+  while (true) {
+    const url = BASE + encodeURIComponent(sheet) + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`;
+    const rows = await fetch(url)
+      .then(r => r.text())
+      .then(t => {
+        const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+        const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+        return (json.table.rows || []).map(r =>
+          Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+        );
+      });
+    allRows = allRows.concat(rows);
+    if (rows.length < limit) break;
+    offset += limit;
+  }
+  return allRows;
+}
+
 function gvizFetch(sheet) {
-  // tq=select * para obtener todas las filas sin límite
   return fetch(BASE + encodeURIComponent(sheet) + '&tq=select%20*')
     .then(r => r.text())
     .then(t => {
@@ -776,7 +798,7 @@ function gvizFetch(sheet) {
 async function cargarDatos() {
   try {
     const [m, min, mis, cat, vis, est, int] = await Promise.all([
-      gvizFetch('MIEMBROS'),
+      gvizFetchAll('MIEMBROS'),
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
       gvizFetch('CATALOGOS'),
