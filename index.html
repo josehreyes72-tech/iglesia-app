@@ -207,6 +207,7 @@
     <h1>Crecimiento Espiritual</h1>
     <p>Iglesia Adventista del Séptimo Día</p>
   </div>
+  <button onclick="recargarDatos()" title="Recargar datos" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;color:white;font-size:18px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="btn-reload">🔄</button>
 </div>
 
 <!-- PÁGINAS -->
@@ -758,14 +759,19 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+// Cache-buster: número único por sesión + timestamp
+const _CB = Date.now();
+
 async function gvizFetchAll(sheet) {
-  // Cargar todas las filas en lotes de 500
+  // Cargar todas las filas en lotes de 500, con anti-caché
   let allRows = [];
   let offset = 0;
   const limit = 500;
   while (true) {
-    const url = BASE + encodeURIComponent(sheet) + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`;
-    const rows = await fetch(url)
+    const url = BASE + encodeURIComponent(sheet)
+      + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`
+      + `&_cb=${_CB}&_t=${Date.now()}`;
+    const rows = await fetch(url, { cache: 'no-store' })
       .then(r => r.text())
       .then(t => {
         const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
@@ -782,7 +788,11 @@ async function gvizFetchAll(sheet) {
 }
 
 function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet) + '&tq=select%20*')
+  // Anti-caché: parámetro único por carga
+  const url = BASE + encodeURIComponent(sheet)
+    + `&tq=select%20*`
+    + `&_cb=${_CB}&_t=${Date.now()}`;
+  return fetch(url, { cache: 'no-store' })
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
@@ -802,9 +812,9 @@ async function cargarDatos() {
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
       gvizFetch('CATALOGOS'),
-      gvizFetch('VISITAS'),
-      gvizFetch('ESTUDIOS'),
-      gvizFetch('INTERESADOS'),
+      gvizFetchAll('VISITAS'),
+      gvizFetchAll('ESTUDIOS'),
+      gvizFetchAll('INTERESADOS'),
     ]);
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
@@ -1268,7 +1278,7 @@ function renderDashboard() {
   // Reporte por estado de visitas
   const estadosVisita = {};
   VISITAS.forEach(r => {
-    const est = String(r['Estado de la visita']||r['Estado']||'Sin estado').trim();
+    const est = String(r['Estado de la Visita']||r['Estado de la visita']||r['Estado']||'Sin estado').trim();
     estadosVisita[est] = (estadosVisita[est]||0) + 1;
   });
 
@@ -2501,6 +2511,16 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
   renderActualizar();
   renderDashboard();
   showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
+}
+
+async function recargarDatos() {
+  const btn = document.getElementById('btn-reload');
+  if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
+  document.getElementById('lista-miembros').innerHTML =
+    '<div class="loading"><div class="spinner"></div>Recargando datos...</div>';
+  await cargarDatos();
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+  showToast('✅ Datos actualizados');
 }
 
 cargarDatos();
