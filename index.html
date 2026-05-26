@@ -759,27 +759,19 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Cache-buster: número único por sesión + timestamp
+// Cache-buster: número único por sesión
 const _CB = Date.now();
 
 async function gvizFetchAll(sheet) {
-  // Cargar todas las filas en lotes de 500, con anti-caché
   let allRows = [];
   let offset = 0;
   const limit = 500;
   while (true) {
     const url = BASE + encodeURIComponent(sheet)
-      + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`
-      + `&_cb=${_CB}&_t=${Date.now()}`;
-    const rows = await fetch(url, { cache: 'no-store' })
+      + `&headers=0&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`;
+    const rows = await fetch(url)
       .then(r => r.text())
-      .then(t => {
-        const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-        const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-        return (json.table.rows || []).map(r =>
-          Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
-        );
-      });
+      .then(t => parseGviz(t, sheet, true));
     allRows = allRows.concat(rows);
     if (rows.length < limit) break;
     offset += limit;
@@ -788,38 +780,37 @@ async function gvizFetchAll(sheet) {
 }
 
 function gvizFetch(sheet) {
-  // Anti-caché: parámetro único por carga
-  const url = BASE + encodeURIComponent(sheet)
-    + `&tq=select%20*`
-    + `&_cb=${_CB}&_t=${Date.now()}`;
-  console.log(`🌐 Fetching: ${sheet} →`, url);
-  return fetch(url, { cache: 'no-store' })
+  const url = BASE + encodeURIComponent(sheet) + `&headers=0&tq=select%20*&v=${_CB}`;
+  console.log(`🌐 ${sheet}:`, url);
+  return fetch(url)
     .then(r => r.text())
-    .then(t => {
-      const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-      const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-      const rows = json.table.rows || [];
+    .then(t => parseGviz(t, sheet, false));
+}
 
-      // Si las columnas son letras (A,B,C...) significa parsedNumHeaders=0
-      // → usar la primera fila como encabezado
-      const sonLetras = rawCols.every(c => /^[A-Z]$/.test(c));
-      let cols, dataRows;
-      if (sonLetras && rows.length > 0) {
-        // Primera fila = nombres de columnas
-        cols = rows[0].c.map(cell => String(cell?.v ?? '').trim());
-        dataRows = rows.slice(1);
-        console.log(`📋 ${sheet} (headers desde fila 1):`, cols);
-      } else {
-        cols = rawCols;
-        dataRows = rows;
-        if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', rows.length);
-        if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
-      }
+function parseGviz(text, sheet, silencioso) {
+  try {
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+    const rows = json.table.rows || [];
 
-      return dataRows.map(r =>
-        Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
-      );
-    });
+    // Si columnas son letras (A,B,C..) → primera fila como encabezado
+    const sonLetras = rawCols.length > 0 && rawCols.every(c => /^[A-Z]{1,2}$/.test(String(c)));
+    let cols, dataRows;
+    if (sonLetras && rows.length > 0) {
+      cols = rows[0].c.map(cell => String(cell?.v ?? '').trim());
+      dataRows = rows.slice(1);
+    } else {
+      cols = rawCols;
+      dataRows = rows;
+    }
+    if (!silencioso) console.log(`📋 ${sheet}: ${dataRows.length} filas | cols:`, cols.slice(0,5));
+    return dataRows.map(r =>
+      Object.fromEntries(cols.map((c,i) => [c, r.c?.[i]?.v ?? '']))
+    );
+  } catch(e) {
+    console.error(`❌ Error parseando ${sheet}:`, e.message);
+    return [];
+  }
 }
 
 async function cargarDatos() {
@@ -960,6 +951,7 @@ async function cargarDatos() {
 function getNombreHermano(r) {
   return String(
     r['Nombre del\nHermano'] || r['Nombre del Hermano'] ||
+    r['Nombre del\r\nHermano'] ||
     r['Hermano'] || r['Nombre Hermano'] || ''
   ).trim();
 }
