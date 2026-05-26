@@ -812,10 +812,16 @@ async function cargarDatos() {
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
       gvizFetch('CATALOGOS'),
-      gvizFetchAll('VISITAS'),
-      gvizFetchAll('ESTUDIOS'),
-      gvizFetchAll('INTERESADOS'),
+      gvizFetch('VISITAS'),
+      gvizFetch('ESTUDIOS'),
+      gvizFetch('INTERESADOS'),
     ]);
+
+    // DEBUG: ver qué devuelve cada hoja
+    console.log('🔍 VISITAS raw filas:', vis.length, vis[0] ? Object.keys(vis[0]) : 'vacío');
+    console.log('🔍 ESTUDIOS raw filas:', est.length, est[0] ? Object.keys(est[0]) : 'vacío');
+    console.log('🔍 INTERESADOS raw filas:', int.length, int[0] ? Object.keys(int[0]) : 'vacío');
+    console.log('🔍 MISIONERO raw filas:', mis.length, mis[0] ? Object.keys(mis[0]) : 'vacío');
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
       return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
