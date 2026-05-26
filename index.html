@@ -792,6 +792,7 @@ function gvizFetch(sheet) {
   const url = BASE + encodeURIComponent(sheet)
     + `&tq=select%20*`
     + `&_cb=${_CB}&_t=${Date.now()}`;
+  console.log(`🌐 Fetching: ${sheet} →`, url);
   return fetch(url, { cache: 'no-store' })
     .then(r => r.text())
     .then(t => {
