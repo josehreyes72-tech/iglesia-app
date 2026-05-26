@@ -821,31 +821,64 @@ async function cargarDatos() {
       return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
     });
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
-    MISIONERO = mis.filter(r => getNombreHermano(r));
+
+    // Helper: normalizar un registro de estudio a campos estándar
+    function normalizarEstudio(e, fuente) {
+      // Lección: puede venir como 'Lección Actual (1-20)', 'Lección\nActual (1-20)', o con salto visual
+      const leccion = e['Lección Actual (1-20)'] || e['Lección\nActual (1-20)'] ||
+                      e['Leccion Actual (1-20)'] || e['Lección actual (1-20)'] || 1;
+      // Nombre estudiante: puede venir con o sin salto
+      const nombreEst = String(
+        e['Nombre del Estudiante'] || e['Nombre del\nEstudiante'] || ''
+      ).trim();
+      const nombreHerm = String(
+        e['Nombre del Hermano'] || e['Nombre del\nHermano'] || ''
+      ).trim();
+      return {
+        '_fuente': fuente,
+        'Nombre del Hermano': nombreHerm,
+        'Nombre del\nHermano': nombreHerm,
+        'Nombre del\nEstudiante': nombreEst,
+        'Nombre del Estudiante': nombreEst,
+        'Estado': String(e['Estado'] || 'En Curso').trim(),
+        'Lección\nActual (1-20)': leccion,
+        'Lección Actual (1-20)': leccion,
+        'Teléfono': String(e['Teléfono'] || '').trim(),
+        'Estado Civil': String(e['Estado Civil'] || '').trim(),
+        'Joven Acompañante': String(e['Joven Acompañante'] || '').trim(),
+        'Parentesco': String(e['Parentesco'] || '').trim(),
+        'Observaciones': String(e['Observaciones'] || '').trim(),
+        'Registrado por': String(e['Registrado por'] || '').trim(),
+        'Fecha': String(e['Fecha'] || '').trim(),
+      };
+    }
+
+    // Cargar MISIONERO desde hoja CRECIMIENTO_MISIONERO
+    const misioneroBase = mis
+      .filter(r => getNombreHermano(r))
+      .map(r => normalizarEstudio(r, 'MISIONERO'));
+
+    // Cargar estudios desde hoja ESTUDIOS y unificar (ESTUDIOS tiene prioridad si hay duplicado)
+    const estudiosSheet = est
+      .filter(r => String(r['Nombre del Estudiante'] || '').trim())
+      .map(r => normalizarEstudio(r, 'ESTUDIOS'));
+
+    // Merge: empezar con ESTUDIOS, agregar los de MISIONERO que no estén ya
+    const nombresEnEstudios = new Set(estudiosSheet.map(e => e['Nombre del Estudiante'].toLowerCase()));
+    const misioneroExtra = misioneroBase.filter(e =>
+      e['Nombre del Estudiante'] && !nombresEnEstudios.has(e['Nombre del Estudiante'].toLowerCase())
+    );
+    MISIONERO = [...estudiosSheet, ...misioneroExtra];
+
+    console.log(`📖 MISIONERO total: ${MISIONERO.length} (${estudiosSheet.length} de ESTUDIOS + ${misioneroExtra.length} de MISIONERO)`);
+
     VISITAS = vis.filter(r => {
       const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
       const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
       return Boolean(hermano || visitado);
     });
 
-    // Agregar estudios desde hoja ESTUDIOS (evitar duplicados)
-    est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
-      const nombre = String(e['Nombre del Estudiante']||'').trim();
-      const existe = MISIONERO.find(m =>
-        String(m['Nombre del\nEstudiante'] || m['Nombre del Estudiante'] || '').trim() === nombre
-      );
-      if (!existe) {
-        MISIONERO.push({
-          'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
-          'Nombre del\nEstudiante': nombre,
-          'Nombre del Estudiante': nombre,
-          'Estado': String(e['Estado']||'En Curso').trim(),
-          'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
-          'Teléfono': String(e['Teléfono']||'').trim(),
-          'Estado Civil': String(e['Estado Civil']||'').trim(),
-        });
-      }
-    });
+    console.log(`🚶 VISITAS total: ${VISITAS.length}`);
 
     // Cargar interesados desde hoja INTERESADOS (sin duplicar)
     INTERESADOS = []; // Reset antes de cargar desde Sheets
@@ -1666,9 +1699,6 @@ function guardarInteresado() {
     'Teléfono': tel,
     'Dirección': dir,
     'Tipo de Actividad': tipo,
-    'Hermano Adulto': '',
-    'Joven Acompañante': '',
-    'Parentesco': '',
     'Observaciones': obs,
   });
 
