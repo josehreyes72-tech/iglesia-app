@@ -796,10 +796,26 @@ function gvizFetch(sheet) {
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-      const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', json.table.rows?.length);
-      if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
-      return (json.table.rows || []).map(r =>
+      const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+      const rows = json.table.rows || [];
+
+      // Si las columnas son letras (A,B,C...) significa parsedNumHeaders=0
+      // → usar la primera fila como encabezado
+      const sonLetras = rawCols.every(c => /^[A-Z]$/.test(c));
+      let cols, dataRows;
+      if (sonLetras && rows.length > 0) {
+        // Primera fila = nombres de columnas
+        cols = rows[0].c.map(cell => String(cell?.v ?? '').trim());
+        dataRows = rows.slice(1);
+        console.log(`📋 ${sheet} (headers desde fila 1):`, cols);
+      } else {
+        cols = rawCols;
+        dataRows = rows;
+        if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', rows.length);
+        if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
+      }
+
+      return dataRows.map(r =>
         Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
       );
     });
