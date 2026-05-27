@@ -729,6 +729,22 @@
 <script>
 const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
+
+// GIDs numericos de cada hoja (mas confiables que nombres)
+const GIDS = {
+  VISITAS:                 '619148620',
+  ESTUDIOS:                '1935249592',
+  INTERESADOS:             '2008567376',
+  CRECIMIENTO_MISIONERO:   '1080595887',
+  CRECIMIENTO_MINISTERIAL: '923355275',
+};
+
+function gvizUrl(sheet) {
+  const gid = GIDS[sheet];
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+  if (gid) return `${base}&gid=${gid}&headers=1&tq=select%20*&v=${_CB}`;
+  return `${base}&sheet=${encodeURIComponent(sheet)}&headers=1&tq=select%20*&v=${_CB}`;
+}
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyblnO0OFHB1S0KcCf8uD3tMtx3XGBp3kYnrp9gDzfSeXI1DqlIPtLnN1knDRTlcEm/exec';
 
 // Función central para grabar en Google Sheets automáticamente
@@ -766,9 +782,12 @@ async function gvizFetchAll(sheet) {
   let allRows = [];
   let offset = 0;
   const limit = 500;
+  const gid = GIDS[sheet];
+  const baseUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
   while (true) {
-    const url = BASE + encodeURIComponent(sheet)
-      + `&headers=0&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`;
+    const url = gid
+      ? `${baseUrl}&gid=${gid}&headers=1&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`
+      : `${baseUrl}&sheet=${encodeURIComponent(sheet)}&headers=1&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`;
     const rows = await fetch(url)
       .then(r => r.text())
       .then(t => parseGviz(t, sheet, true));
@@ -780,7 +799,7 @@ async function gvizFetchAll(sheet) {
 }
 
 function gvizFetch(sheet) {
-  const url = BASE + encodeURIComponent(sheet) + `&headers=0&tq=select%20*&v=${_CB}`;
+  const url = gvizUrl(sheet);
   console.log(`🌐 ${sheet}:`, url);
   return fetch(url)
     .then(r => r.text())
