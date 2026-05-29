@@ -207,7 +207,6 @@
     <h1>Crecimiento Espiritual</h1>
     <p>Iglesia Adventista del Séptimo Día</p>
   </div>
-  <button onclick="recargarDatos()" title="Recargar datos" style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;color:white;font-size:18px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="btn-reload">🔄</button>
 </div>
 
 <!-- PÁGINAS -->
@@ -727,24 +726,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SHEET_ID = '1U_RhpC8ILMV_Xw_-BGSen453rzwosS8oM5yLMy6REiY';
+const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
-
-// GIDs numericos de cada hoja (mas confiables que nombres)
-const GIDS = {
-  VISITAS:                 '619148620',
-  ESTUDIOS:                '1935249592',
-  INTERESADOS:             '2008567376',
-  CRECIMIENTO_MISIONERO:   '1080595887',
-  CRECIMIENTO_MINISTERIAL: '923355275',
-};
-
-function gvizUrl(sheet) {
-  const gid = GIDS[sheet];
-  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-  if (gid) return `${base}&gid=${gid}&headers=1&tq=select%20*&v=${_CB}`;
-  return `${base}&sheet=${encodeURIComponent(sheet)}&headers=1&tq=select%20*&v=${_CB}`;
-}
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyblnO0OFHB1S0KcCf8uD3tMtx3XGBp3kYnrp9gDzfSeXI1DqlIPtLnN1knDRTlcEm/exec';
 
 // Función central para grabar en Google Sheets automáticamente
@@ -775,22 +758,22 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Cache-buster: número único por sesión
-const _CB = Date.now();
-
 async function gvizFetchAll(sheet) {
+  // Cargar todas las filas en lotes de 500
   let allRows = [];
   let offset = 0;
   const limit = 500;
-  const gid = GIDS[sheet];
-  const baseUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
   while (true) {
-    const url = gid
-      ? `${baseUrl}&gid=${gid}&headers=1&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`
-      : `${baseUrl}&sheet=${encodeURIComponent(sheet)}&headers=1&tq=select%20*%20limit%20${limit}%20offset%20${offset}&v=${_CB}`;
+    const url = BASE + encodeURIComponent(sheet) + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`;
     const rows = await fetch(url)
       .then(r => r.text())
-      .then(t => parseGviz(t, sheet, true));
+      .then(t => {
+        const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+        const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+        return (json.table.rows || []).map(r =>
+          Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+        );
+      });
     allRows = allRows.concat(rows);
     if (rows.length < limit) break;
     offset += limit;
@@ -799,43 +782,22 @@ async function gvizFetchAll(sheet) {
 }
 
 function gvizFetch(sheet) {
-  const url = gvizUrl(sheet);
-  console.log(`🌐 ${sheet}:`, url);
-  return fetch(url)
+  return fetch(BASE + encodeURIComponent(sheet) + '&tq=select%20*')
     .then(r => r.text())
-    .then(t => parseGviz(t, sheet, false));
-}
-
-function parseGviz(text, sheet, silencioso) {
-  try {
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-    const rows = json.table.rows || [];
-
-    // Si columnas son letras (A,B,C..) → primera fila como encabezado
-    const sonLetras = rawCols.length > 0 && rawCols.every(c => /^[A-Z]{1,2}$/.test(String(c)));
-    let cols, dataRows;
-    if (sonLetras && rows.length > 0) {
-      cols = rows[0].c.map(cell => String(cell?.v ?? '').trim());
-      dataRows = rows.slice(1);
-    } else {
-      cols = rawCols;
-      dataRows = rows;
-    }
-    if (!silencioso) console.log(`📋 ${sheet}: ${dataRows.length} filas | cols:`, cols.slice(0,5));
-    return dataRows.map(r =>
-      Object.fromEntries(cols.map((c,i) => [c, r.c?.[i]?.v ?? '']))
-    );
-  } catch(e) {
-    console.error(`❌ Error parseando ${sheet}:`, e.message);
-    return [];
-  }
+    .then(t => {
+      const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', json.table.rows?.length);
+      if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
+      return (json.table.rows || []).map(r =>
+        Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+      );
+    });
 }
 
 async function cargarDatos() {
   try {
-    const [m, min, mis, cat, vis, est, int] = await Promise.all([
-      gvizFetchAll('MIEMBROS'),
+    const [min, mis, cat, vis, est, int] = await Promise.all([
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
       gvizFetch('CATALOGOS'),
@@ -843,75 +805,37 @@ async function cargarDatos() {
       gvizFetch('ESTUDIOS'),
       gvizFetch('INTERESADOS'),
     ]);
-
-    // DEBUG: ver qué devuelve cada hoja
-    console.log('🔍 VISITAS raw filas:', vis.length, vis[0] ? Object.keys(vis[0]) : 'vacío');
-    console.log('🔍 ESTUDIOS raw filas:', est.length, est[0] ? Object.keys(est[0]) : 'vacío');
-    console.log('🔍 INTERESADOS raw filas:', int.length, int[0] ? Object.keys(int[0]) : 'vacío');
-    console.log('🔍 MISIONERO raw filas:', mis.length, mis[0] ? Object.keys(mis[0]) : 'vacío');
+    const m = await gvizFetchAll('MIEMBROS');
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
       return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
     });
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
-
-    // Helper: normalizar un registro de estudio a campos estándar
-    function normalizarEstudio(e, fuente) {
-      // Lección: puede venir como 'Lección Actual (1-20)', 'Lección\nActual (1-20)', o con salto visual
-      const leccion = e['Lección Actual (1-20)'] || e['Lección\nActual (1-20)'] ||
-                      e['Leccion Actual (1-20)'] || e['Lección actual (1-20)'] || 1;
-      // Nombre estudiante: puede venir con o sin salto
-      const nombreEst = String(
-        e['Nombre del Estudiante'] || e['Nombre del\nEstudiante'] || ''
-      ).trim();
-      const nombreHerm = String(
-        e['Nombre del Hermano'] || e['Nombre del\nHermano'] || ''
-      ).trim();
-      return {
-        '_fuente': fuente,
-        'Nombre del Hermano': nombreHerm,
-        'Nombre del\nHermano': nombreHerm,
-        'Nombre del\nEstudiante': nombreEst,
-        'Nombre del Estudiante': nombreEst,
-        'Estado': String(e['Estado'] || 'En Curso').trim(),
-        'Lección\nActual (1-20)': leccion,
-        'Lección Actual (1-20)': leccion,
-        'Teléfono': String(e['Teléfono'] || '').trim(),
-        'Estado Civil': String(e['Estado Civil'] || '').trim(),
-        'Joven Acompañante': String(e['Joven Acompañante'] || '').trim(),
-        'Parentesco': String(e['Parentesco'] || '').trim(),
-        'Observaciones': String(e['Observaciones'] || '').trim(),
-        'Registrado por': String(e['Registrado por'] || '').trim(),
-        'Fecha': String(e['Fecha'] || '').trim(),
-      };
-    }
-
-    // Cargar MISIONERO desde hoja CRECIMIENTO_MISIONERO
-    const misioneroBase = mis
-      .filter(r => getNombreHermano(r))
-      .map(r => normalizarEstudio(r, 'MISIONERO'));
-
-    // Cargar estudios desde hoja ESTUDIOS y unificar (ESTUDIOS tiene prioridad si hay duplicado)
-    const estudiosSheet = est
-      .filter(r => String(r['Nombre del Estudiante'] || '').trim())
-      .map(r => normalizarEstudio(r, 'ESTUDIOS'));
-
-    // Merge: empezar con ESTUDIOS, agregar los de MISIONERO que no estén ya
-    const nombresEnEstudios = new Set(estudiosSheet.map(e => e['Nombre del Estudiante'].toLowerCase()));
-    const misioneroExtra = misioneroBase.filter(e =>
-      e['Nombre del Estudiante'] && !nombresEnEstudios.has(e['Nombre del Estudiante'].toLowerCase())
-    );
-    MISIONERO = [...estudiosSheet, ...misioneroExtra];
-
-    console.log(`📖 MISIONERO total: ${MISIONERO.length} (${estudiosSheet.length} de ESTUDIOS + ${misioneroExtra.length} de MISIONERO)`);
-
+    MISIONERO = mis.filter(r => getNombreHermano(r));
     VISITAS = vis.filter(r => {
       const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
       const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
       return Boolean(hermano || visitado);
     });
 
-    console.log(`🚶 VISITAS total: ${VISITAS.length}`);
+    // Agregar estudios desde hoja ESTUDIOS (evitar duplicados)
+    est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
+      const nombre = String(e['Nombre del Estudiante']||'').trim();
+      const existe = MISIONERO.find(m =>
+        String(m['Nombre del\nEstudiante'] || m['Nombre del Estudiante'] || '').trim() === nombre
+      );
+      if (!existe) {
+        MISIONERO.push({
+          'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
+          'Nombre del\nEstudiante': nombre,
+          'Nombre del Estudiante': nombre,
+          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
+          'Teléfono': String(e['Teléfono']||'').trim(),
+          'Estado Civil': String(e['Estado Civil']||'').trim(),
+        });
+      }
+    });
 
     // Cargar interesados desde hoja INTERESADOS (sin duplicar)
     INTERESADOS = []; // Reset antes de cargar desde Sheets
@@ -970,7 +894,6 @@ async function cargarDatos() {
 function getNombreHermano(r) {
   return String(
     r['Nombre del\nHermano'] || r['Nombre del Hermano'] ||
-    r['Nombre del\r\nHermano'] ||
     r['Hermano'] || r['Nombre Hermano'] || ''
   ).trim();
 }
@@ -1345,7 +1268,7 @@ function renderDashboard() {
   // Reporte por estado de visitas
   const estadosVisita = {};
   VISITAS.forEach(r => {
-    const est = String(r['Estado de la Visita']||r['Estado de la visita']||r['Estado']||'Sin estado').trim();
+    const est = String(r['Estado de la visita']||r['Estado']||'Sin estado').trim();
     estadosVisita[est] = (estadosVisita[est]||0) + 1;
   });
 
@@ -1733,6 +1656,9 @@ function guardarInteresado() {
     'Teléfono': tel,
     'Dirección': dir,
     'Tipo de Actividad': tipo,
+    'Hermano Adulto': '',
+    'Joven Acompañante': '',
+    'Parentesco': '',
     'Observaciones': obs,
   });
 
@@ -2575,16 +2501,6 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
   renderActualizar();
   renderDashboard();
   showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
-}
-
-async function recargarDatos() {
-  const btn = document.getElementById('btn-reload');
-  if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
-  document.getElementById('lista-miembros').innerHTML =
-    '<div class="loading"><div class="spinner"></div>Recargando datos...</div>';
-  await cargarDatos();
-  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
-  showToast('✅ Datos actualizados');
 }
 
 cargarDatos();
