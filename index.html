@@ -63,6 +63,25 @@
   .b-rojo { background: #FEE2E2; color: #991B1B; }
   .b-azul { background: #DBEAFE; color: #1E40AF; }
   .b-gris { background: #F3F4F6; color: #4B5563; }
+  .b-naranja { background: #FED7AA; color: #9A3412; }
+  .b-morado { background: #EDE9FE; color: #5B21B6; }
+
+  /* PROFILE */
+  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--azul); background: none; border: none; cursor: pointer; padding: 0 0 14px; font-weight: 500; }
+  .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .avatar-xl { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+
+  /* PROGRESS */
+  .progress-section { margin-bottom: 14px; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-label span { font-size: 13px; color: var(--text2); }
+  .progress-label strong { font-size: 13px; font-weight: 600; }
+  .progress-bar { height: 10px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .fill-verde { background: var(--green); }
+  .fill-azul { background: var(--blue); }
+  .fill-amber { background: var(--amber); }
+  .fill-rojo { background: var(--red); }
 
   /* POINTS GRID */
   .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
@@ -70,13 +89,78 @@
   .point-val { font-size: 22px; font-weight: 700; color: var(--text); }
   .point-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.3; }
 
+  /* ESTUDIOS */
+  .estudio-item { background: #F9FAFB; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .estudio-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .estudio-name { font-size: 13px; font-weight: 600; }
+  .leccion-bar { height: 5px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+  .leccion-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+
+  /* INTERESADOS */
+  .int-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .int-name { font-size: 14px; font-weight: 600; }
+  .int-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .sugerencia-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #1E40AF; line-height: 1.4; }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; font-size: 14px; padding: 11px 12px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: white; color: var(--text); outline: none;
+    -webkit-appearance: none; appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--azul); }
+  .form-group textarea { min-height: 70px; resize: vertical; }
+  .btn-primary { width: 100%; padding: 13px; background: var(--azul); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+  .btn-primary:active { opacity: .85; }
+  .btn-secondary { width: 100%; padding: 13px; background: white; color: var(--azul); border: 2px solid var(--azul); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+  /* ACTION CARDS */
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .action-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+  .action-card:active { transform: scale(0.96); }
+  .action-icon { font-size: 32px; margin-bottom: 8px; }
+  .action-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .action-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
   /* DASHBOARD */
   .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .stat-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
   .stat-val { font-size: 28px; font-weight: 700; color: var(--text); }
   .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.3; }
 
-  /* BUSCADOR UNIVERSAL */
+  /* DESTACADOS BIG NUMBERS */
+  .big-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .big-stat-card { border-radius: 14px; padding: 18px 14px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.10); }
+  .big-stat-val { font-size: 48px; font-weight: 800; line-height: 1; }
+  .big-stat-lbl { font-size: 12px; font-weight: 600; margin-top: 6px; line-height: 1.3; text-transform: uppercase; letter-spacing: .4px; }
+  .bsc-rescatar { background: #FEE2E2; color: #991B1B; }
+  .bsc-transferir { background: #DBEAFE; color: #1E40AF; }
+  .bsc-frecuente { background: #D1FAE5; color: #065F46; }
+  .bsc-nofrecuente { background: #FEF3C7; color: #92400E; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+  /* LOADING / EMPTY */
+  .loading { text-align: center; padding: 50px 20px; color: var(--text2); }
+  .spinner { width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--azul); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; line-height: 1.6; }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 80px; left: 16px; right: 16px; background: #1F3864; color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; text-align: center; }
+  .toast.show { opacity: 1; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  .tag { display: inline-block; background: #EEF2FF; color: #3730A3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin: 2px; }
+
+  /* BUSCADOR UNIVERSAL DE HERMANOS */
   .hermano-search-wrap { position: relative; margin-bottom: 4px; }
   .hermano-search-wrap input { width: 100%; padding: 11px 12px 11px 38px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
   .hermano-search-wrap input:focus { border-color: var(--azul); }
@@ -84,22 +168,35 @@
   .hermano-dropdown { display:none; background:white; border:1px solid var(--border); border-radius:10px; margin-top:4px; max-height:200px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; position:relative; }
   .hermano-dropdown.show { display:block !important; }
   .hermano-opcion { padding:10px 14px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-  .hermano-opcion:hover { background:#EFF6FF; }
+  .hermano-opcion:last-child { border-bottom:none; }
+  .hermano-opcion:active, .hermano-opcion:hover { background:#EFF6FF; }
+  .hermano-seleccionado { display:none; margin-top:6px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:8px 12px; font-size:13px; color:#1E40AF; align-items:center; justify-content:space-between; }
   .ver-todos-btn { width:100%; padding:8px; font-size:12px; color:var(--azul); background:#F8FAFF; border:1px dashed var(--azul); border-radius:8px; cursor:pointer; margin-top:4px; text-align:center; }
 
+  /* TIPO ACTIVIDAD MULTIPLE */
   .multi-select-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-  .multi-select-item { display:flex; align-items:center; gap:6px; background:#F9FAFB; border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; font-size:13px; }
-  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .checkbox-item { display: flex; align-items: center; gap: 6px; background: #F9FAFB; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; }
+  .multi-select-item { display:flex; align-items:center; gap:6px; background:#F9FAFB; border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; font-size:13px; transition:.15s; }
+  .multi-select-item:has(input:checked) { background:#DBEAFE; border-color:var(--azul); }
+  .multi-select-item input { width:14px; height:14px; accent-color:#1F3864; flex-shrink:0; }
 
-  /* LOADING / EMPTY */
-  .loading { text-align: center; padding: 50px 20px; color: var(--text2); }
-  .spinner { width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--azul); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; }
-  .toast { position: fixed; bottom: 80px; left: 16px; right: 16px; background: #1F3864; color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; text-align: center; }
-  .toast.show { opacity: 1; }
-  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  /* CHECKBOX GRID para áreas de apoyo - #18: más pequeño, más oscuro */
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .checkbox-item { display: flex; align-items: center; gap: 6px; background: #F9FAFB; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; transition: background .15s, border-color .15s; }
+  .checkbox-item:hover { background: #EFF6FF; border-color: var(--azul); }
+  .checkbox-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: #1F3864; flex-shrink: 0; cursor: pointer; }
+  .checkbox-item input[type="checkbox"]:checked + label { color: var(--azul); font-weight: 600; }
+  .checkbox-item:has(input:checked) { background: #DBEAFE; border-color: var(--azul); }
+  .checkbox-item label { cursor: pointer; line-height: 1.3; }
+
+  /* ALERTA JOVEN */
+  .alerta-joven { background: #EDE9FE; border: 1px solid #C4B5FD; border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #5B21B6; line-height: 1.5; }
+  .alerta-bautizado { background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #92400E; line-height: 1.5; }
+
+  /* TIPO MISIONERO - elegir entre Estudio o Visitación */
+  .tipo-misionero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .tipo-misionero-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 2px solid var(--border); transition: border-color .2s; }
+  .tipo-misionero-card:active { transform: scale(0.96); }
+  .tipo-misionero-card.selected { border-color: var(--azul); background: #EFF6FF; }
 </style>
 </head>
 <body>
@@ -112,6 +209,7 @@
   </div>
 </div>
 
+<!-- PÁGINAS -->
 <div id="page-miembros" class="page active">
   <div class="search-wrap" style="margin-top:8px;">
     <span class="search-icon">🔍</span>
@@ -146,6 +244,7 @@
 <div id="page-nuevo-interesado" class="page">
   <button class="back-btn" onclick="showPage('interesados')">← Volver</button>
   <div class="section-title" style="margin-bottom:16px;">Nuevo interesado</div>
+
   <div class="form-group">
     <label>Nombre completo *</label>
     <input type="text" id="ni-nombre" placeholder="Apellido, Nombre">
@@ -158,28 +257,34 @@
     <label>Dirección / Referencia</label>
     <input type="text" id="ni-dir" placeholder="Barrio, zona, referencia...">
   </div>
+
+  <!-- TIPO DE ACTIVIDAD: solo Estudio o Visita -->
   <div class="form-group">
     <label>Tipo de actividad *</label>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-      <div id="ni-tipo-estudio" onclick="selTipoInteresado('estudio')" style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
+      <div id="ni-tipo-estudio" onclick="selTipoInteresado('estudio')"
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
         <div style="font-size:26px;">📖</div>
         <div style="font-size:12px;font-weight:600;margin-top:4px;">Estudio Bíblico</div>
       </div>
-      <div id="ni-tipo-visita" onclick="selTipoInteresado('visita')" style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
+      <div id="ni-tipo-visita" onclick="selTipoInteresado('visita')"
+        style="background:white;border:2px solid var(--border);border-radius:10px;padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;">
         <div style="font-size:26px;">🚶</div>
         <div style="font-size:12px;font-weight:600;margin-top:4px;">Visita</div>
       </div>
     </div>
     <input type="hidden" id="ni-tipo-valor">
   </div>
+
   <div class="form-group">
     <label>Observaciones</label>
-    <textarea id="ni-obs" placeholder="Cómo lo conocimos..."></textarea>
+    <textarea id="ni-obs" placeholder="Cómo lo conocimos, intereses espirituales..."></textarea>
   </div>
   <button class="btn-primary" onclick="guardarInteresado()">Guardar interesado</button>
   <button class="btn-secondary" onclick="showPage('interesados')">Cancelar</button>
 </div>
 
+<!-- REGISTRO: elegir tipo -->
 <div id="page-registro" class="page">
   <div class="section-title" style="margin-top:8px;">Tipo de actividad</div>
   <div class="action-grid">
@@ -194,456 +299,2214 @@
       <div class="action-sub">Estudio / Visitación</div>
     </div>
   </div>
-</div>
-
-<div id="page-reg-misionero-tipo" class="page">
-  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
-  <div class="section-title" style="margin-bottom:16px;">Actividad misionera — Tipo</div>
-  <div class="tipo-misionero-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <div class="action-card" onclick="showPage('reg-misionero')"><div>📖</div><strong>Estudio Bíblico</strong></div>
-    <div class="action-card" onclick="showPage('reg-visitacion')"><div>🚶</div><strong>Visitación</strong></div>
+  <div style="margin-top:20px;" class="section-title">Accesos rápidos</div>
+  <div class="card" onclick="showPage('nuevo-interesado')" style="cursor:pointer;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">📋</span>
+    <div>
+      <div style="font-size:14px;font-weight:600;">Nuevo interesado</div>
+      <div style="font-size:12px;color:var(--text2);">Registrar persona para estudios</div>
+    </div>
+    <span style="margin-left:auto;color:var(--text2);">›</span>
   </div>
 </div>
 
+<!-- MODIFICACIÓN 8: Selección de tipo misionero -->
+<div id="page-reg-misionero-tipo" class="page">
+  <button class="back-btn" onclick="showPage('registro')">← Volver</button>
+  <div class="section-title" style="margin-bottom:16px;">Actividad misionera — Tipo</div>
+  <div class="tipo-misionero-grid">
+    <div class="action-card" onclick="showPage('reg-misionero')">
+      <div class="action-icon">📖</div>
+      <div class="action-title">Estudio Bíblico</div>
+      <div class="action-sub">Registrar estudio con estudiante</div>
+    </div>
+    <div class="action-card" onclick="showPage('reg-visitacion')">
+      <div class="action-icon">🚶</div>
+      <div class="action-title">Visitación</div>
+      <div class="action-sub">Registrar visita realizada</div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVIDAD MINISTERIAL - NUEVO DISEÑO -->
 <div id="page-reg-ministerial" class="page">
   <button class="back-btn" onclick="showPage('registro')">← Volver</button>
-  <div class="section-title">Actividad ministerial</div>
+  <div class="section-title" style="margin-bottom:4px;">Actividad ministerial</div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">Un registro por hermano — se actualiza cada visita</div>
+
   <div class="form-group">
     <label>Hermano *</label>
     <div class="hermano-search-wrap">
       <span class="hermano-search-icon">🔍</span>
-      <input type="text" id="rm-hermano-input" placeholder="Escribir nombre..." autocomplete="off">
+      <input type="text" id="rm-hermano-input" placeholder="Escribir nombre del hermano..."
+        autocomplete="off" style="width:100%;padding:11px 12px 11px 38px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rm-hermano-lista"></div>
-    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rm')">☰ Ver lista completa</button>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rm')">☰ Ver lista completa de hermanos</button>
     <input type="hidden" id="rm-hermano-valor">
+    <div class="hermano-seleccionado" id="rm-hermano-seleccionado"></div>
   </div>
+
   <div id="rm-datos-auto" style="display:none;">
-    <div class="form-group"><label>Departamento</label><select id="rm-dept"><option value="">Seleccionar...</option></select></div>
     <div class="form-group">
-      <label>Áreas de Apoyo</label>
+      <label>Departamento</label>
+      <select id="rm-dept"><option value="">Seleccionar...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Tipos de actividad que desarrolla</label>
+      <div class="multi-select-grid">
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-1" value="Reunión Departamental"><label for="rm-tipo-1">Reunión Departamental</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-2" value="Evento Especial"><label for="rm-tipo-2">Evento Especial</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-3" value="Capacitación"><label for="rm-tipo-3">Capacitación</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-4" value="Servicio"><label for="rm-tipo-4">Servicio</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-5" value="Programa"><label for="rm-tipo-5">Programa</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-6" value="Semana de Oración"><label for="rm-tipo-6">Semana de Oración</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-7" value="Seminario"><label for="rm-tipo-7">Seminario</label></div>
+        <div class="multi-select-item"><input type="checkbox" id="rm-tipo-8" value="Otro"><label for="rm-tipo-8">Otro</label></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Áreas en las que le gustaría apoyar</label>
       <div class="checkbox-grid" id="rm-areas-apoyo"></div>
     </div>
-    <div class="form-group"><label>Día disponible</label><select id="rm-dia"><option value="">Seleccionar...</option><option>Cualquier día</option><option>Sábado</option><option>Domingo</option></select></div>
-    <div class="form-group"><label>Horario disponible</label><select id="rm-horario"><option value="">Seleccionar...</option><option>Todo el día</option><option>Tarde</option><option>Noche</option></select></div>
-    <div class="form-group"><label>Registrado por</label><input type="text" id="rm-registrador"></div>
+    <div class="divider"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Información adicional</div>
+    <div class="form-group">
+      <label>Día disponible para obra misionera</label>
+      <select id="rm-dia">
+        <option value="">Seleccionar...</option>
+        <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+        <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+        <option>Domingo</option><option>Cualquier día</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Horario disponible</label>
+      <select id="rm-horario">
+        <option value="">Seleccionar...</option>
+        <option>Mañana (8am–12pm)</option><option>Tarde (12pm–6pm)</option>
+        <option>Noche (6pm–9pm)</option><option>Todo el día</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Conoce las doctrinas de la iglesia?</label>
+      <select id="rm-doctrinas">
+        <option value="">Seleccionar...</option>
+        <option>Sí, las conoce bien</option><option>Parcialmente</option><option>No las conoce</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>¿Conoce la estructura mundial de la iglesia?</label>
+      <select id="rm-estructura">
+        <option value="">Seleccionar...</option>
+        <option>Sí</option><option>No</option><option>Parcialmente</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tema espiritual en que le gustaría capacitarse</label>
+      <input type="text" id="rm-capacitacion" placeholder="Ej: Evangelismo, Mayordomía, Liderazgo...">
+    </div>
+    <div class="form-group">
+      <label>¿Completó el estudio Fe de Jesús?</label>
+      <select id="rm-fe-jesus" onchange="toggleFeJesus(this)">
+        <option value="">Seleccionar...</option>
+        <option value="si">Sí, lo completó</option>
+        <option value="no">No lo completó</option>
+        <option value="no-sabe">No sabe / No recuerda</option>
+      </select>
+    </div>
+    <div id="rm-fe-jesus-detalle" style="display:none;">
+      <div class="form-group">
+        <label>Lecciones faltantes</label>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px;">
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-1" value="1" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-1" style="font-size:12px;cursor:pointer;">1</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-2" value="2" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-2" style="font-size:12px;cursor:pointer;">2</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-3" value="3" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-3" style="font-size:12px;cursor:pointer;">3</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-4" value="4" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-4" style="font-size:12px;cursor:pointer;">4</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-5" value="5" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-5" style="font-size:12px;cursor:pointer;">5</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-6" value="6" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-6" style="font-size:12px;cursor:pointer;">6</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-7" value="7" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-7" style="font-size:12px;cursor:pointer;">7</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-8" value="8" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-8" style="font-size:12px;cursor:pointer;">8</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-9" value="9" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-9" style="font-size:12px;cursor:pointer;">9</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-10" value="10" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-10" style="font-size:12px;cursor:pointer;">10</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-11" value="11" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-11" style="font-size:12px;cursor:pointer;">11</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-12" value="12" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-12" style="font-size:12px;cursor:pointer;">12</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-13" value="13" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-13" style="font-size:12px;cursor:pointer;">13</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-14" value="14" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-14" style="font-size:12px;cursor:pointer;">14</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-15" value="15" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-15" style="font-size:12px;cursor:pointer;">15</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-16" value="16" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-16" style="font-size:12px;cursor:pointer;">16</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-17" value="17" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-17" style="font-size:12px;cursor:pointer;">17</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-18" value="18" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-18" style="font-size:12px;cursor:pointer;">18</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-19" value="19" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-19" style="font-size:12px;cursor:pointer;">19</label></div>
+          <div style="display:flex;align-items:center;gap:4px;background:#F9FAFB;border:1px solid var(--border);border-radius:6px;padding:5px 6px;"><input type="checkbox" id="lec-20" value="20" style="width:14px;height:14px;accent-color:#1F3864;"><label for="lec-20" style="font-size:12px;cursor:pointer;">20</label></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nombre del instructor bíblico</label>
+        <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label>Registrado por</label>
+      <input type="text" id="rm-registrador" placeholder="Su nombre">
+    </div>
     <button class="btn-primary" onclick="guardarMinisterial()">Guardar registro ministerial</button>
+    <button class="btn-secondary" onclick="showPage('registro')">Cancelar</button>
   </div>
 </div>
 
+<!-- ESTUDIO BÍBLICO MISIONERO -->
 <div id="page-reg-misionero" class="page">
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
-  <div class="section-title">Registro — Estudio Bíblico</div>
+  <div class="section-title" style="margin-bottom:16px;">Registro — Estudio Bíblico</div>
+
   <div class="form-group">
-    <label>Hermano Instructor *</label>
+    <label>Hermano joven acompañante (12–19 años)</label>
     <div class="hermano-search-wrap">
       <span class="hermano-search-icon">🔍</span>
-      <input type="text" id="rmi-hermano-input" placeholder="Buscar hermano..." autocomplete="off">
+      <input type="text" id="rmi-joven-input" placeholder="Buscar joven..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rmi-joven-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rmi-joven')">☰ Ver lista de jóvenes</button>
+    <input type="hidden" id="rmi-hermano-joven">
+    <div class="hermano-seleccionado" id="rmi-joven-seleccionado"></div>
+  </div>
+  <div class="form-group">
+    <label>Hermano adulto que da el estudio *</label>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rmi-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
     </div>
     <div class="hermano-dropdown" id="rmi-hermano-lista"></div>
-    <input type="hidden" id="rmi-hermano-valor">
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rmi')">☰ Ver lista completa</button>
+    <input type="hidden" id="rmi-hermano">
+    <div class="hermano-seleccionado" id="rmi-hermano-seleccionado"></div>
   </div>
-  <div class="form-group"><label>Nombre del estudiante *</label><input type="text" id="rmi-estudiante"></div>
-  <div class="form-group"><label>Teléfono</label><input type="tel" id="rmi-tel"></div>
-  <div class="form-group"><label>Dirección</label><input type="text" id="rmi-dir"></div>
-  <div class="form-group"><label>Lección (1-20)</label><input type="number" id="rmi-leccion" min="1" max="20" value="1"></div>
-  <div class="form-group"><label>Estado</label><select id="rmi-estado"><option>En Curso</option><option>Bautizado</option><option>Pausado</option></select></div>
-  <div class="form-group"><label>Observaciones</label><textarea id="rmi-obs"></textarea></div>
-  <div class="form-group"><label>Registrado por</label><input type="text" id="rmi-registrador"></div>
+  <div id="rmi-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-bottom:8px;"></div>
+  <div id="rmi-familiar-wrap" style="display:none;margin-bottom:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <input type="checkbox" id="rmi-es-familiar" onchange="toggleFamiliarMisionero('rmi')" style="width:16px;height:16px;accent-color:var(--azul);">
+      <label for="rmi-es-familiar" style="font-size:13px;font-weight:600;color:#92400E;cursor:pointer;">✅ Son familiares — aplicar excepción</label>
+    </div>
+    <div id="rmi-parentesco-wrap" style="display:none;">
+      <input type="text" id="rmi-parentesco" placeholder="Ej: esposo/a, padre/madre, hermanos..." style="width:100%;font-size:14px;padding:9px 12px;border:1px solid #FDE68A;border-radius:8px;background:white;color:var(--text);outline:none;">
+    </div>
+  </div>
+
+  <!-- Datos del estudiante (pueden venir precargados) -->
+  <div id="rmi-datos-interesado" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;">
+    <div style="font-weight:600;color:#065F46;margin-bottom:4px;">📋 Datos del interesado (precargados)</div>
+    <div id="rmi-resumen-interesado" style="color:#166534;line-height:1.6;"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Nombre del estudiante *</label>
+    <div style="margin-bottom:6px;position:relative;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
+      <input type="text" id="rmi-interesado-input" placeholder="Buscar en lista de interesados..."
+        autocomplete="off" oninput="buscarEnInteresados('rmi',this.value)"
+        style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
+    </div>
+    <div class="hermano-dropdown" id="rmi-interesado-lista"></div>
+    <button class="ver-todos-btn" onclick="verTodosInteresados('rmi')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
+    <input type="text" id="rmi-estudiante" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
+  </div>
+  <div class="form-group">
+    <label>Teléfono del estudiante</label>
+    <input type="tel" id="rmi-tel" placeholder="+591 7...">
+  </div>
+  <div class="form-group">
+    <label>Dirección del estudiante</label>
+    <input type="text" id="rmi-dir" placeholder="Barrio, zona, referencia...">
+  </div>
+  <div class="form-group">
+    <label>Estado civil del estudiante</label>
+    <select id="rmi-estado-civil">
+      <option value="">Seleccionar...</option>
+      <option>Soltero/a</option>
+      <option>Casado/a</option>
+      <option>Unión libre</option>
+      <option>Divorciado/a</option>
+      <option>Viudo/a</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Lección actual (1-20)</label>
+    <input type="number" id="rmi-leccion" min="1" max="20" value="1" oninput="validarLeccion(this)">
+    <div id="rmi-leccion-error" style="color:#DC2626;font-size:12px;margin-top:4px;display:none;">⚠️ La lección debe estar entre 1 y 20</div>
+  </div>
+  <div class="form-group">
+    <label>Estado del estudio</label>
+    <select id="rmi-estado">
+      <option>En Curso</option>
+      <option>Bautizado</option>
+      <option>Pausado</option>
+      <option>Abandonó</option>
+      <option>Transferido</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Observaciones</label>
+    <textarea id="rmi-obs" placeholder="Notas sobre el progreso del estudio..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>Registrado por</label>
+    <input type="text" id="rmi-registrador" placeholder="Su nombre">
+  </div>
   <button class="btn-primary" onclick="guardarMisionero()">Guardar estudio</button>
+  <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
 </div>
 
+<!-- VISITACIÓN -->
 <div id="page-reg-visitacion" class="page">
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
-  <div class="section-title">Registro — Visitación</div>
+  <div class="section-title" style="margin-bottom:16px;">Registro — Visitación</div>
+
+  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">👤 Hermano visitador</div>
   <div class="form-group">
-    <label>Hermano Visitador *</label>
+    <label>Hermano joven acompañante (12–19 años)</label>
     <div class="hermano-search-wrap">
       <span class="hermano-search-icon">🔍</span>
-      <input type="text" id="rv-hermano-input" placeholder="Buscar hermano..." autocomplete="off">
+      <input type="text" id="rv-joven-input" placeholder="Buscar joven..." autocomplete="off">
+    </div>
+    <div class="hermano-dropdown" id="rv-joven-lista"></div>
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rv-joven')">☰ Ver lista de jóvenes</button>
+    <input type="hidden" id="rv-hermano-joven">
+    <div class="hermano-seleccionado" id="rv-joven-seleccionado"></div>
+  </div>
+  <div class="form-group">
+    <label>Hermano adulto que realiza la visita *</label>
+    <div class="hermano-search-wrap">
+      <span class="hermano-search-icon">🔍</span>
+      <input type="text" id="rv-hermano-input" placeholder="Buscar hermano adulto..." autocomplete="off">
     </div>
     <div class="hermano-dropdown" id="rv-hermano-lista"></div>
-    <input type="hidden" id="rv-hermano-valor">
+    <button class="ver-todos-btn" onclick="mostrarTodosHermanos('rv')">☰ Ver lista completa</button>
+    <input type="hidden" id="rv-hermano">
+    <div class="hermano-seleccionado" id="rv-hermano-seleccionado"></div>
   </div>
-  <div class="form-group"><label>Nombre del visitado *</label><input type="text" id="rv-nombre"></div>
-  <div class="form-group"><label>Fecha</label><input type="date" id="rv-fecha"></div>
-  <div class="form-group"><label>Estado</label><select id="rv-estado"><option>Concretada</option><option>No encontrado</option></select></div>
-  <div class="form-group"><label>Observaciones</label><textarea id="rv-obs"></textarea></div>
-  <div class="form-group"><label>Registrado por</label><input type="text" id="rv-registrador"></div>
+  <div id="rv-error-sexo" style="display:none;background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:8px 12px;font-size:12px;color:#991B1B;margin-bottom:8px;"></div>
+  <div id="rv-familiar-wrap" style="display:none;margin-bottom:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <input type="checkbox" id="rv-es-familiar" onchange="toggleFamiliarMisionero('rv')" style="width:16px;height:16px;accent-color:var(--azul);">
+      <label for="rv-es-familiar" style="font-size:13px;font-weight:600;color:#92400E;cursor:pointer;">✅ Son familiares — aplicar excepción</label>
+    </div>
+    <div id="rv-parentesco-wrap" style="display:none;">
+      <input type="text" id="rv-parentesco" placeholder="Ej: esposo/a, padre/madre, hermanos..." style="width:100%;font-size:14px;padding:9px 12px;border:1px solid #FDE68A;border-radius:8px;background:white;color:var(--text);outline:none;">
+    </div>
+  </div>
+
+  <!-- Datos precargados del interesado -->
+  <div id="rv-datos-interesado" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;">
+    <div style="font-weight:600;color:#065F46;margin-bottom:4px;">📋 Datos del interesado (precargados)</div>
+    <div id="rv-resumen-interesado" style="color:#166534;line-height:1.6;"></div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">🏠 Datos de la persona visitada</div>
+  <div class="form-group">
+    <label>Nombre *</label>
+    <div style="margin-bottom:6px;position:relative;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
+      <input type="text" id="rv-interesado-input" placeholder="Buscar en lista de interesados..."
+        autocomplete="off" oninput="buscarEnInteresados('rv',this.value)"
+        style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
+    </div>
+    <div class="hermano-dropdown" id="rv-interesado-lista"></div>
+    <button class="ver-todos-btn" onclick="verTodosInteresados('rv')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
+    <input type="text" id="rv-nombre" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
+  </div>
+  <div class="form-group">
+    <label>Teléfono</label>
+    <input type="tel" id="rv-tel" placeholder="+591 7...">
+  </div>
+  <div class="form-group">
+    <label>Dirección / Referencia</label>
+    <input type="text" id="rv-dir" placeholder="Barrio, zona, referencia...">
+  </div>
+  <div class="form-group">
+    <label>Relación con la iglesia</label>
+    <select id="rv-relacion">
+      <option value="">Seleccionar...</option>
+      <option>Familiar de miembro</option>
+      <option>Conocido</option>
+      <option>Interesado previo</option>
+      <option>Desconocido / Evangelismo</option>
+      <option>Ex miembro</option>
+      <option>Otro</option>
+    </select>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-size:13px;font-weight:600;color:var(--azul);margin-bottom:10px;">📋 Detalles de la visita</div>
+  <div class="form-group">
+    <label>Fecha de la visita</label>
+    <input type="date" id="rv-fecha">
+  </div>
+  <div class="form-group">
+    <label>Estado de la visita</label>
+    <select id="rv-estado">
+      <option value="">Seleccionar...</option>
+      <option>Concretada</option>
+      <option>No encontrado</option>
+      <option>Reprogramada</option>
+      <option>Cancelada</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Material entregado</label>
+    <select id="rv-material">
+      <option value="">Ninguno</option>
+      <option>Biblia</option>
+      <option>Libro devocional</option>
+      <option>Tratado / Folleto</option>
+      <option>Revista Adventista</option>
+      <option>Invitación a culto</option>
+      <option>Otro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Observaciones</label>
+    <textarea id="rv-obs" placeholder="Cómo fue recibido, interés demostrado, próximos pasos..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>Registrado por</label>
+    <input type="text" id="rv-registrador" placeholder="Su nombre">
+  </div>
   <button class="btn-primary" onclick="guardarVisitacion()">Guardar visita</button>
+  <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
 </div>
 
+<!-- PÁGINA ACTUALIZAR -->
 <div id="page-actualizar" class="page">
-  <div class="section-title">🔄 Actualizar registros</div>
-  <div class="filters">
-    <div class="filter-chip active" onclick="setFiltroActualizar('visitas',this)">🚶 Visitas</div>
-    <div class="filter-chip" onclick="setFiltroActualizar('estudios',this)">📖 Estudios</div>
+  <div style="margin-top:8px;">
+    <div class="section-title">🔄 Actualizar registros</div>
+
+    <!-- Filtro de tipo -->
+    <div class="filters" style="margin-bottom:16px;">
+      <div class="filter-chip active" onclick="setFiltroActualizar('visitas',this)">🚶 Visitas</div>
+      <div class="filter-chip" onclick="setFiltroActualizar('estudios',this)">📖 Estudios</div>
+    </div>
+
+    <div id="act-lista-visitas">
+      <div class="loading"><div class="spinner"></div>Cargando visitas...</div>
+    </div>
+    <div id="act-lista-estudios" style="display:none;">
+      <div class="loading"><div class="spinner"></div>Cargando estudios...</div>
+    </div>
   </div>
-  <div id="act-lista-visitas"></div>
-  <div id="act-lista-estudios" style="display:none;"></div>
 </div>
 
 <div id="page-dashboard" class="page">
-  <div id="dashboard-contenido"></div>
+  <div id="dashboard-contenido">
+    <div class="loading"><div class="spinner"></div>Calculando estadísticas...</div>
+  </div>
 </div>
 
+<!-- NAV BOTTOM -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="showPage('miembros')"><span>👥</span>Hermanos</button>
-  <button class="nav-btn" onclick="showPage('interesados')"><span>📋</span>Interesados</button>
-  <button class="nav-btn" onclick="showPage('registro')"><span>✏️</span>Registrar</button>
-  <button class="nav-btn" onclick="showPage('actualizar')"><span>🔄</span>Actualizar</button>
-  <button class="nav-btn" onclick="showPage('dashboard')"><span>📊</span>Resumen</button>
+  <button class="nav-btn active" onclick="showPage('miembros')">
+    <span class="icon">👥</span>Hermanos
+  </button>
+  <button class="nav-btn" onclick="showPage('interesados')">
+    <span class="icon">📋</span>Interesados
+  </button>
+  <button class="nav-btn" onclick="showPage('registro')">
+    <span class="icon">✏️</span>Registrar
+  </button>
+  <button class="nav-btn" onclick="showPage('actualizar')">
+    <span class="icon">🔄</span>Actualizar
+  </button>
+  <button class="nav-btn" onclick="showPage('dashboard')">
+    <span class="icon">📊</span>Resumen
+  </button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// CONFIGURACIÓN DE ENLACES (¡Reemplaza con tus IDs si es necesario!)
-const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q'; 
+const SHEET_ID = '1PCLjDHrwaneyjssmCbqGAYDujVFrjP6Q';
+const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyblnO0OFHB1S0KcCf8uD3tMtx3XGBp3kYnrp9gDzfSeXI1DqlIPtLnN1knDRTlcEm/exec';
 
-const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
-
-let MIEMBROS = [], MINISTERIAL = [], MISIONERO = [], INTERESADOS = [], VISITAS = [];
-let filtroNivel = '';
-let filtroActualizarActual = 'visitas';
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  if(t) { t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
-}
-
-async function gvizFetch(sheet) {
-  try {
-    const url = BASE + encodeURIComponent(sheet) + '&tq=select%20*';
-    console.log(`Lanzando petición a hoja: ${sheet}`);
-    const r = await fetch(url);
-    const t = await r.text();
-    const match = t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
-    if (!match) return [];
-    const json = JSON.parse(match[1]);
-    if (!json.table || !json.table.rows) return [];
-    const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-    return json.table.rows.map(r => Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? ''])));
-  } catch(e) {
-    console.error(`Error de conexión en pestaña ${sheet}:`, e);
-    return [];
-  }
-}
-
-async function cargarDatos() {
-  try {
-    console.log("Iniciando descarga asíncrona...");
-    
-    MIEMBROS = await gvizFetch('MIEMBROS');
-    MINISTERIAL = await gvizFetch('CRECIMIENTO_MINISTERIAL');
-    MISIONERO = await gvizFetch('CRECIMIENTO_MISIONERO');
-    VISITAS = await gvizFetch('VISITAS');
-    let cat = await gvizFetch('CATALOGOS');
-    let est = await gvizFetch('ESTUDIOS');
-    let int = await gvizFetch('INTERESADOS');
-
-    if(!MIEMBROS.length) {
-      document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ La hoja 'MIEMBROS' devolvió 0 filas. Revisa que el documento sea público o los nombres de las pestañas.</div>`;
-      return;
-    }
-
-    MIEMBROS = MIEMBROS.filter(r => r['Apellidos y Nombres'] && r['Apellidos y Nombres'] !== 'Apellido, Nombre');
-    
-    est.forEach(e => {
-      if (e['Nombre del Estudiante']) {
-        MISIONERO.push({
-          'Nombre del Hermano': e['Nombre del Hermano'] || '',
-          'Nombre del Estudiante': e['Nombre del Estudiante'],
-          'Estado': e['Estado'] || 'En Curso',
-          'Lección Actual (1-20)': e['Lección Actual (1-20)'] || 1
-        });
-      }
-    });
-
-    INTERESADOS = int.map(i => ({
-      nombre: i['Nombre'] || 'Sin Nombre',
-      tel: i['Teléfono'] || '',
-      dir: i['Dirección'] || '',
-      tipo: i['Tipo de Actividad'] || '',
-      hermano: i['Hermano Adulto'] || '',
-      obs: i['Observaciones'] || ''
-    }));
-
-    window.CATALOGOS_DEPT = [];
-    window.CATALOGOS_TAL = [];
-    if (cat.length > 0) {
-      const keys = Object.keys(cat[0]);
-      cat.forEach((row, idx) => {
-        if(idx > 0) {
-          if(row[keys[0]]) window.CATALOGOS_DEPT.push(String(row[keys[0]]).trim());
-          if(row[keys[1]]) window.CATALOGOS_TAL.push(String(row[keys[1]]).trim());
-        }
-      });
-    }
-
-    // Renderizar interfaces tras tener los datos listos
-    renderMiembros(MIEMBROS);
-    renderInteresados();
-    renderDashboard();
-    renderActualizar();
-    poblarSelectores();
-
-  } catch(err) {
-    console.error("Fallo general en la lectura:", err);
-    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Error crítico: ${err.message}</div>`;
-  }
-}
-
-function getNombreHermano(r) {
-  return String(r['Nombre del Hermano'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
-}
-
-function calcNivel(m) {
-  const nombre = String(m['Apellidos y Nombres'] || '').trim();
-  let min = m['Cargo Principal'] && m['Cargo Principal'] !== '-' ? 60 : 0;
-  const estActivos = MISIONERO.filter(r => getNombreHermano(r) === nombre && (r['Estado'] === 'En Curso' || !r['Estado'])).length;
-  const visActivas = VISITAS.filter(r => getNombreHermano(r) === nombre).length;
-  let mis = Math.min(50, estActivos * 20) + Math.min(50, visActivas * 10);
-  return { min, mis: Math.min(100, mis), activos: estActivos, visitas: visActivas };
-}
-
-function semaforo(min, mis) {
-  if (min >= 60 && mis >= 20) return { cls: 'b-verde', label: '🟢 Activo', key: 'verde' };
-  if (min >= 60 || mis >= 20) return { cls: 'b-amarillo', label: '🟡 En desarrollo', key: 'amarillo' };
-  return { cls: 'b-rojo', label: '🔴 Atención', key: 'rojo' };
-}
-
-function renderMiembros(lista) {
-  const el = document.getElementById('lista-miembros');
-  if(!el) return;
-  const mostrar = filtroNivel ? lista.filter(m => semaforo(calcNivel(m).min, calcNivel(m).mis).key === filtroNivel) : lista;
-  if (!mostrar.length) { el.innerHTML = '<div class="empty-state">No se encontraron hermanos</div>'; return; }
-  
-  el.innerHTML = mostrar.map(m => {
-    const n = m['Apellidos y Nombres'];
-    const niv = calcNivel(m);
-    const sm = semaforo(niv.min, niv.mis);
-    return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
-      <div class="avatar" style="background:#1F386420; color:#1F3864;">${n.substring(0,2).toUpperCase()}</div>
-      <div class="member-info"><div class="member-name">${n}</div><div class="member-sub">${m['Departamento'] || 'Sin área'}</div></div>
-      <span class="badge ${sm.cls}">${sm.label}</span>
-    </div>`;
-  }).join('');
-}
-
-function verPerfil(nombreEnc) {
-  const nombre = decodeURIComponent(nombreEnc);
-  const m = MIEMBROS.find(x => x['Apellidos y Nombres'] === nombre);
-  if (!m) return;
-  const niv = calcNivel(m);
-  const sm = semaforo(niv.min, niv.mis);
-
-  document.getElementById('perfil-contenido').innerHTML = `
-    <div class="card">
-      <h3>${m['Apellidos y Nombres']}</h3>
-      <p style="color:var(--text2); font-size:13px; margin-bottom:10px;">${m['Cargo Principal'] || 'Miembro'}</p>
-      <span class="badge ${sm.cls}">${sm.label}</span>
-      <div class="divider"></div>
-      <div class="points-grid">
-        <div class="point-card"><div class="point-val">${niv.activos}</div><div class="point-lbl">Estudios Activos</div></div>
-        <div class="point-card"><div class="point-val">${niv.visitas}</div><div class="point-lbl">Visitas Hechas</div></div>
-      </div>
-    </div>`;
-  showPage('perfil');
-}
-
-function renderInteresados() {
-  const el = document.getElementById('lista-interesados');
-  if(!el) return;
-  if (!INTERESADOS.length) { el.innerHTML = '<div class="empty-state">No hay interesados</div>'; return; }
-  el.innerHTML = INTERESADOS.map(i => `
-    <div class="card">
-      <div class="int-header"><strong>${i.nombre}</strong> <span class="badge b-amarillo">${i.tipo}</span></div>
-      <p style="font-size:12px; color:var(--text2); margin-top:4px;">${i.dir} · ${i.tel}</p>
-    </div>`).join('');
-}
-
-function renderDashboard() {
-  const el = document.getElementById('dashboard-contenido');
-  if(!el) return;
-  el.innerHTML = `
-    <div class="section-title">Resumen de la Congregación</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val">${MIEMBROS.length}</div><div class="stat-lbl">Miembros totales</div></div>
-      <div class="stat-card"><div class="stat-val">${INTERESADOS.length}</div><div class="stat-lbl">Interesados</div></div>
-    </div>`;
-}
-
-function renderActualizar() {
-  const lv = document.getElementById('act-lista-visitas');
-  const le = document.getElementById('act-lista-estudios');
-  if(lv) lv.innerHTML = VISITAS.length ? VISITAS.map(v => `<div class="card">${v['Nombre del Visitado'] || 'Visita'} - ${v['Estado de la Visita'] || 'Registrada'}</div>`).join('') : 'Sin visitas';
-  if(le) le.innerHTML = MISIONERO.length ? MISIONERO.map(e => `<div class="card">${e['Nombre del Estudiante'] || 'Estudiante'} - Lec. ${e['Lección Actual (1-20)'] || 1}</div>`).join('') : 'Sin estudios';
-}
-
-function poblarSelectores() {
-  const ds = document.getElementById('rm-dept');
-  if (ds && window.CATALOGOS_DEPT) {
-    ds.innerHTML = '<option value="">Seleccionar...</option>' + window.CATALOGOS_DEPT.map(d => `<option value="${d}">${d}</option>`).join('');
-  }
-  const areasContainer = document.getElementById('rm-areas-apoyo');
-  if (areasContainer && window.CATALOGOS_TAL) {
-    areasContainer.innerHTML = window.CATALOGOS_TAL.map((area, i) => `
-      <div class="checkbox-item">
-        <input type="checkbox" id="area-${i}" name="area-apoyo" value="${area}">
-        <label for="area-${i}">${area}</label>
-      </div>`).join('');
-  }
-}
-
-function crearBuscadorCompleto(prefix, hiddenId) {
-  const input = document.getElementById(`${prefix}-hermano-input`);
-  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
-  if (!input || !listaEl) return;
-
-  input.oninput = () => {
-    const q = input.value.toLowerCase().trim();
-    if (!q) { listaEl.classList.remove('show'); return; }
-    const hits = MIEMBROS.filter(m => m['Apellidos y Nombres'] && m['Apellidos y Nombres'].toLowerCase().includes(q)).slice(0, 8);
-    
-    listaEl.innerHTML = hits.map(h => `
-      <div class="hermano-opcion" onclick="seleccionarHermanoDirecto('${prefix}', '${hiddenId}', '${h['Apellidos y Nombres']}')">
-        ${h['Apellidos y Nombres']}
-      </div>`).join('');
-    listaEl.classList.add('show');
-  };
-}
-
-function seleccionarHermanoDirecto(prefix, hiddenId, nombre) {
-  document.getElementById(`${prefix}-hermano-input`).value = nombre;
-  document.getElementById(hiddenId).value = nombre;
-  document.getElementById(`${prefix}-hermano-lista`).classList.remove('show');
-  if(prefix === 'rm') document.getElementById('rm-datos-auto').style.display = 'block';
-}
-
-function mostrarTodosHermanos(prefix) {
-  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
-  if (!listaEl) return;
-  listaEl.innerHTML = MIEMBROS.slice(0, 40).map(h => `
-    <div class="hermano-opcion" onclick="seleccionarHermanoDirecto('${prefix}', '${prefix==='rm'?'rm-hermano-valor':prefix+'-hermano-valor'}', '${h['Apellidos y Nombres']}')">
-      ${h['Apellidos y Nombres']}
-    </div>`).join('');
-  listaEl.classList.add('show');
-}
-
-async function ejecutarEnvio(tipo, fila) {
-  showToast('⏳ Guardando en Google Sheets...');
+// Función central para grabar en Google Sheets automáticamente
+async function guardarEnSheets(tipo, fila) {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tipo, fila })
+      body: JSON.stringify({ tipo, fila }),
     });
-    showToast('✅ ¡Guardado con éxito!');
-    setTimeout(() => cargarDatos(), 1500);
+    return true;
   } catch(e) {
-    showToast('⚠️ Error de red al guardar');
+    console.error('Error guardando en Sheets:', e);
+    return false;
   }
 }
 
+// Las áreas de apoyo se extraen dinámicamente de 'Talentos Prácticos' de cada miembro
+
+let MIEMBROS = [], MINISTERIAL = [], MISIONERO = [], INTERESADOS = [], VISITAS = [];
+let filtroNivel = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+async function gvizFetchAll(sheet) {
+  // Cargar todas las filas en lotes de 500
+  let allRows = [];
+  let offset = 0;
+  const limit = 500;
+  while (true) {
+    const url = BASE + encodeURIComponent(sheet) + `&tq=select%20*%20limit%20${limit}%20offset%20${offset}`;
+    const rows = await fetch(url)
+      .then(r => r.text())
+      .then(t => {
+        const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+        const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+        return (json.table.rows || []).map(r =>
+          Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+        );
+      });
+    allRows = allRows.concat(rows);
+    if (rows.length < limit) break;
+    offset += limit;
+  }
+  return allRows;
+}
+
+function gvizFetch(sheet) {
+  return fetch(BASE + encodeURIComponent(sheet) + '&tq=select%20*')
+    .then(r => r.text())
+    .then(t => {
+      const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const cols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+      if (sheet === 'MIEMBROS') console.log('📋 Columnas MIEMBROS:', cols, '| Filas:', json.table.rows?.length);
+      if (sheet === 'CATALOGOS') console.log('📋 Columnas CATALOGOS:', cols);
+      return (json.table.rows || []).map(r =>
+        Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? '']))
+      );
+    });
+}
+
+async function cargarDatos() {
+  try {
+    // Cargar MIEMBROS con paginación para obtener todos los registros
+    const m = await gvizFetchAll('MIEMBROS');
+    
+    // Cargar el resto en paralelo
+    const [min, mis, cat, vis, est, int] = await Promise.all([
+      gvizFetch('CRECIMIENTO_MINISTERIAL'),
+      gvizFetch('CRECIMIENTO_MISIONERO'),
+      gvizFetch('CATALOGOS'),
+      gvizFetch('VISITAS'),
+      gvizFetch('ESTUDIOS'),
+      gvizFetch('INTERESADOS'),
+    ]);
+    MIEMBROS = m.filter(r => {
+      const n = String(r['Apellidos y Nombres'] || '').trim();
+      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
+    });
+    MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
+    MISIONERO = mis.filter(r => getNombreHermano(r));
+    VISITAS = vis.filter(r => {
+      const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
+      const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
+      return Boolean(hermano || visitado);
+    });
+
+    // Agregar estudios desde hoja ESTUDIOS (evitar duplicados)
+    est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
+      const nombre = String(e['Nombre del Estudiante']||'').trim();
+      const existe = MISIONERO.find(m =>
+        String(m['Nombre del\nEstudiante'] || m['Nombre del Estudiante'] || '').trim() === nombre
+      );
+      if (!existe) {
+        MISIONERO.push({
+          'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
+          'Nombre del\nEstudiante': nombre,
+          'Nombre del Estudiante': nombre,
+          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
+          'Teléfono': String(e['Teléfono']||'').trim(),
+          'Estado Civil': String(e['Estado Civil']||'').trim(),
+        });
+      }
+    });
+
+    // Cargar interesados desde hoja INTERESADOS (sin duplicar)
+    INTERESADOS = []; // Reset antes de cargar desde Sheets
+    const interesadosSheets = int.filter(r => String(r['Nombre']||'').trim());
+    interesadosSheets.forEach(i => {
+      INTERESADOS.push({
+        nombre: String(i['Nombre']||'').trim(),
+        tel: String(i['Teléfono']||'').trim(),
+        dir: String(i['Dirección']||'').trim(),
+        tipo: String(i['Tipo de Actividad']||'').trim(),
+        hermano: String(i['Hermano Adulto']||'').trim(),
+        obs: String(i['Observaciones']||'').trim(),
+        fecha: String(i['Fecha']||'').trim(),
+      });
+    });
+
+    // CATALOGOS: parsedNumHeaders=0 — ninguna fila es cabecera automática
+    // Fila 0 del array = títulos (DEPARTAMENTOS, TALENTOS PRÁCTICOS, etc.)
+    // Fila 1+ = datos reales
+    // Las claves del objeto son 'A','B','C','D'... pero los VALORES de fila 0 son los títulos
+    // Buscar qué clave tiene 'DEPARTAMENTOS' y cuál tiene 'TALENTOS' en la fila 0
+    const catFila0 = cat[0] || {};
+    let keyDept = null, keyTal = null;
+    Object.entries(catFila0).forEach(([k, v]) => {
+      const val = String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (val.includes('DEPARTAMENTO')) keyDept = k;
+      if (val.includes('TALENTO')) keyTal = k;
+    });
+
+    const catDatos = cat.slice(1); // datos reales desde fila 1
+
+    window.CATALOGOS_DEPT = keyDept ? [...new Set(
+      catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean)
+    )].sort() : [];
+
+    window.CATALOGOS_TAL = keyTal ? [...new Set(
+      catDatos.map(r => String(r[keyTal]||'').trim()).filter(Boolean)
+    )].sort() : [];
+
+    console.log('🔑 keyDept:', keyDept, '| keyTal:', keyTal);
+    console.log('📋 Departamentos:', window.CATALOGOS_DEPT);
+    console.log('📋 Talentos:', window.CATALOGOS_TAL);
+
+    renderMiembros(MIEMBROS);
+    renderInteresados();
+    renderDashboard();
+    renderActualizar();
+    poblarSelectores();
+    poblarInteresadosEnFormularios();
+  } catch(e) {
+    document.getElementById('lista-miembros').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div>No se pudo conectar con Google Sheets.<br><small style="color:#999;">${e.message}</small></div>`;
+  }
+}
+
+function getNombreHermano(r) {
+  return String(
+    r['Nombre del\nHermano'] || r['Nombre del Hermano'] ||
+    r['Hermano'] || r['Nombre Hermano'] || ''
+  ).trim();
+}
+
+function getCargo(m) {
+  return String(m['Cargo\nPrincipal'] || m['Cargo Principal'] || '').trim();
+}
+
+function calcNivel(m) {
+  const nombre = String(m['Apellidos y Nombres'] || '').trim();
+  const cargo = getCargo(m);
+  const tieneCargo = cargo && cargo !== '-' && cargo !== 'Sin Cargo Actual';
+
+  // MINISTERIAL: 60% cargo + hasta 20% áreas + hasta 20% días
+  let min = 0;
+  if (tieneCargo) min += 60;
+  const regMin = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim() === nombre).slice(-1)[0];
+  if (regMin) {
+    const areas = String(regMin['Areas de Apoyo']||'').split(',').filter(a => a.trim()).length;
+    min += Math.min(20, areas * 3);
+    const dia = String(regMin['Dia Disponible']||'').trim();
+    if (dia) min += dia === 'Cualquier día' ? 20 : 10;
+  }
+  min = Math.min(100, min);
+
+  // MISIONERO: buscar estudios donde el hermano es el que da el estudio
+  const estudios = MISIONERO.filter(r => {
+    const herm = String(r['Nombre del Hermano'] || r['Nombre del\nHermano'] || '').trim();
+    return herm === nombre;
+  });
+  // #11: activos = En Curso o sin estado
+  const activos = estudios.filter(r => {
+    const est = String(r['Estado']||'').trim();
+    return est === 'En Curso' || est === '';
+  });
+  const bautizados = estudios.filter(r => String(r['Estado']||'').trim() === 'Bautizado');
+
+  // Visitas donde el hermano es el visitador
+  const visitas = VISITAS.filter(r => {
+    const hv = String(r['Hermano Visitador'] || r['Hermano'] || r['Nombre del\nHermano'] || '').trim();
+    return hv === nombre;
+  });
+
+  let mis = 0;
+  mis += Math.min(50, activos.length * 20);
+  mis += Math.min(30, bautizados.length * 15);
+  mis += Math.min(20, visitas.length * 5);
+  mis = Math.min(100, mis);
+
+  return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: regMin ? 1 : 0, visitas: visitas.length, tieneCargo };
+}
+
+function semaforo(min, mis) {
+  // ACTIVO: tiene cargo ministerial Y tiene actividad misionera
+  if (min >= 60 && mis >= 20) return { cls: 'b-verde', label: '🟢 Activo', key: 'verde', desc: 'Cargo ministerial + actividad misionera' };
+  // EN DESARROLLO: tiene cargo pero sin misión, o tiene misión pero sin cargo
+  if (min >= 60 || mis >= 20) return { cls: 'b-amarillo', label: '🟡 En desarrollo', key: 'amarillo', desc: min >= 60 ? 'Tiene cargo pero sin actividad misionera' : 'Activo misionero pero sin cargo ministerial' };
+  // NECESITA ATENCIÓN: ni cargo ni misión
+  return { cls: 'b-rojo', label: '🔴 Necesita atención', key: 'rojo', desc: 'Sin cargo ministerial ni actividad misionera' };
+}
+
+function initials(n) {
+  const p = String(n).split(/[\s,]+/).filter(Boolean);
+  return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : (p[0]||'?')[0].toUpperCase();
+}
+
+const PALETTE = ['#1F3864','#1E5631','#7C3AED','#B45309','#0F766E','#9F1239','#1D4ED8'];
+function avatarColor(n) { let h=0; for(let c of n) h+=c.charCodeAt(0); return PALETTE[h%PALETTE.length]; }
+
+function setFiltroNivel(val, el) {
+  filtroNivel = val;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filtrarMiembros();
+}
+
+function renderMiembros(lista) {
+  const el = document.getElementById('lista-miembros');
+  const mostrar = filtroNivel ? lista.filter(m => {
+    const niv = calcNivel(m);
+    return semaforo(niv.min, niv.mis).key === filtroNivel;
+  }) : lista;
+
+  if (!mostrar.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No se encontraron hermanos</div>';
+    return;
+  }
+  const max = 100;
+  el.innerHTML = mostrar.slice(0, max).map(m => {
+    const n = String(m['Apellidos y Nombres'] || '').trim();
+    const col = avatarColor(n);
+    // Usar colDept dinámico si ya está disponible, sino intentar el nombre exacto
+    const deptCol = window._colDept || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
+    const dept = deptCol ? String(m[deptCol] || '').trim() : '';
+    const clasif = String(m['Clasificación'] || '').trim();
+    const niv = calcNivel(m);
+    const sm = semaforo(niv.min, niv.mis);
+    return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
+      <div class="avatar" style="background:${col}25;color:${col};">${initials(n)}</div>
+      <div class="member-info">
+        <div class="member-name">${n}</div>
+        <div class="member-sub">${dept||'Sin departamento'}${clasif?' · '+clasif:''}</div>
+      </div>
+      <span class="badge ${sm.cls}">${sm.label}</span>
+    </div>`;
+  }).join('') + (mostrar.length > max ? `<div class="empty-state" style="padding:12px;">Mostrando ${max} de ${mostrar.length}. Use el buscador.</div>` : '');
+}
+
+function filtrarMiembros() {
+  const q = document.getElementById('search-miembro').value.toLowerCase();
+  const lista = q ? MIEMBROS.filter(m => String(m['Apellidos y Nombres']||'').toLowerCase().includes(q)) : MIEMBROS;
+  renderMiembros(lista);
+}
+
+// Nombres exactos de columnas en Google Sheets (confirmados por el usuario)
+// MIEMBROS: 'Apellidos y Nombres', 'Edad', 'Bautizado', 'Fecha de Bautismo',
+//           'Clasificación', 'Registro Iglesia', 'Departamento'
+
+// MODIFICACIÓN 3: Calcular días desde bautismo
+// La columna en Sheets se llama exactamente: 'Fecha de Bautismo'
+// Formato esperado: DD/MM/YYYY  (ej: 15/03/2025) o YYYY-MM-DD
+// También maneja fechas numéricas seriales de Google Sheets (número de días desde 30/12/1899)
+function diasDesdeBautismo(m) {
+  const raw = m['Fecha de Bautismo'];
+  if (raw === '' || raw === null || raw === undefined) return null;
+
+  let fecha = null;
+
+  // Caso 1: número serial de Google Sheets (ej: 45730)
+  if (typeof raw === 'number') {
+    // Sheets cuenta días desde 30/12/1899
+    fecha = new Date(Math.round((raw - 25569) * 86400 * 1000));
+  } else {
+    const fechaBaut = String(raw).trim();
+    if (!fechaBaut) return null;
+    const partes = fechaBaut.split(/[\/\-]/);
+    if (partes.length === 3) {
+      if (partes[0].length === 4) {
+        // YYYY-MM-DD
+        fecha = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
+      } else {
+        // DD/MM/YYYY
+        fecha = new Date(parseInt(partes[2]), parseInt(partes[1])-1, parseInt(partes[0]));
+      }
+    }
+  }
+
+  if (!fecha || isNaN(fecha.getTime())) return null;
+  const hoy = new Date();
+  const diff = Math.floor((hoy - fecha) / (1000*60*60*24));
+  return diff >= 0 ? diff : null;
+}
+
+function verPerfil(nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+  if (!m) return;
+  const niv = calcNivel(m);
+  const smMin = semaforo(niv.min, 0);
+  const smMis = semaforo(0, niv.mis);
+  const smGen = semaforo(niv.min, niv.mis);
+  const col = avatarColor(nombre);
+  const cargo = getCargo(m) || 'Sin cargo';
+  const deptCol = window._colDept || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
+  const dept = deptCol ? String(m[deptCol]||'').trim() : '';
+  const talCol = window._colTalentos || Object.keys(m).find(k => k.replace(/\n/g,'').toLowerCase().includes('talentos'));
+  const talentos = talCol ? String(m[talCol]||'').trim() : '';
+  const dones = String(m['Dones\nEspirituales']||m['Dones Espirituales']||'').trim();
+  const clasif = String(m['Clasificación']||'').trim();
+  const estado = String(m['Estado']||'').trim();
+  const bautizado = String(m['Bautizado']||'').trim();
+  const edad = parseInt(m['Edad'] || 0) || 0;
+  const regIglesia = String(m['Registro Iglesia']||'').trim();
+  const fechaBautRaw = m['Fecha de Bautismo'];
+  let fechaBautDisplay = '';
+  if (fechaBautRaw !== '' && fechaBautRaw !== null && fechaBautRaw !== undefined) {
+    if (typeof fechaBautRaw === 'number') {
+      const d = new Date(Math.round((fechaBautRaw - 25569) * 86400 * 1000));
+      fechaBautDisplay = d.toLocaleDateString('es-BO', {day:'2-digit', month:'2-digit', year:'numeric'});
+    } else {
+      fechaBautDisplay = String(fechaBautRaw).trim();
+    }
+  }
+
+  // MODIFICACIÓN 3: badge de recién bautizado
+  const diasBaut = diasDesdeBautismo(m);
+  let recienBautizadoBadge = '';
+  if (diasBaut !== null && diasBaut <= 60) {
+    recienBautizadoBadge = `<span class="badge b-naranja">🌟 Recién bautizado (${diasBaut}d)</span>`;
+  }
+  // MODIFICACIÓN 2: badge de joven adolescente
+  let jovenBadge = '';
+  if (edad >= 12 && edad <= 19) {
+    jovenBadge = `<span class="badge b-morado">🧑 Joven (${edad} años)</span>`;
+  }
+
+  const estudios = MISIONERO.filter(r => getNombreHermano(r) === nombre);
+  const activos = estudios.filter(r => String(r['Estado']||'') === 'En Curso');
+  const disponibilidad = activos.length === 0 ? 'Disponible' : activos.length < 3 ? `${activos.length}/3 estudios` : 'Consultar';
+  const dispBadge = activos.length < 3 ? 'b-verde' : 'b-amarillo';
+
+  const estudiosHTML = activos.length > 0
+    ? activos.map(e => {
+        const est = String(e['Nombre del\nEstudiante']||e['Nombre del Estudiante']||'Sin nombre').trim();
+        const lec = parseInt(e['Lección\nActual (1-20)']||e['Lección Actual (1-20)']||0)||0;
+        return `<div class="estudio-item">
+          <div class="estudio-top">
+            <span class="estudio-name">${est}</span>
+            <span style="font-size:11px;color:var(--text2);">Lec. ${lec}/20</span>
+          </div>
+          <div class="leccion-bar"><div class="leccion-fill" style="width:${Math.round(lec/20*100)}%"></div></div>
+        </div>`;
+      }).join('')
+    : '<div style="font-size:13px;color:var(--text2);padding:8px 0 4px;">Sin estudios bíblicos activos registrados</div>';
+
+  document.getElementById('perfil-contenido').innerHTML = `
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar-xl" style="background:${col}25;color:${col};">${initials(nombre)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:700;color:var(--text);">${nombre}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${cargo}</div>
+          <div style="font-size:12px;color:var(--text2);">${dept}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge ${smGen.cls}">${smGen.label}</span>
+            ${clasif ? `<span class="badge b-gris">${clasif}</span>` : ''}
+            ${estado ? `<span class="badge b-azul">${estado}</span>` : ''}
+            ${recienBautizadoBadge}
+            ${jovenBadge}
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ESTADO ESPIRITUAL: Bautizado + Fecha de Bautismo -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+        ${bautizado ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Bautizado</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${bautizado}</div></div>` : ''}
+        ${fechaBautDisplay ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Fecha de Bautismo</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${fechaBautDisplay}${diasBaut !== null ? `<span style="font-size:11px;font-weight:400;color:var(--text2);margin-left:6px;">(hace ${diasBaut} días)</span>` : ''}</div></div>` : ''}
+        ${regIglesia ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Registro Iglesia</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${regIglesia}</div></div>` : ''}
+        ${edad ? `<div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;">Edad</span><div style="font-size:14px;font-weight:600;margin-top:3px;">${edad} años</div></div>` : ''}
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>🏛️ Nivel ministerial</span>
+          <strong>${niv.min} / 100</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-${niv.min>=70?'verde':niv.min>=40?'amber':'rojo'}" style="width:${niv.min}%"></div>
+        </div>
+        <div style="margin-top:5px;"><span class="badge ${smMin.cls}">${smMin.label}</span></div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>🌍 Nivel misionero</span>
+          <strong>${niv.mis} / 100</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-${niv.mis>=70?'azul':niv.mis>=40?'amber':'rojo'}" style="width:${niv.mis}%"></div>
+        </div>
+        <div style="margin-top:5px;"><span class="badge ${smMis.cls}">${smMis.label}</span></div>
+      </div>
+
+      <div class="points-grid">
+        <div class="point-card">
+          <div class="point-val">${activos.length}</div>
+          <div class="point-lbl">Estudios activos</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val">${niv.bautizados}</div>
+          <div class="point-lbl">Personas bautizadas</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val">${niv.visitas}</div>
+          <div class="point-lbl">Visitas realizadas</div>
+        </div>
+        <div class="point-card">
+          <div class="point-val" style="font-size:16px;">${disponibilidad}</div>
+          <div class="point-lbl">Disponibilidad misionera</div>
+        </div>
+      </div>
+
+      ${dones || talentos ? `<div class="divider"></div>
+      ${dones ? `<div style="margin-bottom:6px;"><span style="font-size:12px;font-weight:600;color:var(--text2);">DONES: </span>${dones.split(',').map(d=>`<span class="tag">${d.trim()}</span>`).join('')}</div>` : ''}
+      ${talentos ? `<div><span style="font-size:12px;font-weight:600;color:var(--text2);">TALENTOS: </span>${talentos.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>` : ''}` : ''}
+    </div>
+
+    <div class="section-title">Estudios bíblicos activos</div>
+    ${estudiosHTML}
+  `;
+  showPage('perfil');
+}
+
+function renderInteresados() {
+  const el = document.getElementById('lista-interesados');
+  if (!INTERESADOS.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No hay interesados registrados aún.</div>';
+    return;
+  }
+  el.innerHTML = INTERESADOS.map(int => `
+    <div class="card">
+      <div class="int-header">
+        <div>
+          <div class="int-name">${int.nombre}</div>
+          <div class="int-sub">${[int.tel, int.dir].filter(Boolean).join(' · ')}</div>
+        </div>
+        <span class="badge ${int.hermano ? 'b-verde' : 'b-amarillo'}">${int.hermano ? 'Asignado' : 'En espera'}</span>
+      </div>
+      ${int.hermano ? `<div style="font-size:13px;color:var(--text2);">Hermano: <strong style="color:var(--text);">${int.hermano}</strong></div>` : ''}
+      ${int.obs ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${int.obs}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// MODIFICACIÓN 6: Dashboard con big numbers de clasificación
+function renderDashboard() {
+  const total = MIEMBROS.length;
+  if (!total) return;
+  let verdes=0, amarillos=0, rojos=0, sinCargo=0, disponibles=0;
+
+  // MODIFICACIÓN 6: contadores de clasificación
+  let rescatar=0, transferir=0, frecuentes=0, noFrecuentes=0;
+
+  MIEMBROS.forEach(m => {
+    const niv = calcNivel(m);
+    const sm = semaforo(niv.min, niv.mis);
+    if (sm.key==='verde') verdes++;
+    else if (sm.key==='amarillo') amarillos++;
+    else rojos++;
+    if (!niv.tieneCargo) sinCargo++;
+    if (niv.activos < 3) disponibles++;
+
+    const clasif = String(m['Clasificación'] || '').trim().toLowerCase();
+    if (clasif.includes('rescatar')) rescatar++;
+    else if (clasif.includes('transferir')) transferir++;
+    else if (clasif === 'frecuente') frecuentes++;
+    else if (clasif.includes('no frecuente') || clasif === 'no frecuentes') noFrecuentes++;
+  });
+
+  const totalEst = MISIONERO.filter(r => {
+    const est = String(r['Estado']||'').trim();
+    return est === 'En Curso' || est === '';
+  }).length;
+  const totalBaut = MISIONERO.filter(r => String(r['Estado']||'').trim()==='Bautizado').length;
+  const totalVisitas = VISITAS.length;
+  const visitasConcretadas = VISITAS.filter(r => {
+    const est = String(r['Estado de la Visita'] || r['Estado de la visita'] || r['estado'] || r['Estado'] || '').trim();
+    return est === 'Concretada';
+  }).length;
+
+  const jovenes = MIEMBROS.filter(m => {
+    const edad = parseInt(m['Edad'] || 0) || 0;
+    return edad >= 12 && edad <= 19;
+  }).length;
+
+  const recienBautizados = MIEMBROS.filter(m => {
+    const d = diasDesdeBautismo(m);
+    return d !== null && d <= 60;
+  }).length;
+
+  // Reporte por estado de estudios
+  const estadosEstudio = {};
+  MISIONERO.forEach(r => {
+    const est = String(r['Estado']||'Sin estado').trim();
+    estadosEstudio[est] = (estadosEstudio[est]||0) + 1;
+  });
+
+  // Reporte por estado de visitas
+  const estadosVisita = {};
+  VISITAS.forEach(r => {
+    const est = String(r['Estado de la visita']||r['Estado']||'Sin estado').trim();
+    estadosVisita[est] = (estadosVisita[est]||0) + 1;
+  });
+
+  document.getElementById('dashboard-contenido').innerHTML = `
+    <div class="section-title" style="margin-top:8px;">📊 Datos destacados de la congregación</div>
+    <div class="big-stats-grid">
+      <div class="big-stat-card bsc-rescatar"><div class="big-stat-val">${rescatar}</div><div class="big-stat-lbl">A Rescatar</div></div>
+      <div class="big-stat-card bsc-transferir"><div class="big-stat-val">${transferir}</div><div class="big-stat-lbl">A Transferir</div></div>
+      <div class="big-stat-card bsc-frecuente"><div class="big-stat-val">${frecuentes}</div><div class="big-stat-lbl">Frecuentes</div></div>
+      <div class="big-stat-card bsc-nofrecuente"><div class="big-stat-val">${noFrecuentes}</div><div class="big-stat-lbl">No Frecuentes</div></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total miembros</div></div>
+      <div class="stat-card"><div class="stat-val">${totalEst}</div><div class="stat-lbl">Estudios activos</div></div>
+      <div class="stat-card"><div class="stat-val">${totalBaut}</div><div class="stat-lbl">Bautizados</div></div>
+      <div class="stat-card"><div class="stat-val">${totalVisitas}</div><div class="stat-lbl">Visitas registradas</div></div>
+    </div>
+
+    <!-- #19: Definición clara de niveles -->
+    <div class="section-title" style="margin-top:4px;">Nivel espiritual de la congregación</div>
+    <div class="card" style="margin-bottom:10px;background:#F0FDF4;border:1px solid #BBF7D0;">
+      <div style="font-size:12px;color:#166534;line-height:1.8;">
+        <div>🟢 <b>Activo:</b> Tiene cargo ministerial + actividad misionera (estudios o visitas)</div>
+        <div>🟡 <b>En desarrollo:</b> Solo cargo ministerial, o solo actividad misionera</div>
+        <div>🔴 <b>Necesita atención:</b> Sin cargo ministerial ni actividad misionera</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="progress-section">
+        <div class="progress-label"><span>🟢 Activos</span><strong>${verdes} (${Math.round(verdes/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-verde" style="width:${Math.round(verdes/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🟡 En desarrollo</span><strong>${amarillos} (${Math.round(amarillos/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:${Math.round(amarillos/total*100)}%"></div></div>
+      </div>
+      <div class="progress-section" style="margin-top:10px;">
+        <div class="progress-label"><span>🔴 Necesitan atención</span><strong>${rojos} (${Math.round(rojos/total*100)}%)</strong></div>
+        <div class="progress-bar"><div class="progress-fill fill-rojo" style="width:${Math.round(rojos/total*100)}%"></div></div>
+      </div>
+    </div>
+
+    <!-- #20: Reporte de visitas clickable -->
+    <div class="section-title">📋 Reporte de visitas</div>
+    <div class="card" onclick="toggleDetalle('detalle-visitas')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${totalVisitas}</div>
+          <div style="font-size:13px;color:var(--text2);">Total visitas · <span style="color:var(--green);font-weight:600;">${visitasConcretadas} concretadas</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
+      </div>
+      <div id="detalle-visitas" style="display:none;margin-top:12px;">
+        ${VISITAS.length > 0 ? VISITAS.map(v => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${v.nombre || v['Nombre del Visitado'] || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${v.hermano || v['Hermano Visitador'] || ''} · ${v.fecha || v['Fecha'] || ''} · <span style="color:var(--green);">${v.estado || v['Estado de la Visita'] || ''}</span></div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin visitas registradas aún</div>'}
+      </div>
+    </div>
+
+    <!-- #20: Reporte de estudios clickable -->
+    <div class="section-title">📖 Reporte de estudios bíblicos</div>
+    <div class="card" onclick="toggleDetalle('detalle-estudios')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${totalEst}</div>
+          <div style="font-size:13px;color:var(--text2);">En curso · <span style="color:var(--green);font-weight:600;">${totalBaut} bautizados</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
+      </div>
+      <div id="detalle-estudios" style="display:none;margin-top:12px;">
+        ${MISIONERO.length > 0 ? MISIONERO.map(e => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${e['Nombre del\nEstudiante'] || e['Nombre del Estudiante'] || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${getNombreHermano(e)} · Lec. ${e['Lección\nActual (1-20)'] || e['Lección Actual (1-20)'] || '?'}/20 · <span style="color:var(--blue);">${e['Estado'] || ''}</span></div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin estudios registrados aún</div>'}
+      </div>
+    </div>
+
+    <!-- #20: Interesados clickable -->
+    <div class="section-title">👥 Interesados</div>
+    <div class="card" onclick="toggleDetalle('detalle-interesados')" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:28px;font-weight:800;color:var(--azul);">${INTERESADOS.length}</div>
+          <div style="font-size:13px;color:var(--text2);">Total · <span style="color:var(--amber);font-weight:600;">${INTERESADOS.filter(i=>!i.hermano).length} sin asignar</span></div>
+        </div>
+        <span style="font-size:20px;color:var(--text2);">▼</span>
+      </div>
+      <div id="detalle-interesados" style="display:none;margin-top:12px;">
+        ${INTERESADOS.length > 0 ? INTERESADOS.map(i => `
+          <div style="padding:8px 0;border-top:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:600;">${i.nombre || '—'}</div>
+            <div style="font-size:12px;color:var(--text2);">${i.tel ? i.tel+' · ' : ''}${i.tipo || ''} · ${i.hermano ? '👤 '+i.hermano : '⏳ Sin asignar'}</div>
+          </div>`).join('')
+        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin interesados registrados aún</div>'}
+      </div>
+    </div>
+
+    <div class="section-title">Grupos especiales</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" style="color:#5B21B6;">${jovenes}</div><div class="stat-lbl">🧑 Jóvenes (12–19 años)</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:#B45309;">${recienBautizados}</div><div class="stat-lbl">🌟 Recién bautizados (≤60 días)</div></div>
+    </div>
+
+    <div class="section-title">Oportunidades de crecimiento</div>
+    <div class="card" style="margin-bottom:10px;">
+      <div style="font-size:15px;font-weight:700;color:var(--azul);">${sinCargo}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Hermanos sin cargo ministerial activo</div>
+    </div>
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;color:var(--verde);">${disponibles}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Disponibles para dar estudios bíblicos</div>
+    </div>
+    <div class="section-title" style="margin-top:4px;">Interesados en espera</div>
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;color:var(--text);">${INTERESADOS.filter(i=>!i.hermano).length}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px;">Sin asignar — ${INTERESADOS.filter(i=>i.hermano).length} asignados</div>
+    </div>
+  `;
+}
+
+// MODIFICACIÓN 5: Validar lección entre 1 y 20
+function validarLeccion(input) {
+  const val = parseInt(input.value);
+  const error = document.getElementById('rmi-leccion-error');
+  if (isNaN(val) || val < 1 || val > 20) {
+    error.style.display = 'block';
+    input.style.borderColor = '#DC2626';
+  } else {
+    error.style.display = 'none';
+    input.style.borderColor = '';
+    if (val > 20) input.value = 20;
+    if (val < 1) input.value = 1;
+  }
+}
+
+function poblarSelectores() {
+  const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
+
+  // Departamentos y Talentos desde hoja CATALOGOS (fuente correcta)
+  const deptsHoja = window.CATALOGOS_DEPT || [];
+  const todosLosTalentos = window.CATALOGOS_TAL || [];
+
+  // Departamento de cada miembro sigue leyéndose de MIEMBROS col 'Departamento'
+  const colDept = window._colDeptMiembros ||
+    Object.keys(MIEMBROS[0] || {}).find(k => k.replace(/\n/g,'').toLowerCase() === 'departamento');
+  window._colDept = colDept;
+  window._colTalentos = null; // ya no se necesita desde MIEMBROS
+
+  // Construir listas para buscadores
+  const listaTodos = MIEMBROS.map(m => ({
+    nombre: String(m['Apellidos y Nombres']||'').trim(),
+    dept: colDept ? String(m[colDept]||'').trim() : '',
+    edad: parseInt(m['Edad']||0)||0,
+    gen: (() => { const col = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero')); return col ? String(m[col]||'').trim() : ''; })(),
+  })).filter(x => x.nombre);
+
+  const listaJovenes = listaTodos.filter(h => h.edad >= 12 && h.edad <= 19);
+  const listaAdultosFrecuentes = MIEMBROS.filter(m => {
+    const clasif = String(m['Clasificación']||'').trim().toLowerCase();
+    const regIg = String(m['Registro Iglesia']||m['Registro\nIglesia']||'').trim().toLowerCase();
+    const edad = parseInt(m['Edad']||0)||0;
+    return clasif === 'frecuente' && (regIg === 'si' || regIg === 'sí') && edad > 19;
+  }).map(m => ({
+    nombre: String(m['Apellidos y Nombres']||'').trim(),
+    dept: colDept ? String(m[colDept]||'').trim() : '',
+    edad: parseInt(m['Edad']||0)||0,
+    gen: (() => { const col = Object.keys(m).find(k=>k.toLowerCase().replace(/\s|\n/g,'').includes('gnero')||k.toLowerCase().replace(/\s|\n/g,'').includes('genero')); return col ? String(m[col]||'').trim() : ''; })(),
+  }));
+
+  // Guardar listas globales para mostrarTodosHermanos
+  window._hermanosMinistrialLista = listaTodos;
+  window._lista_rm   = listaTodos;
+  window._lista_ni   = listaAdultosFrecuentes;
+  window._lista_rmi  = listaAdultosFrecuentes;
+  window._lista_rv   = listaAdultosFrecuentes;
+  window._lista_jovenes   = listaJovenes;
+  window._lista_ni_joven  = listaJovenes;
+  window._lista_rmi_joven = listaJovenes;
+  window._lista_rv_joven  = listaJovenes;
+
+  // Inicializar buscadores
+  crearBuscadorHermano('rm', listaTodos);
+  crearBuscadorHermano('ni', listaAdultosFrecuentes);
+  // Buscador del joven en interesados usa ID especial
+  crearBuscadorGenerico('ni-joven', listaJovenes, 'ni-hermano-joven');
+  crearBuscadorHermano('rmi', listaAdultosFrecuentes);
+  crearBuscadorHermano('rv', listaAdultosFrecuentes);
+
+  // Buscadores de jóvenes (usan IDs especiales ni-joven, rmi-joven, rv-joven)
+  ['ni-joven','rmi-joven','rv-joven'].forEach(pfx => {
+    const inputEl = document.getElementById(`${pfx}-input`);
+    const listaEl = document.getElementById(`${pfx}-lista`);
+    if (!inputEl || !listaEl) return;
+    inputEl.oninput = () => {
+      const q = inputEl.value.toLowerCase().trim();
+      document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`).value = '';
+      const selEl = document.getElementById(`${pfx}-seleccionado`);
+      if (selEl) selEl.className = 'hermano-seleccionado';
+      if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+      const hits = listaJovenes.filter(h => h.nombre.toLowerCase().includes(q)).slice(0, 10);
+      listaEl.innerHTML = hits.map(h =>
+        `<div class="hermano-opcion" onclick="seleccionarJoven('${pfx}','${encodeURIComponent(h.nombre)}')">
+          <div>${h.nombre}</div>
+          <div class="sub">${h.edad} años${h.gen ? ' · '+h.gen : ''}</div>
+        </div>`
+      ).join('');
+      listaEl.className = hits.length ? 'hermano-dropdown show' : 'hermano-dropdown';
+    };
+  });
+  const areasContainer = document.getElementById('rm-areas-apoyo');
+  if (areasContainer) {
+    if (todosLosTalentos.length > 0) {
+      areasContainer.innerHTML = todosLosTalentos.map((area, i) => `
+        <div class="checkbox-item">
+          <input type="checkbox" id="area-${i}" name="area-apoyo" value="${area}">
+          <label for="area-${i}">${area}</label>
+        </div>
+      `).join('');
+    } else {
+      areasContainer.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:4px 0;">⚠️ No se encontraron talentos en el catálogo.</div>';
+    }
+  }
+
+  // Poblar select de Departamento desde CATALOGOS
+  const ds = document.getElementById('rm-dept');
+  if (ds) {
+    deptsHoja.forEach(d => {
+      const o = document.createElement('option');
+      o.value = d; o.textContent = d;
+      ds.appendChild(o);
+    });
+    if (deptsHoja.length === 0) {
+      const o = document.createElement('option');
+      o.disabled = true;
+      o.textContent = '⚠️ No se encontraron departamentos en el catálogo';
+      ds.appendChild(o);
+    }
+  }
+
+  // MODIFICACIÓN 7: Solo hermanos Frecuentes + Registro Iglesia = Sí para estudio bíblico
+  const hermanosMisionero = MIEMBROS.filter(m => {
+    const clasif = String(m['Clasificación'] || '').trim().toLowerCase();
+    const regIglesia = String(m['Registro Iglesia'] || m['Registro\nIglesia'] || '').trim().toLowerCase();
+    return clasif === 'frecuente' && (regIglesia === 'si' || regIglesia === 'sí' || regIglesia === 'yes');
+  });
+
+
+  // Inicializar buscadores para estudio bíblico y visitación
+  crearBuscadorHermano('rmi', listaAdultosFrecuentes);
+  crearBuscadorHermano('rv', listaAdultosFrecuentes);
+
+  // Buscadores de jóvenes para estudio y visitación
+  crearBuscadorGenerico('rmi-joven', listaJovenes, 'rmi-hermano-joven');
+  crearBuscadorGenerico('rv-joven', listaJovenes, 'rv-hermano-joven');
+
+  // Fecha por defecto en formularios de fecha
+  ['rv-fecha'].forEach(id => {
+    const f = document.getElementById(id);
+    if (f) f.value = new Date().toISOString().split('T')[0];
+  });
+}
+
+// ── TIPO DE INTERESADO ──────────────────────────────────────────
+function selTipoInteresado(tipo) {
+  ['estudio','visita','ambos'].forEach(t => {
+    const el = document.getElementById(`ni-tipo-${t}`);
+    if (el) {
+      el.style.borderColor = t===tipo ? 'var(--azul)' : 'var(--border)';
+      el.style.background  = t===tipo ? '#EFF6FF'    : 'white';
+    }
+  });
+  document.getElementById('ni-tipo-valor').value = tipo;
+}
+
+// ── VALIDACIÓN SEXO HERMANOS ─────────────────────────────────────
+function getGenero(nombre) {
+  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+  if (!m) return '';
+  const col = Object.keys(m).find(k =>
+    k.toLowerCase().replace(/\s|\n/g,'').includes('gnero') ||
+    k.toLowerCase().replace(/\s|\n/g,'').includes('genero')
+  );
+  if (!col) return '';
+  return String(m[col] || '').trim().toLowerCase(); // 'masculino' o 'femenino'
+}
+
+function getSexoOpcion(selectEl) {
+  if (!selectEl || !selectEl.value) return '';
+  return getGenero(selectEl.value);
+}
+
+function validarSexoHermanos() {
+  const jovenSel    = document.getElementById('ni-hermano-joven');
+  const adultoSel   = document.getElementById('ni-hermano');
+  const errEl       = document.getElementById('ni-error-sexo');
+  const familiarBox = document.getElementById('ni-familiar-box');
+  const esFamiliar  = document.getElementById('ni-son-familiares');
+
+  if (!jovenSel || !adultoSel || !jovenSel.value || !adultoSel.value) {
+    if(errEl) errEl.style.display='none';
+    if(familiarBox) familiarBox.style.display='none';
+    return true;
+  }
+
+  const genJoven  = getGenero(jovenSel.value);
+  const genAdulto = getGenero(adultoSel.value);
+  const sonDiferente = genJoven && genAdulto && genJoven !== genAdulto;
+
+  if (sonDiferente) {
+    errEl.style.display='block';
+    errEl.style.background='#FEE2E2'; errEl.style.borderColor='#FECACA'; errEl.style.color='#991B1B';
+    errEl.innerHTML=`⚠️ <b>${jovenSel.value}</b> (${genJoven}) y <b>${adultoSel.value}</b> (${genAdulto}) son de diferente género.`;
+    familiarBox.style.display='block';
+    // Permitir si marcó excepción familiar
+    if (esFamiliar && esFamiliar.checked) return true;
+    return false;
+  }
+
+  // Mismo género — ocultar error pero mantener opción familiar visible por si acaso
+  errEl.style.display='none';
+  familiarBox.style.display='none';
+  if(esFamiliar) esFamiliar.checked=false;
+  const parentescoBox = document.getElementById('ni-parentesco-box');
+  if(parentescoBox) parentescoBox.style.display='none';
+  return true;
+}
+
+function toggleFamiliarExcepcion() {
+  const cb = document.getElementById('ni-son-familiares');
+  const parentescoBox = document.getElementById('ni-parentesco-box');
+  const errEl = document.getElementById('ni-error-sexo');
+  if (cb.checked) {
+    // Mostrar campo de parentesco y quitar el error visual
+    parentescoBox.style.display = 'block';
+    errEl.style.background = '#FEF3C7';
+    errEl.style.borderColor = '#FDE68A';
+    errEl.style.color = '#92400E';
+    errEl.innerHTML = errEl.innerHTML.replace('⚠️','ℹ️') ;
+  } else {
+    parentescoBox.style.display = 'none';
+    errEl.style.background = '#FEE2E2';
+    errEl.style.borderColor = '#FECACA';
+    errEl.style.color = '#991B1B';
+  }
+}
+
+function onChangeHermanoAdulto() {
+  validarSexoHermanos();
+  const sel = document.getElementById('ni-hermano').value;
+  const box = document.getElementById('ni-sugerencia');
+  if (!sel) { box.style.display='none'; return; }
+  const act = MISIONERO.filter(r=>getNombreHermano(r)===sel&&String(r['Estado']||'')==='En Curso').length;
+  box.style.display='block';
+  box.innerHTML = act===0
+    ? `✅ ${sel} no tiene estudios activos. ¡Candidato ideal!`
+    : act<3 ? `ℹ️ ${sel} tiene ${act} estudio(s) activo(s). Puede recibir uno más.`
+    : `⚠️ ${sel} ya tiene 3 estudios activos. Consultar antes de asignar.`;
+}
+
+// ── GUARDAR INTERESADO Y AUTOCOMPLETAR FORMULARIOS MISIONEROS ───
 function guardarInteresado() {
   const nombre = document.getElementById('ni-nombre').value.trim();
+  if (!nombre) { showToast('⚠️ Ingrese el nombre del interesado'); return; }
   const tipo = document.getElementById('ni-tipo-valor').value;
-  if (!nombre || !tipo) { showToast('⚠️ Complete los campos obligatorios'); return; }
-  ejecutarEnvio('INTERESADOS', {
-    'Fecha': new Date().toLocaleDateString('es-BO'), 'Nombre': nombre,
-    'Teléfono': document.getElementById('ni-tel').value.trim(), 'Dirección': document.getElementById('ni-dir').value.trim(),
-    'Tipo de Actividad': tipo, 'Observaciones': document.getElementById('ni-obs').value.trim()
+  if (!tipo) { showToast('⚠️ Seleccione el tipo de actividad'); return; }
+
+  const tel  = document.getElementById('ni-tel').value.trim();
+  const dir  = document.getElementById('ni-dir').value.trim();
+  const obs  = document.getElementById('ni-obs').value.trim();
+  const fecha = new Date().toLocaleDateString('es-BO');
+
+  const registro = { nombre, tel, dir, tipo, obs, fecha };
+  INTERESADOS.push(registro);
+
+  // Grabar automáticamente en Google Sheets
+  guardarEnSheets('INTERESADOS', {
+    'Fecha': fecha,
+    'Nombre': nombre,
+    'Teléfono': tel,
+    'Dirección': dir,
+    'Tipo de Actividad': tipo,
+    'Hermano Adulto': '',
+    'Joven Acompañante': '',
+    'Parentesco': '',
+    'Observaciones': obs,
   });
+
+  // Limpiar
+  ['ni-nombre','ni-tel','ni-dir','ni-obs'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('ni-tipo-valor').value='';
+  ['estudio','visita'].forEach(t => {
+    const el = document.getElementById(`ni-tipo-${t}`);
+    if(el){ el.style.borderColor='var(--border)'; el.style.background='white'; }
+  });
+
+  renderInteresados();
+  renderDashboard();
+  poblarInteresadosEnFormularios();
+  showToast('✅ Interesado guardado en Sheets');
   showPage('interesados');
 }
 
+// #21 y #23: Validación género en formularios misioneros (estudio y visitación)
+function validarSexoMisionero(prefix) {
+  const jovenSel  = document.getElementById(`${prefix}-hermano-joven`);
+  const adultoSel = document.getElementById(`${prefix}-hermano`);
+  const errEl     = document.getElementById(`${prefix}-error-sexo`);
+  const famWrap   = document.getElementById(`${prefix}-familiar-wrap`);
+  const esFam     = document.getElementById(`${prefix}-es-familiar`);
+
+  // Si no hay joven seleccionado, no hay nada que validar
+  if (!jovenSel || !jovenSel.value || !adultoSel || !adultoSel.value) {
+    if (errEl) errEl.style.display='none';
+    if (famWrap) famWrap.style.display='none';
+    return true;
+  }
+
+  const genJoven  = getGenero(jovenSel.value);
+  const genAdulto = getGenero(adultoSel.value);
+
+  // Si no tenemos datos de género en la hoja, permitir continuar
+  if (!genJoven || !genAdulto) {
+    if (errEl) errEl.style.display='none';
+    if (famWrap) famWrap.style.display='none';
+    return true;
+  }
+
+  if (genJoven !== genAdulto) {
+    errEl.style.display='block';
+    errEl.style.background='#FEE2E2'; errEl.style.borderColor='#FECACA'; errEl.style.color='#991B1B';
+    errEl.innerHTML=`⚠️ <b>${jovenSel.value}</b> (${genJoven}) y <b>${adultoSel.value}</b> (${genAdulto}) son de diferente género. Si son familiares marque la excepción.`;
+    famWrap.style.display='block';
+    if (esFam && esFam.checked) return true;
+    return false;
+  }
+
+  errEl.style.display='none';
+  famWrap.style.display='none';
+  if (esFam) esFam.checked=false;
+  return true;
+}
+
+function toggleFamiliarMisionero(prefix) {
+  const cb = document.getElementById(`${prefix}-es-familiar`);
+  const pw = document.getElementById(`${prefix}-parentesco-wrap`);
+  const err = document.getElementById(`${prefix}-error-sexo`);
+  if (cb.checked) {
+    pw.style.display='block';
+    err.style.background='#FEF3C7'; err.style.borderColor='#FDE68A'; err.style.color='#92400E';
+  } else {
+    pw.style.display='none';
+    err.style.background='#FEE2E2'; err.style.borderColor='#FECACA'; err.style.color='#991B1B';
+  }
+}
+
+
+// ── BUSCADOR GENÉRICO DE HERMANO ─────────────────────────────────
+// prefix: prefijo del campo (rm, ni, rmi, rv)
+// lista: array de objetos {nombre, dept, edad, gen}
+// Buscador genérico para casos con IDs especiales (ej: ni-joven-input → ni-hermano-joven)
+function crearBuscadorGenerico(prefix, lista, valorId) {
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (!inputEl || !listaEl) return;
+
+  inputEl.oninput = () => {
+    const valorEl = document.getElementById(valorId);
+    if (valorEl) valorEl.value = '';
+    if (selEl) selEl.className = 'hermano-seleccionado';
+    const q = inputEl.value.toLowerCase().trim();
+    if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+    const hits = lista.filter(h => h.nombre && h.nombre.toLowerCase().includes(q)).slice(0, 10);
+    if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+    listaEl.innerHTML = hits.map(h =>
+      `<div class="hermano-opcion" onclick="seleccionarGenerico('${prefix}','${encodeURIComponent(h.nombre)}','${valorId}')">
+        <div>${h.nombre}</div>
+        <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+      </div>`
+    ).join('');
+    listaEl.className = 'hermano-dropdown show';
+  };
+
+  inputEl.onfocus = () => { if (inputEl.value.trim().length > 0) inputEl.oninput(); };
+}
+
+function seleccionarGenerico(prefix, nombreEnc, valorId) {
+  const nombre  = decodeURIComponent(nombreEnc);
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const valorEl = document.getElementById(valorId);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (inputEl) inputEl.value = nombre;
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = nombre;
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarGenerico('${prefix}','${valorId}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+  // Validar género
+  validarSexoHermanos();
+}
+
+function limpiarGenerico(prefix, valorId) {
+  const inputEl = document.getElementById(`${prefix}-input`);
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const valorEl = document.getElementById(valorId);
+  const selEl   = document.getElementById(`${prefix}-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+}
+
+function mostrarTodosGenerico(prefix, valorId) {
+  const listaEl = document.getElementById(`${prefix}-lista`);
+  const lista = window[`_lista_${prefix.replace('-','')}`.replace('joven','_joven')] ||
+                window[`_lista_${prefix}`] || [];
+  if (!listaEl || !lista.length) return;
+  listaEl.innerHTML = lista.slice(0, 30).map(h =>
+    `<div class="hermano-opcion" onclick="seleccionarGenerico('${prefix}','${encodeURIComponent(h.nombre)}','${valorId}')">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function crearBuscadorHermano(prefix, listaHermanos) {
+  const inputEl = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
+  if (!inputEl || !listaEl) return;
+
+  inputEl.oninput = () => {
+    const valorEl = document.getElementById(`${prefix}-hermano-valor`);
+    const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
+    if (valorEl) valorEl.value = '';
+    if (selEl) selEl.className = 'hermano-seleccionado';
+    const q = inputEl.value.toLowerCase().trim();
+    if (!q) { listaEl.className = 'hermano-dropdown'; return; }
+    const hits = listaHermanos.filter(h => h.nombre && h.nombre.toLowerCase().includes(q)).slice(0, 10);
+    renderDropdown(prefix, listaEl, hits, listaHermanos);
+  };
+
+  // También activar al hacer foco si ya tiene texto
+  inputEl.onfocus = () => {
+    if (inputEl.value.trim().length > 0) inputEl.oninput();
+  };
+}
+
+function renderDropdown(prefix, listaEl, hits, todos) {
+  if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+  listaEl.innerHTML = hits.map(h =>
+    `<div class="hermano-opcion" onclick="seleccionarHermano('${prefix}','${encodeURIComponent(h.nombre)}')">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function mostrarTodosHermanos(prefix) {
+  // Detectar si es un buscador de jóvenes
+  const esJoven = prefix.includes('joven');
+  let listaEl, lista, onclickFn;
+
+  if (esJoven) {
+    // Para jóvenes: rmi-joven → lista en rmi-joven-lista
+    listaEl = document.getElementById(`${prefix}-lista`);
+    lista = window._lista_jovenes || window._lista_ni_joven || [];
+    const valorId = prefix.replace('-joven','') + '-hermano-joven';
+    onclickFn = (nombre) => `seleccionarJoven('${prefix}','${encodeURIComponent(nombre)}')`;
+  } else {
+    // Para adultos: rm, ni, rmi, rv → lista en prefix-hermano-lista
+    listaEl = document.getElementById(`${prefix}-hermano-lista`);
+    lista = window._hermanosMinistrialLista || window[`_lista_${prefix}`] || [];
+    onclickFn = (nombre) => `seleccionarHermano('${prefix}','${encodeURIComponent(nombre)}')`;
+  }
+
+  if (!listaEl || !lista.length) return;
+  listaEl.innerHTML = lista.slice(0, 60).map(h =>
+    `<div class="hermano-opcion" onclick="${onclickFn(h.nombre)}">
+      <div>${h.nombre}</div>
+      <div class="sub">${[h.dept, h.edad ? h.edad+' años' : '', h.gen].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function seleccionarHermano(prefix, nombreEnc) {
+  const nombre   = decodeURIComponent(nombreEnc);
+  const inputEl  = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl  = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl  = document.getElementById(`${prefix}-hermano-valor`);
+  const hiddenEl = document.getElementById(`${prefix}-hermano`); // ID directo sin -valor
+  const selEl    = document.getElementById(`${prefix}-hermano-seleccionado`);
+
+  if (inputEl)  inputEl.value  = nombre;
+  if (valorEl)  valorEl.value  = nombre;
+  if (hiddenEl && hiddenEl.type === 'hidden') hiddenEl.value = nombre;
+  if (listaEl)  listaEl.className = 'hermano-dropdown';
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarHermano('${prefix}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+
+  if (prefix === 'rm') {
+    const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+    const dept = (m && window._colDept) ? String(m[window._colDept]||'').trim() : '';
+    const deptSel = document.getElementById('rm-dept');
+    if (deptSel && dept) {
+      const opt = Array.from(deptSel.options).find(o => o.value === dept);
+      if (opt) deptSel.value = dept;
+    }
+    const datosAuto = document.getElementById('rm-datos-auto');
+    if (datosAuto) datosAuto.style.display = 'block';
+    cargarDatosMinisterialHermano(nombre);
+  }
+
+  if (['ni','rmi','rv'].includes(prefix)) {
+    validarSexoHermanos();
+    validarSexoMisionero(prefix);
+  }
+}
+
+function limpiarHermano(prefix) {
+  const inputEl = document.getElementById(`${prefix}-hermano-input`);
+  const listaEl = document.getElementById(`${prefix}-hermano-lista`);
+  const valorEl = document.getElementById(`${prefix}-hermano-valor`);
+  const selEl   = document.getElementById(`${prefix}-hermano-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+  if (prefix === 'rm') {
+    const d = document.getElementById('rm-dept'); if(d) d.value = '';
+    const da = document.getElementById('rm-datos-auto'); if(da) da.style.display = 'none';
+  }
+}
+
+// Mantener compatibilidad con llamadas existentes
+function buscarHermanoMinisterial(q) {
+  const inputEl = document.getElementById('rm-hermano-input');
+  if (inputEl) inputEl.oninput && inputEl.oninput();
+}
+function seleccionarHermanoMinisterial(nombreEnc) { seleccionarHermano('rm', nombreEnc); }
+function limpiarHermanoMinisterial() { limpiarHermano('rm'); }
+
+// Cargar datos previos del hermano en Ministerial
+function cargarDatosMinisterialHermano(nombre) {
+  // Buscar en MINISTERIAL si ya existe un registro para este hermano
+  const registroMin = MINISTERIAL.filter(r =>
+    String(r['Apellidos y Nombres']||'').trim() === nombre
+  ).slice(-1)[0]; // Tomar el más reciente
+
+  if (!registroMin) return;
+
+  // Autocompletar tipos de actividad
+  const tipos = String(registroMin['Tipo'] || registroMin['Tipos'] || '').split(',').map(t => t.trim());
+  document.querySelectorAll('[id^="rm-tipo-"]').forEach(cb => {
+    cb.checked = tipos.includes(cb.value);
+  });
+
+  // Autocompletar áreas de apoyo
+  const areas = String(registroMin['Areas de Apoyo'] || '').split(',').map(a => a.trim());
+  document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => {
+    cb.checked = areas.includes(cb.value);
+  });
+
+  // Autocompletar otros campos
+  const campos = {
+    'rm-dia': registroMin['Dia Disponible'],
+    'rm-horario': registroMin['Horario Disponible'],
+    'rm-doctrinas': registroMin['Conoce Doctrinas'],
+    'rm-estructura': registroMin['Conoce Estructura'],
+    'rm-capacitacion': registroMin['Capacitacion'],
+    'rm-fe-jesus': registroMin['Fe de Jesus'],
+    'rm-registrador': registroMin['Registrado por'],
+  };
+  Object.entries(campos).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
+}
+
+
+
+
+function seleccionarJoven(pfx, nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  const inputEl = document.getElementById(`${pfx}-input`);
+  const listaEl = document.getElementById(`${pfx}-lista`);
+  const valorEl = document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`);
+  const selEl   = document.getElementById(`${pfx}-seleccionado`);
+  if (inputEl) inputEl.value = nombre;
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = nombre;
+  if (selEl) {
+    selEl.className = 'hermano-seleccionado show';
+    selEl.innerHTML = `<span>✅ <strong>${nombre}</strong></span>
+      <span onclick="limpiarJoven('${pfx}')" style="cursor:pointer;font-size:16px;color:#1E40AF;">✕</span>`;
+  }
+  // Validar género
+  const formPrefix = pfx.replace('-joven','');
+  if (formPrefix === 'ni') validarSexoHermanos();
+  else validarSexoMisionero(formPrefix);
+}
+
+function limpiarJoven(pfx) {
+  const inputEl = document.getElementById(`${pfx}-input`);
+  const listaEl = document.getElementById(`${pfx}-lista`);
+  const valorEl = document.getElementById(`${pfx.replace('-joven','')}-hermano-joven`);
+  const selEl   = document.getElementById(`${pfx}-seleccionado`);
+  if (inputEl) inputEl.value = '';
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (valorEl) valorEl.value = '';
+  if (selEl)   selEl.className = 'hermano-seleccionado';
+}
+
+// Helper para obtener valor de hermano (funciona con hidden input o select)
+function getHermanoVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  return String(el.value || '').trim();
+}
+
+function toggleFeJesus(sel) {
+  const detalle = document.getElementById('rm-fe-jesus-detalle');
+  if (!detalle) return;
+  // Mostrar para ambos casos - lecciones siempre con selección múltiple
+  detalle.style.display = (sel.value === 'no' || sel.value === 'no-sabe') ? 'block' : 'none';
+  // Siempre mostrar lecciones (múltiple)
+  const lecGrid = detalle.querySelector('[style*="grid-template-columns"]');
+  if (lecGrid) lecGrid.closest('.form-group').style.display = 'block';
+}
+
+
 function guardarMinisterial() {
   const h = document.getElementById('rm-hermano-valor').value;
-  if(!h) { showToast('⚠️ Seleccione un hermano'); return; }
-  const areas = Array.from(document.querySelectorAll('#rm-areas-apoyo input:checked')).map(c => c.value).join(', ');
-  ejecutarEnvio('CRECIMIENTO_MINISTERIAL', {
-    'Apellidos y Nombres': h, 'Departamento': document.getElementById('rm-dept').value,
-    'Areas de Apoyo': areas, 'Dia Disponible': document.getElementById('rm-dia').value,
-    'Horario Disponible': document.getElementById('rm-horario').value, 'Registrado por': document.getElementById('rm-registrador').value
-  });
+  if (!h) { showToast('⚠️ Busque y seleccione un hermano'); return; }
+
+  // Tipos de actividad - selección múltiple
+  const tiposSeleccionados = Array.from(
+    document.querySelectorAll('[id^="rm-tipo-"]:checked')
+  ).map(cb => cb.value);
+
+  const areasSeleccionadas = Array.from(
+    document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]:checked')
+  ).map(cb => cb.value);
+
+  const lecFaltantes = Array.from(
+    document.querySelectorAll('[id^="lec-"]:checked')
+  ).map(cb => cb.value).join(', ');
+
+  const fecha = new Date().toLocaleDateString('es-BO');
+  const datos = {
+    'Apellidos y Nombres': h,
+    'Departamento': document.getElementById('rm-dept')?.value || '',
+    'Tipo': tiposSeleccionados.join(', '),
+    'Fecha': fecha,
+    'Areas de Apoyo': areasSeleccionadas.join(', '),
+    'Dia Disponible': document.getElementById('rm-dia')?.value || '',
+    'Horario Disponible': document.getElementById('rm-horario')?.value || '',
+    'Conoce Doctrinas': document.getElementById('rm-doctrinas')?.value || '',
+    'Conoce Estructura': document.getElementById('rm-estructura')?.value || '',
+    'Capacitacion': document.getElementById('rm-capacitacion')?.value.trim() || '',
+    'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
+    'Lecciones Faltantes': lecFaltantes,
+    'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
+    'Registrado por': document.getElementById('rm-registrador')?.value.trim() || '',
+  };
+
+  MINISTERIAL.push(datos);
+
+  // Grabar en Sheets
+  guardarEnSheets('CRECIMIENTO_MINISTERIAL', datos);
+
+  // Limpiar
+  document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('[id^="lec-"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('[id^="rm-tipo-"]').forEach(cb => cb.checked = false);
+  ['rm-registrador','rm-capacitacion'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['rm-dia','rm-horario','rm-doctrinas','rm-estructura','rm-fe-jesus'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  if(document.getElementById('rm-instructor')) document.getElementById('rm-instructor').value='';
+  if(document.getElementById('rm-fe-jesus-detalle')) document.getElementById('rm-fe-jesus-detalle').style.display='none';
+  limpiarHermanoMinisterial();
+
+  showToast('✅ Actividad ministerial guardada en Sheets.');
   showPage('registro');
 }
 
 function guardarMisionero() {
-  const h = document.getElementById('rmi-hermano-valor').value;
-  const est = document.getElementById('rmi-estudiante').value.trim();
-  if(!h || !est) { showToast('⚠️ Complete los campos'); return; }
-  ejecutarEnvio('ESTUDIOS', {
-    'Fecha': new Date().toLocaleDateString('es-BO'), 'Nombre del Hermano': h, 'Nombre del Estudiante': est,
-    'Teléfono': document.getElementById('rmi-tel').value.trim(), 'Dirección': document.getElementById('rmi-dir').value.trim(),
-    'Lección Actual (1-20)': document.getElementById('rmi-leccion').value, 'Estado': document.getElementById('rmi-estado').value,
-    'Observaciones': document.getElementById('rmi-obs').value, 'Registrado por': document.getElementById('rmi-registrador').value
+  const h      = getHermanoVal('rmi-hermano');
+  const jovenH = getHermanoVal('rmi-hermano-joven');
+  const est    = document.getElementById('rmi-estudiante').value.trim();
+  if (!h || !est) { showToast('⚠️ Complete hermano adulto y nombre del estudiante'); return; }
+
+  // Validar género si hay joven seleccionado
+  if (jovenH && !validarSexoMisionero('rmi')) {
+    showToast('⚠️ Corrija la asignación de género antes de guardar'); return;
+  }
+
+  const lecVal = parseInt(document.getElementById('rmi-leccion').value);
+  if (isNaN(lecVal) || lecVal < 1 || lecVal > 20) {
+    showToast('⚠️ La lección debe estar entre 1 y 20'); return;
+  }
+
+  const parentesco = document.getElementById('rmi-parentesco')?.value.trim() || '';
+  const fecha = new Date().toLocaleDateString('es-BO');
+
+  const registro = {
+    'Nombre del Hermano': h,
+    'Joven Acompañante': jovenH,
+    'Parentesco': parentesco,
+    'Nombre del\nEstudiante': est,
+    'Nombre del Estudiante': est,
+    'Teléfono': document.getElementById('rmi-tel').value.trim(),
+    'Estado Civil': document.getElementById('rmi-estado-civil').value,
+    'Lección\nActual (1-20)': lecVal,
+    'Estado': document.getElementById('rmi-estado').value,
+    'Observaciones': document.getElementById('rmi-obs').value.trim(),
+    'Registrado por': document.getElementById('rmi-registrador').value.trim(),
+    'Fecha': fecha,
+  };
+  MISIONERO.push(registro);
+
+  // #3: Marcar interesado como asignado para que no aparezca de nuevo
+  const intIdx = INTERESADOS.findIndex(i => i.nombre === est);
+  if (intIdx >= 0) INTERESADOS[intIdx].asignado = true;
+
+  // Grabar en Sheets - campos correctos
+  guardarEnSheets('ESTUDIOS', {
+    'Fecha': fecha,
+    'Nombre del Hermano': h,
+    'Joven Acompañante': jovenH,
+    'Parentesco': parentesco,
+    'Nombre del Estudiante': est,
+    'Teléfono': registro['Teléfono'],
+    'Estado Civil': registro['Estado Civil'],
+    'Lección Actual (1-20)': lecVal,
+    'Estado': registro['Estado'],
+    'Observaciones': registro['Observaciones'],
+    'Registrado por': registro['Registrado por'],
   });
+
+  // Limpiar formulario
+  ['rmi-estudiante','rmi-tel','rmi-obs','rmi-registrador'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const rmiDir = document.getElementById('rmi-dir'); if(rmiDir) rmiDir.value='';
+  document.getElementById('rmi-leccion').value = '1';
+  document.getElementById('rmi-estado-civil').value = '';
+  document.getElementById('rmi-leccion-error').style.display='none';
+  document.getElementById('rmi-leccion').style.borderColor='';
+  ['rmi-error-sexo','rmi-familiar-wrap'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+  const esFam = document.getElementById('rmi-es-familiar'); if(esFam) esFam.checked=false;
+  const pw = document.getElementById('rmi-parentesco-wrap'); if(pw) pw.style.display='none';
+  if(document.getElementById('rmi-parentesco')) document.getElementById('rmi-parentesco').value='';
+
+  showToast('✅ Estudio guardado en Sheets');
+  renderDashboard();
+  poblarInteresadosEnFormularios();
   showPage('registro');
 }
 
 function guardarVisitacion() {
-  const h = document.getElementById('rv-hermano-valor').value;
+  const h      = getHermanoVal('rv-hermano');
+  const jovenH = getHermanoVal('rv-hermano-joven');
   const nombre = document.getElementById('rv-nombre').value.trim();
-  if(!h || !nombre) { showToast('⚠️ Complete los campos'); return; }
-  ejecutarEnvio('VISITAS', {
-    'Fecha': document.getElementById('rv-fecha').value, 'Hermano Visitador': h, 'Nombre del Visitado': nombre,
-    'Estado de la Visita': document.getElementById('rv-estado').value, 'Observaciones': document.getElementById('rv-obs').value,
-    'Registrado por': document.getElementById('rv-registrador').value
+  if (!h || !nombre) { showToast('⚠️ Complete los campos obligatorios'); return; }
+
+  if (!validarSexoMisionero('rv')) {
+    showToast('⚠️ Corrija la asignación de género antes de guardar'); return;
+  }
+
+  const parentesco = document.getElementById('rv-parentesco')?.value.trim() || '';
+  const visita = {
+    hermano: h, jovenH, parentesco, nombre,
+    tel:        document.getElementById('rv-tel').value.trim(),
+    dir:        document.getElementById('rv-dir').value.trim(),
+    relacion:   document.getElementById('rv-relacion').value,
+    fecha:      document.getElementById('rv-fecha').value,
+    estado:     document.getElementById('rv-estado').value,
+    material:   document.getElementById('rv-material').value,
+    obs:        document.getElementById('rv-obs').value.trim(),
+    registrador:document.getElementById('rv-registrador').value.trim(),
+  };
+  VISITAS.push(visita);
+
+  // Grabar automáticamente en Google Sheets
+  guardarEnSheets('VISITAS', {
+    'Fecha': visita.fecha,
+    'Hermano Visitador': visita.hermano,
+    'Joven Acompañante': visita.jovenH,
+    'Parentesco': visita.parentesco,
+    'Nombre del Visitado': visita.nombre,
+    'Teléfono': visita.tel,
+    'Dirección': visita.dir,
+    'Relación con la Iglesia': visita.relacion,
+    'Estado de la Visita': visita.estado,
+    'Material Entregado': visita.material,
+    'Observaciones': visita.obs,
+    'Registrado por': visita.registrador,
   });
+
+  // Limpiar
+  ['rv-nombre','rv-tel','rv-dir','rv-obs','rv-registrador'].forEach(id => document.getElementById(id).value='');
+  ['rv-hermano','rv-hermano-joven','rv-relacion','rv-estado','rv-material'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['rv-error-sexo','rv-familiar-wrap'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+  const esFam = document.getElementById('rv-es-familiar'); if(esFam) esFam.checked=false;
+  const pw = document.getElementById('rv-parentesco-wrap'); if(pw) pw.style.display='none';
+  if(document.getElementById('rv-parentesco')) document.getElementById('rv-parentesco').value='';
+
+  showToast('✅ Visita guardada automáticamente en Sheets.');
+  renderDashboard();
   showPage('registro');
+}
+
+const NAV_MAP = {
+  'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,
+  'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,
+  'actualizar':3,'dashboard':4
+};
+
+function toggleDetalle(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function limpiarFormulario(id) {
+  const page = document.getElementById('page-' + id);
+  if (!page) return;
+  // Limpiar inputs de texto y textarea
+  page.querySelectorAll('input[type="text"], input[type="tel"], input[type="number"], textarea').forEach(el => {
+    if (!el.id.includes('hermano-input') && !el.id.includes('joven-input')) el.value = '';
+  });
+  // Limpiar selects
+  page.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  // Limpiar hidden inputs de hermanos
+  page.querySelectorAll('input[type="hidden"]').forEach(el => el.value = '');
+  // Limpiar buscadores de hermanos
+  page.querySelectorAll('[id$="-hermano-input"],[id$="-joven-input"]').forEach(el => el.value = '');
+  page.querySelectorAll('.hermano-dropdown').forEach(el => el.className = 'hermano-dropdown');
+  page.querySelectorAll('.hermano-seleccionado').forEach(el => el.className = 'hermano-seleccionado');
+  // Limpiar checkboxes
+  page.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  // Ocultar errores y cajas especiales
+  page.querySelectorAll('[id$="-error-sexo"],[id$="-familiar-wrap"],[id$="-familiar-box"],[id$="-fe-jesus-detalle"]').forEach(el => { if(el) el.style.display='none'; });
 }
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.style.display='none');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const p = document.getElementById('page-'+id); if (p) p.style.display='block';
-  const idx = NAV_MAP[id]; if (idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  const p = document.getElementById('page-'+id);
+  if (p) p.style.display='block';
+  const idx = NAV_MAP[id];
+  if (idx!==undefined) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+
+  // Limpiar formularios al entrar
+  const formPages = ['reg-ministerial','reg-misionero','reg-visitacion','nuevo-interesado'];
+  if (formPages.includes(id)) limpiarFormulario(id);
+
+  // Actualizar lista de interesados al entrar a formularios misioneros
+  if (id === 'reg-misionero' || id === 'reg-visitacion') poblarInteresadosEnFormularios();
+
+  // Renderizar actualizar al entrar
+  if (id === 'actualizar') renderActualizar();
+
+  // Limpiar especial para nuevo-interesado
+  if (id === 'nuevo-interesado') {
+    ['estudio','visita','ambos'].forEach(t => {
+      const el = document.getElementById(`ni-tipo-${t}`);
+      if (el) { el.style.borderColor='var(--border)'; el.style.background='white'; }
+    });
+  }
+  window.scrollTo(0,0);
 }
 
-function setFiltroNivel(val, el) {
-  filtroNivel = val;
-  document.querySelectorAll('#filtros-nivel .filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderMiembros(MIEMBROS);
+// ── BUSCADOR DE INTERESADOS EN FORMULARIOS ───────────────────────
+function buscarEnInteresados(prefix, q) {
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  if (!listaEl) return;
+  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
+  // #3: excluir ya asignados
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
+  if (!q.trim()) { listaEl.className = 'hermano-dropdown'; return; }
+  const hits = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase())).slice(0,10);
+  if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
+  listaEl.innerHTML = hits.map(i =>
+    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
+      <div>${i.nombre}</div>
+      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
 }
 
-function selTipoInteresado(tipo) {
-  ['estudio','visita'].forEach(t => {
-    const el = document.getElementById(`ni-tipo-${t}`);
-    if(el) el.style.background = (t === tipo) ? '#EFF6FF' : 'white';
+function verTodosInteresados(prefix) {
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  if (!listaEl) return;
+  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
+  // #3: excluir ya asignados
+  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
+  if (!lista.length) {
+    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);">Sin interesados disponibles para este tipo</div>';
+    listaEl.className = 'hermano-dropdown show';
+    return;
+  }
+  listaEl.innerHTML = lista.map(i =>
+    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
+      <div>${i.nombre}</div>
+      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
+}
+
+function seleccionarInteresado(prefix, nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  const int = INTERESADOS.find(i => i.nombre === nombre);
+  if (!int) return;
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  const inputEl = document.getElementById(`${prefix}-interesado-input`);
+  if (listaEl) listaEl.className = 'hermano-dropdown';
+  if (inputEl) inputEl.value = nombre;
+  // Cargar datos según formulario
+  if (prefix === 'rmi') {
+    document.getElementById('rmi-estudiante').value = int.nombre;
+    document.getElementById('rmi-tel').value = int.tel || '';
+    // #3: agregar dirección en estudio bíblico
+    const dirEl = document.getElementById('rmi-dir');
+    if (dirEl) dirEl.value = int.dir || '';
+  } else if (prefix === 'rv') {
+    document.getElementById('rv-nombre').value = int.nombre;
+    document.getElementById('rv-tel').value = int.tel || '';
+    document.getElementById('rv-dir').value = int.dir || '';
+  }
+  // Marcar interesado como asignado
+  int.hermano = int.hermano || 'Asignado';
+  renderInteresados();
+}
+
+// ── ACTUALIZAR CON GRABADO EN SHEETS ────────────────────────────
+function actualizarEstadoVisita(idx, nuevoEstado) {
+  if (!VISITAS[idx]) return;
+  VISITAS[idx]['Estado de la Visita'] = nuevoEstado;
+  VISITAS[idx].estado = nuevoEstado;
+  // Grabar en Sheets
+  guardarEnSheets('VISITAS', {
+    'Fecha': VISITAS[idx]['Fecha'] || VISITAS[idx].fecha || '',
+    'Hermano Visitador': VISITAS[idx]['Hermano Visitador'] || VISITAS[idx].hermano || '',
+    'Joven Acompañante': VISITAS[idx]['Joven Acompañante'] || '',
+    'Parentesco': VISITAS[idx]['Parentesco'] || '',
+    'Nombre del Visitado': VISITAS[idx]['Nombre del Visitado'] || VISITAS[idx].nombre || '',
+    'Teléfono': VISITAS[idx]['Teléfono'] || VISITAS[idx].tel || '',
+    'Dirección': VISITAS[idx]['Dirección'] || VISITAS[idx].dir || '',
+    'Relación con la Iglesia': VISITAS[idx]['Relación con la Iglesia'] || '',
+    'Estado de la Visita': nuevoEstado,
+    'Material Entregado': VISITAS[idx]['Material Entregado'] || '',
+    'Observaciones': VISITAS[idx]['Observaciones'] || '',
+    'Registrado por': VISITAS[idx]['Registrado por'] || '',
   });
-  document.getElementById('ni-tipo-valor').value = tipo;
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Visita actualizada: ${nuevoEstado}`);
 }
+
+function actualizarEstadoEstudio(idx, nuevoEstado) {
+  if (!MISIONERO[idx]) return;
+  const estudio = MISIONERO[idx];
+  estudio['Estado'] = nuevoEstado;
+
+  // #10: Si se bautiza, preguntar si registrar en MIEMBROS
+  if (nuevoEstado === 'Bautizado') {
+    const nombre = String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim();
+    const confirmar = confirm(`🎉 ¡${nombre} fue bautizado!\n\n¿Desea registrarlo como nuevo miembro en la base de datos?`);
+    if (confirmar) {
+      const fechaBaut = new Date().toLocaleDateString('es-BO');
+      guardarEnSheets('MIEMBROS', {
+        'Apellidos y Nombres': nombre,
+        'Bautizado': 'Sí',
+        'Fecha de Bautismo': fechaBaut,
+        'Clasificación': 'Frecuente',
+        'Registro Iglesia': 'Sí',
+        'Estado': 'Asiste',
+      });
+      // #7: Agregar al array MIEMBROS para actualizar contador inmediatamente
+      MIEMBROS.push({
+        'Apellidos y Nombres': nombre,
+        'Bautizado': 'Sí',
+        'Fecha de Bautismo': fechaBaut,
+        'Clasificación': 'Frecuente',
+        'Registro Iglesia': 'Sí',
+        'Estado': 'Asiste',
+      });
+      showToast(`✅ ${nombre} registrado como nuevo miembro`);
+    }
+  }
+
+  // Grabar actualización en Sheets
+  guardarEnSheets('ESTUDIOS', {
+    'Fecha': new Date().toLocaleDateString('es-BO'),
+    'Nombre del Hermano': getNombreHermano(estudio),
+    'Nombre del Estudiante': String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim(),
+    'Teléfono': estudio['Teléfono'] || '',
+    'Estado Civil': estudio['Estado Civil'] || '',
+    'Lección Actual (1-20)': estudio['Lección\nActual (1-20)'] || '',
+    'Estado': nuevoEstado,
+    'Observaciones': estudio['Observaciones'] || '',
+    'Registrado por': estudio['Registrado por'] || '',
+  });
+
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
+}
+
+// ── RENDER ACTUALIZAR con Terminado añadido ──────────────────────
+// ── POBLAR INTERESADOS EN FORMULARIOS ───────────────────────────
+function poblarInteresadosEnFormularios() {
+  // Solo limpia los inputs de búsqueda - la lista se carga dinámicamente
+  ['rmi-interesado-input','rv-interesado-input'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['rmi-interesado-lista','rv-interesado-lista'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'hermano-dropdown';
+  });
+}
+
+// ── PÁGINA ACTUALIZAR ────────────────────────────────────────────
+let filtroActualizarActual = 'visitas';
 
 function setFiltroActualizar(tipo, el) {
   filtroActualizarActual = tipo;
-  document.querySelectorAll('#page-actualizar .filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('act-lista-visitas').style.display = tipo === 'visitas' ? 'block' : 'none';
   document.getElementById('act-lista-estudios').style.display = tipo === 'estudios' ? 'block' : 'none';
 }
 
-function filtrarMiembros() {
-  const q = document.getElementById('search-miembro').value.toLowerCase();
-  renderMiembros(q ? MIEMBROS.filter(m => m['Apellidos y Nombres'] && m['Apellidos y Nombres'].toLowerCase().includes(q)) : MIEMBROS);
+function renderActualizar() {
+  // Visitas por estado
+  const estadosVisita = ['Concretada','No encontrado','Reprogramada','Cancelada',''];
+  const listV = document.getElementById('act-lista-visitas');
+  if (listV) {
+    if (!VISITAS.length) {
+      listV.innerHTML = '<div class="empty-state"><div class="empty-icon">🚶</div>Sin visitas registradas aún</div>';
+    } else {
+      listV.innerHTML = VISITAS.map((v, idx) => {
+        const estado = String(v['Estado de la Visita'] || v.estado || '').trim();
+        const nombre = String(v['Nombre del Visitado'] || v.nombre || '—').trim();
+        const hermano = String(v['Hermano Visitador'] || v.hermano || '').trim();
+        const fecha = String(v['Fecha'] || v.fecha || '').trim();
+        return `<div class="card" style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+              <div style="font-size:14px;font-weight:600;">${nombre}</div>
+              <div style="font-size:12px;color:var(--text2);">${hermano} · ${fecha}</div>
+            </div>
+            <span class="badge ${estado==='Concretada'?'b-verde':estado?'b-amarillo':'b-gris'}">${estado||'Sin estado'}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${['Concretada','No encontrado','Reprogramada','Cancelada'].map(s =>
+              `<button onclick="actualizarEstadoVisita(${idx},'${s}')" 
+                style="padding:4px 10px;font-size:11px;border-radius:99px;border:1px solid var(--border);background:${s===estado?'var(--azul)':'white'};color:${s===estado?'white':'var(--text2)'};cursor:pointer;">
+                ${s}
+              </button>`
+            ).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Estudios por estado
+  const listE = document.getElementById('act-lista-estudios');
+  if (listE) {
+    if (!MISIONERO.length) {
+      listE.innerHTML = '<div class="empty-state"><div class="empty-icon">📖</div>Sin estudios registrados aún</div>';
+    } else {
+      listE.innerHTML = MISIONERO.map((e, idx) => {
+        const estado = String(e['Estado'] || '').trim();
+        const nombre = String(e['Nombre del\nEstudiante'] || e['Nombre del Estudiante'] || '—').trim();
+        const hermano = getNombreHermano(e);
+        const lec = e['Lección\nActual (1-20)'] || e['Lección Actual (1-20)'] || '?';
+        return `<div class="card" style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+              <div style="font-size:14px;font-weight:600;">${nombre}</div>
+              <div style="font-size:12px;color:var(--text2);">${hermano} · Lec. ${lec}/20</div>
+            </div>
+            <span class="badge ${estado==='En Curso'?'b-azul':estado==='Bautizado'?'b-verde':estado?'b-amarillo':'b-gris'}">${estado||'Sin estado'}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${['En Curso','Bautizado','Pausado','Abandonó','Transferido'].map(s =>
+              `<button onclick="actualizarEstadoEstudio(${idx},'${s}')" 
+                style="padding:4px 10px;font-size:11px;border-radius:99px;border:1px solid var(--border);background:${s===estado?'var(--azul)':'white'};color:${s===estado?'white':'var(--text2)'};cursor:pointer;">
+                ${s}
+              </button>`
+            ).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
 }
 
-function toggleFeJesus(sel) {}
+function actualizarEstadoVisita(idx, nuevoEstado) {
+  if (!VISITAS[idx]) return;
+  VISITAS[idx]['Estado de la Visita'] = nuevoEstado;
+  VISITAS[idx].estado = nuevoEstado;
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Visita actualizada: ${nuevoEstado}`);
+}
 
-// INICIALIZACIÓN SECUENCIAL SEGURA
-window.onload = async function() {
-  // 1. Descargar datos primero obligatoriamente
-  await cargarDatos();
-  
-  // 2. Lincarlo a los componentes visuales una vez existan los datos
-  try { crearBuscadorCompleto('rm', 'rm-hermano-valor'); } catch(e){}
-  try { crearBuscadorCompleto('rmi', 'rmi-hermano-valor'); } catch(e){}
-  try { crearBuscadorCompleto('rv', 'rv-hermano-valor'); } catch(e){}
-};
+function actualizarEstadoEstudio(idx, nuevoEstado) {
+  if (!MISIONERO[idx]) return;
+  MISIONERO[idx]['Estado'] = nuevoEstado;
+  renderActualizar();
+  renderDashboard();
+  showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
+}
+
+cargarDatos();
 </script>
 </body>
 </html>
