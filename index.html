@@ -797,6 +797,10 @@ function gvizFetch(sheet) {
 
 async function cargarDatos() {
   try {
+    // Cargar MIEMBROS con paginación para obtener todos los registros
+    const m = await gvizFetchAll('MIEMBROS');
+    
+    // Cargar el resto en paralelo
     const [min, mis, cat, vis, est, int] = await Promise.all([
       gvizFetch('CRECIMIENTO_MINISTERIAL'),
       gvizFetch('CRECIMIENTO_MISIONERO'),
@@ -805,7 +809,6 @@ async function cargarDatos() {
       gvizFetch('ESTUDIOS'),
       gvizFetch('INTERESADOS'),
     ]);
-    const m = await gvizFetchAll('MIEMBROS');
     MIEMBROS = m.filter(r => {
       const n = String(r['Apellidos y Nombres'] || '').trim();
       return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
