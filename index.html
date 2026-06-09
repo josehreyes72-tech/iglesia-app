@@ -213,7 +213,7 @@
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
   <div class="section-title">Registro — Visitación</div>
   <div class="form-group">
-    <label>Hermano visitor *</label>
+    <label>Hermano visitador *</label>
     <input type="text" id="rv-hermano-input" placeholder="Buscar hermano..." autocomplete="off">
     <div class="hermano-dropdown" id="rv-hermano-lista"></div>
     <input type="hidden" id="rv-hermano-valor">
@@ -272,7 +272,6 @@ function normalizarLlave(txt) {
   return String(txt || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
 }
 
-// RESTAURACIÓN DE LA FUNCIÓN DEL SEMÁFORO CRÍTICO
 function semaforo(min, mis) {
   if (min >= 60 && mis >= 20) return { cls: 'b-verde', label: '🟢 Activo', key: 'verde' };
   if (min >= 60 || mis >= 20) return { cls: 'b-amarillo', label: '🟡 En desarrollo', key: 'amarillo' };
@@ -288,10 +287,10 @@ async function gvizFetchAll(sheet) {
   });
 }
 
-// SENSOR COMPUESTO (Lectura dual por nombre o por orden físico de columna A, B, C...)
-async function gvizFetchInteresados() {
+// NUEVO TRADUCTOR INTELIGENTE DE COLUMNAS DE GOOGLE (Mapea por el identificador real interno)
+async function gvizFetchDinamico(sheet) {
   try {
-    const url = BASE + encodeURIComponent('INTERESADOS') + '&tq=select%20*';
+    const url = BASE + encodeURIComponent(sheet) + '&tq=select%20*';
     const r = await fetch(url);
     const t = await r.text();
     const match = t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
@@ -301,94 +300,92 @@ async function gvizFetchInteresados() {
     if (!json.table || !json.table.rows) return [];
     
     const rows = json.table.rows;
-    const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
+    const rawCols = json.table.cols;
+    
+    // Identificar las etiquetas reales que Google resolvió para cada columna
+    const mapaColumnas = rawCols.map((c, i) => {
+      let labelReal = c.label ? String(c.label).trim() : '';
+      if (!labelReal && json.table.parsedNumHeaders === 0 && rows.length > 0) {
+        labelReal = rows[0].c[i] ? String(rows[0].c[i].v || '') : '';
+      }
+      return { indice: i, llave: normalizarLlave(labelReal) };
+    });
+
     let filaInicio = (json.table.parsedNumHeaders === 0) ? 1 : 0;
     
-    let encabezados = rawCols;
-    if (json.table.parsedNumHeaders === 0 && rows.length > 0) {
-      encabezados = rows[0].c.map(c => c?.v ?? '').map((h, i) => h ? String(h).trim() : rawCols[i]);
-    }
-
     return rows.slice(filaInicio).map(r => {
-      const celda = r.c || [];
-      // Método 1: Leer dinámicamente por cabecera de texto normalizada
-      const objMapeado = {};
-      encabezados.forEach((c, idx) => {
-        objMapeado[normalizarLlave(c)] = celda[idx] ? String(celda[idx].v || '') : '';
+      const celdas = r.c || [];
+      const item = {};
+      mapaColumnas.forEach(col => {
+        if (col.llave) {
+          item[col.llave] = celdas[col.indice] ? String(celdas[col.indice].v || '') : '';
+        }
       });
-
-      // Método 2: Respaldo estricto por posición de columna física (Inmune a fallos)
-      return {
-        nombre: objMapeado['nombre'] || (celda[1] ? String(celda[1].v || '') : 'Sin Nombre'),
-        tel: objMapeado['telefono'] || (celda[2] ? String(celda[2].v || '') : ''),
-        dir: objMapeado['direccion'] || (celda[3] ? String(celda[3].v || '') : ''),
-        tipo: objMapeado['tipodeactividad'] || (celda[4] ? String(celda[4].v || '') : ''),
-        hermano: objMapeado['hermanoadulto'] || (celda[5] ? String(celda[5].v || '') : ''),
-        obs: objMapeado['observaciones'] || (celda[8] ? String(celda[8].v || '') : ''),
-        fecha: objMapeado['fecha'] || (celda[0] ? String(celda[0].v || '') : '')
-      };
-    }).filter(i => i.nombre && i.nombre !== 'Sin Nombre' && i.nombre !== 'Nombre');
+      return item;
+    });
   } catch(e) {
-    console.error("Fallo lectura interesados:", e);
+    console.error("Fallo de mapeo en pestaña: " + sheet, e);
     return [];
   }
 }
 
-async function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet)).then(r => r.text()).then(t => {
-    const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
-    const rows = json.table.rows || [];
-    if (json.table.parsedNumHeaders === 0 && rows.length > 0) {
-      const cols = rows[0].c.map(c => c?.v ?? '').map((h, i) => h ? String(h).trim() : rawCols[i]);
-      return rows.slice(1).map(r => Object.fromEntries(cols.map((c,i) => [c, r.c[i]?.v ?? ''])));
-    }
-    return rows.map(r => Object.fromEntries(rawCols.map((c,i) => [c, r.c[i]?.v ?? ''])));
-  });
-}
-
 async function cargarDatos() {
   try {
-    const m = await gvizFetchAll('MIEMBROS');
-    const [min, mis, cat, vis] = await Promise.all([
-      gvizFetch('CRECIMIENTO_MINISTERIAL'), gvizFetch('CRECIMIENTO_MISIONERO'),
-      gvizFetch('CATALOGOS'), gvizFetch('VISITAS')
-    ]);
+    MIEMBROS = await gvizFetchAll('MIEMBROS');
     
-    // Llamado dual seguro para interesados
-    INTERESADOS = await gvizFetchInteresados();
+    // Descarga y traducción blindada de todas las pestañas operativas
+    const [min, mis, cat, vis, int] = await Promise.all([
+      gvizFetchDinamico('CRECIMIENTO_MINISTERIAL'),
+      gvizFetchDinamico('CRECIMIENTO_MISIONERO'),
+      gvizFetchDinamico('CATALOGOS'),
+      gvizFetchDinamico('VISITAS'),
+      gvizFetchDinamico('INTERESADOS')
+    ]);
 
-    MIEMBROS = m.filter(r => {
-      const n = String(r['Apellidos y Nombres'] || '').trim();
-      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
-    });
+    MIEMBROS = MIEMBROS.filter(r => r['Apellidos y Nombres'] && r['Apellidos y Nombres'] !== 'Apellido, Nombre');
     MINISTERIAL = min;
     MISIONERO = mis;
     VISITAS = vis;
 
-    const catFila0 = cat[0] || {};
-    let keyDept = null;
-    Object.entries(catFila0).forEach(([k, v]) => {
-      if (String(v).toLowerCase().includes('departamento')) keyDept = k;
-    });
-    const catDatos = cat.slice(1);
-    window.CATALOGOS_DEPT = keyDept ? [...new Set(catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean))].sort() : [];
+    // Procesar interesados asociando las propiedades normalizadas de tu Sheets
+    INTERESADOS = int.map(i => ({
+      nombre: i['nombre'] || '',
+      tel: i['telefono'] || '',
+      dir: i['direccion'] || '',
+      tipo: i['tipodeactividad'] || i['tipo'] || '',
+      hermano: i['hermanoadulto'] || '',
+      obs: i['observaciones'] || ''
+    })).filter(i => i.nombre.trim());
 
-    // Pintar elementos visuales
+    // Configuración dinámica del catálogo de departamentos
+    window.CATALOGOS_DEPT = [];
+    if (cat.length > 0) {
+      const llavesCat = Object.keys(cat[0]);
+      cat.forEach(row => {
+        if (row[llavesCat[0]]) window.CATALOGOS_DEPT.push(row[llavesCat[0]]);
+      });
+    }
+
     renderMiembros(MIEMBROS);
     renderInteresados();
     renderDashboard();
     renderActualizar();
     poblarSelectores();
   } catch(e) {
-    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Ocurrió un fallo: ${e.message}</div>`;
+    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Error general: ${e.message}</div>`;
   }
 }
 
 function calcNivel(m) {
-  const nombre = String(m['Apellidos y Nombres'] || '').trim();
+  const nombre = String(m['Apellidos y Nombres'] || '').trim().toLowerCase();
   let min = m['Cargo Principal'] && m['Cargo Principal'] !== '-' ? 60 : 0;
-  const estActivos = MISIONERO.filter(r => String(r['Nombre del Hermano']||'').includes(nombre)).length;
+  
+  // Buscar actividades en base al listado dinámico unificado
+  const estActivos = MISIONERO.filter(r => {
+    const h = String(r['nombredelhermano'] || r['hermano'] || '').toLowerCase();
+    return h.includes(nombre);
+  }).length;
+
   return { min, mis: Math.min(100, estActivos * 25), activos: estActivos, visitas: 0 };
 }
 
@@ -422,7 +419,7 @@ function verPerfil(nombreEnc) {
   document.getElementById('perfil-contenido').innerHTML = `
     <div class="card">
       <div class="profile-header" style="display:flex; align-items:center; gap:14px;">
-        <div class="avatar-xl" style="background:${col}25;color:${col};width:50px;height:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;">${nombre.substring(0,2).toUpperCase()}</div>
+        <div class="avatar-xl" style="background:${col}25;color:${col};width:46px;height:46px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;">${nombre.substring(0,2).toUpperCase()}</div>
         <div><h3>${nombre}</h3><span class="badge ${smGen.cls}">${smGen.label}</span></div>
       </div>
     </div>`;
@@ -464,7 +461,7 @@ function renderDashboard() {
 
 function renderActualizar() {
   const lv = document.getElementById('act-lista-visitas');
-  if(lv) lv.innerHTML = '<div class="card">Control de actualización de registros listo.</div>';
+  if(lv) lv.innerHTML = '<div class="card">Control de actualización listo.</div>';
 }
 
 function poblarSelectores() {
@@ -523,6 +520,7 @@ function guardarInteresado() {
 }
 
 function guardarMinisterial() { showPage('registro'); }
+// Se eliminaron llamadas duplicadas inconsistentes de misiones[cite: 2]
 function guardarMisionero() { showPage('registro'); }
 function guardarVisitacion() { showPage('registro'); }
 
