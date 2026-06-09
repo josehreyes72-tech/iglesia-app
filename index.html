@@ -103,7 +103,7 @@
   </div>
 </div>
 
-<!-- NAV PAGES -->
+<!-- PAGES -->
 <div id="page-miembros" class="page active">
   <div class="search-wrap" style="margin-top:8px;">
     <span class="search-icon">🔍</span>
@@ -213,7 +213,7 @@
   <button class="back-btn" onclick="showPage('reg-misionero-tipo')">← Volver</button>
   <div class="section-title">Registro — Visitación</div>
   <div class="form-group">
-    <label>Hermano visitador *</label>
+    <label>Hermano visitor *</label>
     <input type="text" id="rv-hermano-input" placeholder="Buscar hermano..." autocomplete="off">
     <div class="hermano-dropdown" id="rv-hermano-lista"></div>
     <input type="hidden" id="rv-hermano-valor">
@@ -261,10 +261,22 @@ async function guardarEnSheets(tipo, fila) {
 
 let MIEMBROS = [], MINISTERIAL = [], MISIONERO = [], INTERESADOS = [], VISITAS = [];
 let filtroNivel = '';
+let filtroActualizarActual = 'visitas';
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   if(t) { t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+}
+
+function normalizarLlave(txt) {
+  return String(txt || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+}
+
+// RESTAURACIÓN DE LA FUNCIÓN DEL SEMÁFORO CRÍTICO
+function semaforo(min, mis) {
+  if (min >= 60 && mis >= 20) return { cls: 'b-verde', label: '🟢 Activo', key: 'verde' };
+  if (min >= 60 || mis >= 20) return { cls: 'b-amarillo', label: '🟡 En desarrollo', key: 'amarillo' };
+  return { cls: 'b-rojo', label: '🔴 Atención', key: 'rojo' };
 }
 
 async function gvizFetchAll(sheet) {
@@ -276,7 +288,7 @@ async function gvizFetchAll(sheet) {
   });
 }
 
-// NUEVO MOTOR SEGURO DE LECTURA POR INDEXACIÓN DE COLUMNA (A, B, C...)
+// SENSOR COMPUESTO (Lectura dual por nombre o por orden físico de columna A, B, C...)
 async function gvizFetchInteresados() {
   try {
     const url = BASE + encodeURIComponent('INTERESADOS') + '&tq=select%20*';
@@ -289,27 +301,35 @@ async function gvizFetchInteresados() {
     if (!json.table || !json.table.rows) return [];
     
     const rows = json.table.rows;
-    // Si la fila 0 contiene las palabras de cabecera por configuración de Google, empezamos en 1, de lo contrario en 0
+    const rawCols = json.table.cols.map(c => (c.label && c.label.trim()) ? c.label : c.id);
     let filaInicio = (json.table.parsedNumHeaders === 0) ? 1 : 0;
     
-    const listaMapeada = [];
-    for (let i = filaInicio; i < rows.length; i++) {
-      const celda = rows[i].c;
-      if (!celda || !celda[1]) continue; // Si la columna B (Nombre) viene vacía, saltamos la fila
-      
-      listaMapeada.push({
-        fecha: celda[0] ? String(celda[0].v || '') : '',
-        nombre: celda[1] ? String(celda[1].v || '') : '',
-        tel: celda[2] ? String(celda[2].v || '') : '',
-        dir: celda[3] ? String(celda[3].v || '') : '',
-        tipo: celda[4] ? String(celda[4].v || '') : '',
-        hermano: celda[5] ? String(celda[5].v || '') : '',
-        obs: celda[8] ? String(celda[8].v || '') : ''
-      });
+    let encabezados = rawCols;
+    if (json.table.parsedNumHeaders === 0 && rows.length > 0) {
+      encabezados = rows[0].c.map(c => c?.v ?? '').map((h, i) => h ? String(h).trim() : rawCols[i]);
     }
-    return listaMapeada;
+
+    return rows.slice(filaInicio).map(r => {
+      const celda = r.c || [];
+      // Método 1: Leer dinámicamente por cabecera de texto normalizada
+      const objMapeado = {};
+      encabezados.forEach((c, idx) => {
+        objMapeado[normalizarLlave(c)] = celda[idx] ? String(celda[idx].v || '') : '';
+      });
+
+      // Método 2: Respaldo estricto por posición de columna física (Inmune a fallos)
+      return {
+        nombre: objMapeado['nombre'] || (celda[1] ? String(celda[1].v || '') : 'Sin Nombre'),
+        tel: objMapeado['telefono'] || (celda[2] ? String(celda[2].v || '') : ''),
+        dir: objMapeado['direccion'] || (celda[3] ? String(celda[3].v || '') : ''),
+        tipo: objMapeado['tipodeactividad'] || (celda[4] ? String(celda[4].v || '') : ''),
+        hermano: objMapeado['hermanoadulto'] || (celda[5] ? String(celda[5].v || '') : ''),
+        obs: objMapeado['observaciones'] || (celda[8] ? String(celda[8].v || '') : ''),
+        fecha: objMapeado['fecha'] || (celda[0] ? String(celda[0].v || '') : '')
+      };
+    }).filter(i => i.nombre && i.nombre !== 'Sin Nombre' && i.nombre !== 'Nombre');
   } catch(e) {
-    console.error("Error indexado: ", e);
+    console.error("Fallo lectura interesados:", e);
     return [];
   }
 }
@@ -329,16 +349,22 @@ async function gvizFetch(sheet) {
 
 async function cargarDatos() {
   try {
-    MIEMBROS = await gvizFetchAll('MIEMBROS');
-    MINISTERIAL = await gvizFetch('CRECIMIENTO_MINISTERIAL');
-    MISIONERO = await gvizFetch('CRECIMIENTO_MISIONERO');
-    VISITAS = await gvizFetch('VISITAS');
-    let cat = await gvizFetch('CATALOGOS');
+    const m = await gvizFetchAll('MIEMBROS');
+    const [min, mis, cat, vis] = await Promise.all([
+      gvizFetch('CRECIMIENTO_MINISTERIAL'), gvizFetch('CRECIMIENTO_MISIONERO'),
+      gvizFetch('CATALOGOS'), gvizFetch('VISITAS')
+    ]);
     
-    // Llamado al motor indexado inmune a errores de títulos en Interesados
+    // Llamado dual seguro para interesados
     INTERESADOS = await gvizFetchInteresados();
 
-    MIEMBROS = MIEMBROS.filter(r => r['Apellidos y Nombres'] && r['Apellidos y Nombres'] !== 'Apellido, Nombre');
+    MIEMBROS = m.filter(r => {
+      const n = String(r['Apellidos y Nombres'] || '').trim();
+      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
+    });
+    MINISTERIAL = min;
+    MISIONERO = mis;
+    VISITAS = vis;
 
     const catFila0 = cat[0] || {};
     let keyDept = null;
@@ -348,41 +374,59 @@ async function cargarDatos() {
     const catDatos = cat.slice(1);
     window.CATALOGOS_DEPT = keyDept ? [...new Set(catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean))].sort() : [];
 
+    // Pintar elementos visuales
     renderMiembros(MIEMBROS);
     renderInteresados();
     renderDashboard();
     renderActualizar();
     poblarSelectores();
   } catch(e) {
-    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Error: ${e.message}</div>`;
+    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Ocurrió un fallo: ${e.message}</div>`;
   }
 }
 
 function calcNivel(m) {
   const nombre = String(m['Apellidos y Nombres'] || '').trim();
   let min = m['Cargo Principal'] && m['Cargo Principal'] !== '-' ? 60 : 0;
-  return { min, mis: 0, activos: 0, visitas: 0 };
+  const estActivos = MISIONERO.filter(r => String(r['Nombre del Hermano']||'').includes(nombre)).length;
+  return { min, mis: Math.min(100, estActivos * 25), activos: estActivos, visitas: 0 };
 }
 
 function renderMiembros(lista) {
   const el = document.getElementById('lista-miembros');
-  const mostrar = filtroNivel ? lista.filter(m => semaforo(calcNivel(m).min, 0).key === filtroNivel) : lista;
+  if(!el) return;
+  const mostrar = filtroNivel ? lista.filter(m => semaforo(calcNivel(m).min, calcNivel(m).mis).key === filtroNivel) : lista;
   if (!mostrar.length) { el.innerHTML = '<div class="empty-state">No se encontraron hermanos</div>'; return; }
   
   el.innerHTML = mostrar.map(m => {
     const n = String(m['Apellidos y Nombres'] || '').trim();
     const col = avatarColor(n);
+    const niv = calcNivel(m);
+    const sm = semaforo(niv.min, niv.mis);
     return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
       <div class="avatar" style="background:${col}25;color:${col};">${n.substring(0,2).toUpperCase()}</div>
       <div class="member-info"><div class="member-name">${n}</div><div class="member-sub">${m['Departamento']||'Sin área'}</div></div>
-      <span class="badge ${semaforo(calcNivel(m).min, 0).cls}">${semaforo(calcNivel(m).min, 0).label}</span>
+      <span class="badge ${sm.cls}">${sm.label}</span>
     </div>`;
   }).join('');
 }
 
 function verPerfil(nombreEnc) {
   const nombre = decodeURIComponent(nombreEnc);
-  showPage('miembros');
+  const m = MIEMBROS.find(x => String(x['Apellidos y Nombres']||'').trim() === nombre);
+  if (!m) return;
+  const niv = calcNivel(m);
+  const smGen = semaforo(niv.min, niv.mis);
+  const col = avatarColor(nombre);
+
+  document.getElementById('perfil-contenido').innerHTML = `
+    <div class="card">
+      <div class="profile-header" style="display:flex; align-items:center; gap:14px;">
+        <div class="avatar-xl" style="background:${col}25;color:${col};width:50px;height:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;">${nombre.substring(0,2).toUpperCase()}</div>
+        <div><h3>${nombre}</h3><span class="badge ${smGen.cls}">${smGen.label}</span></div>
+      </div>
+    </div>`;
+  showPage('perfil');
 }
 
 function renderInteresados() {
@@ -420,7 +464,7 @@ function renderDashboard() {
 
 function renderActualizar() {
   const lv = document.getElementById('act-lista-visitas');
-  if(lv) lv.innerHTML = 'Control de actualización de registros listo.';
+  if(lv) lv.innerHTML = '<div class="card">Control de actualización de registros listo.</div>';
 }
 
 function poblarSelectores() {
@@ -493,11 +537,13 @@ function showPage(id) {
   if (id === 'interesados') renderInteresados();
   if (id === 'dashboard') renderDashboard();
   if (id === 'actualizar') renderActualizar();
+  if (id === 'miembros') renderMiembros(MIEMBROS);
 }
 
 function setFiltroNivel(val, el) { filtroNivel = val; document.querySelectorAll('#filtros-nivel .filter-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderMiembros(MIEMBROS); }
 function selTipoInteresado(tipo) { ['estudio','visita'].forEach(t => { const el = document.getElementById(`ni-tipo-${t}`); if(el) el.style.background = (t === tipo) ? '#EFF6FF' : 'white'; }); document.getElementById('ni-tipo-valor').value = tipo; }
 function filtrarMiembros() { const q = document.getElementById('search-miembro').value.toLowerCase(); renderMiembros(q ? MIEMBROS.filter(m => m['Apellidos y Nombres'].toLowerCase().includes(q)) : MIEMBROS); }
+
 const NAV_MAP = {'miembros':0,'perfil':0,'interesados':1,'nuevo-interesado':1,'registro':2,'reg-ministerial':2,'reg-misionero-tipo':2,'reg-misionero':2,'reg-visitacion':2,'actualizar':3,'dashboard':4};
 const PALETTE = ['#1F3864','#1E5631','#7C3AED','#B45309'];
 function avatarColor(n) { let h=0; for(let c of n) h+=c.charCodeAt(0); return PALETTE[h%PALETTE.length]; }
