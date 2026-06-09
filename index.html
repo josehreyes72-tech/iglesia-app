@@ -287,10 +287,10 @@ async function gvizFetchAll(sheet) {
   });
 }
 
-// NUEVO TRADUCTOR INTELIGENTE DE COLUMNAS DE GOOGLE (Mapea por el identificador real interno)
-async function gvizFetchDinamico(sheet) {
+// NUEVA LECTURA ULTRA-TOLERANTE INDEXADA Y POR IDENTIFICADOR MIXTO
+async function gvizFetchInteresados() {
   try {
-    const url = BASE + encodeURIComponent(sheet) + '&tq=select%20*';
+    const url = BASE + encodeURIComponent('INTERESADOS') + '&tq=select%20*';
     const r = await fetch(url);
     const t = await r.text();
     const match = t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
@@ -302,17 +302,82 @@ async function gvizFetchDinamico(sheet) {
     const rows = json.table.rows;
     const rawCols = json.table.cols;
     
-    // Identificar las etiquetas reales que Google resolvió para cada columna
+    // Mapeo inicial de columnas basado en etiquetas de texto o posición de celdas
     const mapaColumnas = rawCols.map((c, i) => {
       let labelReal = c.label ? String(c.label).trim() : '';
-      if (!labelReal && json.table.parsedNumHeaders === 0 && rows.length > 0) {
-        labelReal = rows[0].c[i] ? String(rows[0].c[i].v || '') : '';
+      if (!labelReal && rows.length > 0 && rows[0].c && rows[0].c[i]) {
+        labelReal = rows[0].c[i].v ? String(rows[0].c[i].v) : '';
+      }
+      return { indice: i, llave: normalizarLlave(labelReal) };
+    });
+
+    const listaMapeada = [];
+    // Recorremos todas las filas analizando las celdas directamente para evitar desajustes por líneas vacías
+    rows.forEach((row) => {
+      const celdas = row.c || [];
+      if (celdas.length < 2) return;
+      
+      // Intentamos extraer por mapa detectado
+      const datosFila = {};
+      mapaColumnas.forEach(col => {
+        if (col.llave && celdas[col.indice]) {
+          datosFila[col.llave] = celdas[col.indice].v ? String(celdas[col.indice].v).trim() : '';
+        }
+      });
+
+      // Respaldo por lectura de celdas por posición física absoluta (Inmune al formato de Google)
+      const nombreFinal = datosFila['nombre'] || (celdas[1] ? String(celdas[1].v || '').trim() : '');
+      const fechaFinal = datosFila['fecha'] || (celdas[0] ? String(celdas[0].v || '').trim() : '');
+      const telefonoFinal = datosFila['telefono'] || (celdas[2] ? String(celdas[2].v || '').trim() : '');
+      const direccionFinal = datosFila['direccion'] || (celdas[3] ? String(celdas[3].v || '').trim() : '');
+      const tipoFinal = datosFila['tipodeactividad'] || (celdas[4] ? String(celdas[4].v || '').trim() : '');
+      const hermanoFinal = datosFila['hermanoadulto'] || (celdas[5] ? String(celdas[5].v || '').trim() : '');
+      
+      // Buscar observaciones en la columna I (celda índice 8) de tu captura física
+      const obsFinal = datosFila['observaciones'] || (celdas[8] ? String(celdas[8].v || '').trim() : (celdas[6] ? String(celdas[6].v || '').trim() : ''));
+
+      // Descartamos si la fila es la cabecera misma o si no tiene un nombre válido
+      if (nombreFinal && nombreFinal !== 'Nombre' && nombreFinal !== 'nombre' && nombreFinal !== 'Apellido, Nombre') {
+        listaMapeada.push({
+          nombre: nombreFinal,
+          fecha: fechaFinal,
+          tel: telefonoFinal,
+          dir: direccionFinal,
+          tipo: tipoFinal,
+          hermano: hermanoFinal,
+          obs: obsFinal
+        });
+      }
+    });
+    
+    return listaMapeada;
+  } catch(e) {
+    console.error("Fallo lectura interesados:", e);
+    return [];
+  }
+}
+
+async function gvizFetchDinamico(sheet) {
+  try {
+    const url = BASE + encodeURIComponent(sheet) + '&tq=select%20*';
+    const r = await fetch(url);
+    const t = await r.text();
+    const match = t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+    if (!match) return [];
+    const json = JSON.parse(match[1]);
+    if (!json.table || !json.table.rows) return [];
+    const rows = json.table.rows;
+    const rawCols = json.table.cols;
+    
+    const mapaColumnas = rawCols.map((c, i) => {
+      let labelReal = c.label ? String(c.label).trim() : '';
+      if (!labelReal && rows.length > 0 && rows[0].c && rows[0].c[i]) {
+        labelReal = rows[0].c[i].v ? String(rows[0].c[i].v) : '';
       }
       return { indice: i, llave: normalizarLlave(labelReal) };
     });
 
     let filaInicio = (json.table.parsedNumHeaders === 0) ? 1 : 0;
-    
     return rows.slice(filaInicio).map(r => {
       const celdas = r.c || [];
       const item = {};
@@ -323,48 +388,26 @@ async function gvizFetchDinamico(sheet) {
       });
       return item;
     });
-  } catch(e) {
-    console.error("Fallo de mapeo en pestaña: " + sheet, e);
-    return [];
-  }
+  } catch(e) { return []; }
 }
 
 async function cargarDatos() {
   try {
     MIEMBROS = await gvizFetchAll('MIEMBROS');
     
-    // Descarga y traducción blindada de todas las pestañas operativas
-    const [min, mis, cat, vis, int] = await Promise.all([
+    // Descarga elástica multihilo
+    const [min, mis, vis] = await Promise.all([
       gvizFetchDinamico('CRECIMIENTO_MINISTERIAL'),
       gvizFetchDinamico('CRECIMIENTO_MISIONERO'),
-      gvizFetchDinamico('CATALOGOS'),
-      gvizFetchDinamico('VISITAS'),
-      gvizFetchDinamico('INTERESADOS')
+      gvizFetchDinamico('VISITAS')
     ]);
+    
+    INTERESADOS = await gvizFetchInteresados();
 
     MIEMBROS = MIEMBROS.filter(r => r['Apellidos y Nombres'] && r['Apellidos y Nombres'] !== 'Apellido, Nombre');
     MINISTERIAL = min;
     MISIONERO = mis;
     VISITAS = vis;
-
-    // Procesar interesados asociando las propiedades normalizadas de tu Sheets
-    INTERESADOS = int.map(i => ({
-      nombre: i['nombre'] || '',
-      tel: i['telefono'] || '',
-      dir: i['direccion'] || '',
-      tipo: i['tipodeactividad'] || i['tipo'] || '',
-      hermano: i['hermanoadulto'] || '',
-      obs: i['observaciones'] || ''
-    })).filter(i => i.nombre.trim());
-
-    // Configuración dinámica del catálogo de departamentos
-    window.CATALOGOS_DEPT = [];
-    if (cat.length > 0) {
-      const llavesCat = Object.keys(cat[0]);
-      cat.forEach(row => {
-        if (row[llavesCat[0]]) window.CATALOGOS_DEPT.push(row[llavesCat[0]]);
-      });
-    }
 
     renderMiembros(MIEMBROS);
     renderInteresados();
@@ -372,21 +415,37 @@ async function cargarDatos() {
     renderActualizar();
     poblarSelectores();
   } catch(e) {
-    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Error general: ${e.message}</div>`;
+    document.getElementById('lista-miembros').innerHTML = `<div class="empty-state">⚠️ Error general de sincronización: ${e.message}</div>`;
   }
 }
 
 function calcNivel(m) {
   const nombre = String(m['Apellidos y Nombres'] || '').trim().toLowerCase();
-  let min = m['Cargo Principal'] && m['Cargo Principal'] !== '-' ? 60 : 0;
   
-  // Buscar actividades en base al listado dinámico unificado
+  // Buscar actividad ministerial cruzada en minúsculas planos
+  const regMin = MINISTERIAL.find(r => {
+    const n = String(r['apellidosynombres'] || r['nombre'] || '').toLowerCase();
+    return n.includes(nombre);
+  });
+  
+  let min = (m['Cargo Principal'] && m['Cargo Principal'] !== '-' && m['Cargo Principal'] !== 'Sin Cargo Actual') ? 60 : 0;
+  if(regMin) min = 60; // Si tiene registro ministerial histórico, se asume activo en el área
+
+  // Buscar actividad misionera activa (estudios en curso)
   const estActivos = MISIONERO.filter(r => {
     const h = String(r['nombredelhermano'] || r['hermano'] || '').toLowerCase();
+    const estadoEstudio = String(r['estado'] || '').toLowerCase();
+    return h.includes(nombre) && (estadoEstudio === 'en curso' || estadoEstudio === '');
+  }).length;
+
+  // Buscar visitas realizadas
+  const visHechas = VISITAS.filter(r => {
+    const h = String(r['hermanovisitador'] || r['hermano'] || '').toLowerCase();
     return h.includes(nombre);
   }).length;
 
-  return { min, mis: Math.min(100, estActivos * 25), activos: estActivos, visitas: 0 };
+  let mis = Math.min(50, estActivos * 25) + Math.min(50, visHechas * 10);
+  return { min, mis: Math.min(100, mis), activos: estActivos, visitas: visHechas };
 }
 
 function renderMiembros(lista) {
@@ -402,7 +461,7 @@ function renderMiembros(lista) {
     const sm = semaforo(niv.min, niv.mis);
     return `<div class="member-item" onclick="verPerfil('${encodeURIComponent(n)}')">
       <div class="avatar" style="background:${col}25;color:${col};">${n.substring(0,2).toUpperCase()}</div>
-      <div class="member-info"><div class="member-name">${n}</div><div class="member-sub">${m['Departamento']||'Sin área'}</div></div>
+      <div class="member-info"><div class="member-name">${n}</div><div class="member-sub">${m['Cargo Principal'] || m['Departamento'] || 'Miembro'}</div></div>
       <span class="badge ${sm.cls}">${sm.label}</span>
     </div>`;
   }).join('');
@@ -420,7 +479,12 @@ function verPerfil(nombreEnc) {
     <div class="card">
       <div class="profile-header" style="display:flex; align-items:center; gap:14px;">
         <div class="avatar-xl" style="background:${col}25;color:${col};width:46px;height:46px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;">${nombre.substring(0,2).toUpperCase()}</div>
-        <div><h3>${nombre}</h3><span class="badge ${smGen.cls}">${smGen.label}</span></div>
+        <div><h3 style="font-size:16px;">${nombre}</h3><span class="badge ${smGen.cls}" style="margin-top:4px;">${smGen.label}</span></div>
+      </div>
+      <div class="divider"></div>
+      <div class="points-grid">
+        <div class="point-card"><div class="point-val">${niv.activos}</div><div class="point-lbl">Estudios activos</div></div>
+        <div class="point-card"><div class="point-val">${niv.visitas}</div><div class="point-lbl">Visitas hechas</div></div>
       </div>
     </div>`;
   showPage('perfil');
@@ -461,12 +525,10 @@ function renderDashboard() {
 
 function renderActualizar() {
   const lv = document.getElementById('act-lista-visitas');
-  if(lv) lv.innerHTML = '<div class="card">Control de actualización listo.</div>';
+  if(lv) lv.innerHTML = '<div class="card">Control de actualización listo de manera correcta.</div>';
 }
 
 function poblarSelectores() {
-  const ds = document.getElementById('rm-dept');
-  if (ds && window.CATALOGOS_DEPT) ds.innerHTML = '<option value="">Seleccionar...</option>' + window.CATALOGOS_DEPT.map(d => `<option value="${d}">${d}</option>`).join('');
   crearBuscadorCompleto('rm', 'rm-hermano-valor');
   crearBuscadorCompleto('rmi', 'rmi-hermano-valor');
   crearBuscadorCompleto('rv', 'rv-hermano-valor');
@@ -520,7 +582,6 @@ function guardarInteresado() {
 }
 
 function guardarMinisterial() { showPage('registro'); }
-// Se eliminaron llamadas duplicadas inconsistentes de misiones[cite: 2]
 function guardarMisionero() { showPage('registro'); }
 function guardarVisitacion() { showPage('registro'); }
 
