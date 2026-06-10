@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
+<!-- v=42 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -509,7 +510,6 @@
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rmi-interesado-lista"></div>
-    <button class="ver-todos-btn" onclick="verTodosInteresados('rmi')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
     <input type="text" id="rmi-estudiante" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
   </div>
   <div class="form-group">
@@ -614,7 +614,6 @@
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rv-interesado-lista"></div>
-    <button class="ver-todos-btn" onclick="verTodosInteresados('rv')" style="background:#F0FDF4;border-color:#BBF7D0;color:#065F46;">☰ Ver todos los interesados</button>
     <input type="text" id="rv-nombre" placeholder="O escribir nombre manualmente" style="margin-top:6px;">
   </div>
   <div class="form-group">
@@ -881,10 +880,23 @@ async function cargarDatos() {
     Object.entries(catFila0).forEach(([k, v]) => {
       const val = String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
       if (val.includes('DEPARTAMENTO')) keyDept = k;
-      if (val.includes('TALENTO')) keyTal = k;
+      if (val.includes('TALENTO') || val.includes('PRACTICO') || val.includes('PRACTICA') || val.includes('AREA')) keyTal = k;
     });
 
-    const catDatos = cat.slice(1); // datos reales desde fila 1
+    // Si parsedNumHeaders>0 (labels reales), las claves ya son los títulos
+    const catConHeaders = cat.length > 0 && !Object.keys(cat[0]).every(k => /^[A-Z]$/.test(k));
+    let catDatos;
+    if (catConHeaders) {
+      // Las keys ya son nombres de columna
+      catDatos = cat;
+      Object.keys(cat[0]).forEach(k => {
+        const val = k.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+        if (val.includes('DEPARTAMENTO')) keyDept = k;
+        if (val.includes('TALENTO') || val.includes('PRACTICO') || val.includes('AREA')) keyTal = k;
+      });
+    } else {
+      catDatos = cat.slice(1); // datos reales desde fila 1
+    }
 
     window.CATALOGOS_DEPT = keyDept ? [...new Set(
       catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean)
@@ -959,7 +971,7 @@ function calcNivel(m) {
   let mis = 0;
   mis += Math.min(50, activos.length * 20);
   mis += Math.min(30, bautizados.length * 15);
-  mis += Math.min(20, visitas.length * 5);
+  mis += Math.min(20, visitas.length * 10);  // 2 visitas ya = 20 pts → activo misionero
   mis = Math.min(100, mis);
 
   return { min, mis, activos: activos.length, bautizados: bautizados.length, actsMin: regMin ? 1 : 0, visitas: visitas.length, tieneCargo };
@@ -1272,10 +1284,22 @@ function renderDashboard() {
     return edad >= 12 && edad <= 19;
   }).length;
 
-  const recienBautizados = MIEMBROS.filter(m => {
-    const d = diasDesdeBautismo(m);
-    return d !== null && d <= 60;
-  }).length;
+  const recienBautizados = (() => {
+    // Bautizados desde hoja MIEMBROS con fecha ≤60 días
+    const desdeMembers = MIEMBROS.filter(m => {
+      const d = diasDesdeBautismo(m);
+      return d !== null && d <= 60;
+    }).map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase());
+
+    // Bautizados recientemente desde MISIONERO (actualizados a "Bautizado" sin fecha confiable,
+    // pero que fueron añadidos al array MIEMBROS en esta sesión)
+    const nombres = new Set(desdeMembers);
+
+    // Buscar en MIEMBROS los que fueron agregados dinámicamente con estado Bautizado
+    // (tienen 'Fecha de Bautismo' asignada hoy) — ya cubierto arriba.
+    // Total único
+    return nombres.size;
+  })();
 
   // Reporte por estado de estudios
   const estadosEstudio = {};
@@ -1311,7 +1335,7 @@ function renderDashboard() {
     <div class="section-title" style="margin-top:4px;">Nivel espiritual de la congregación</div>
     <div class="card" style="margin-bottom:10px;background:#F0FDF4;border:1px solid #BBF7D0;">
       <div style="font-size:12px;color:#166534;line-height:1.8;">
-        <div>🟢 <b>Activo:</b> Tiene cargo ministerial + actividad misionera (estudios o visitas)</div>
+        <div>🟢 <b>Activo:</b> Tiene cargo ministerial + actividad misionera (1 estudio activo ó 2+ visitas)</div>
         <div>🟡 <b>En desarrollo:</b> Solo cargo ministerial, o solo actividad misionera</div>
         <div>🔴 <b>Necesita atención:</b> Sin cargo ministerial ni actividad misionera</div>
       </div>
@@ -2275,39 +2299,42 @@ function showPage(id) {
 }
 
 // ── BUSCADOR DE INTERESADOS EN FORMULARIOS ───────────────────────
+function interesadosDisponibles(prefix) {
+  // Obtener nombres que ya tienen estudio asignado en MISIONERO
+  const conEstudio = new Set(
+    MISIONERO.map(r => String(r['Nombre del\nEstudiante'] || r['Nombre del Estudiante'] || '').trim().toLowerCase()).filter(Boolean)
+  );
+  // Obtener nombres que ya tienen visita registrada en VISITAS
+  const conVisita = new Set(
+    VISITAS.map(r => String(r['Nombre del Visitado'] || r.nombre || '').trim().toLowerCase()).filter(Boolean)
+  );
+  const tipoFiltro = prefix === 'rmi' ? ['estudio','estudio bíblico'] : ['visita'];
+  return INTERESADOS.filter(i => {
+    if (!i.nombre) return false;
+    const tipo = String(i.tipo || '').toLowerCase();
+    if (!tipoFiltro.some(t => tipo.includes(t))) return false;
+    if (i.asignado) return false;
+    // Excluir si ya tiene estudio bíblico asignado
+    if (prefix === 'rmi' && conEstudio.has(i.nombre.toLowerCase())) return false;
+    return true;
+  });
+}
+
 function buscarEnInteresados(prefix, q) {
   const listaEl = document.getElementById(`${prefix}-interesado-lista`);
   if (!listaEl) return;
-  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
-  // #3: excluir ya asignados
-  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
+  const lista = interesadosDisponibles(prefix);
   if (!q.trim()) { listaEl.className = 'hermano-dropdown'; return; }
-  const hits = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase())).slice(0,10);
-  if (!hits.length) { listaEl.className = 'hermano-dropdown'; return; }
-  listaEl.innerHTML = hits.map(i =>
-    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
-      <div>${i.nombre}</div>
-      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
-    </div>`
-  ).join('');
-  listaEl.className = 'hermano-dropdown show';
-}
-
-function verTodosInteresados(prefix) {
-  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
-  if (!listaEl) return;
-  const tipoFiltro = prefix === 'rmi' ? ['estudio','Estudio Bíblico'] : ['visita','Visita'];
-  // #3: excluir ya asignados
-  const lista = INTERESADOS.filter(i => tipoFiltro.includes(i.tipo) && !i.asignado);
-  if (!lista.length) {
-    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);">Sin interesados disponibles para este tipo</div>';
+  const hits = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase())).slice(0, 10);
+  if (!hits.length) {
+    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);font-size:13px;">Sin coincidencias en interesados</div>';
     listaEl.className = 'hermano-dropdown show';
     return;
   }
-  listaEl.innerHTML = lista.map(i =>
+  listaEl.innerHTML = hits.map(i =>
     `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
       <div>${i.nombre}</div>
-      <div class="sub">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+      <div style="font-size:12px;color:var(--text2);">${[i.dir, i.tel].filter(Boolean).join(' · ')}</div>
     </div>`
   ).join('');
   listaEl.className = 'hermano-dropdown show';
@@ -2383,10 +2410,13 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
         'Estado': 'Asiste',
       });
       // #7: Agregar al array MIEMBROS para actualizar contador inmediatamente
+      // Usamos número serial de Google Sheets para que diasDesdeBautismo() lo calcule bien
+      const hoy = new Date();
+      const serialHoy = Math.floor((hoy - new Date(1899,11,30)) / 86400000);
       MIEMBROS.push({
         'Apellidos y Nombres': nombre,
         'Bautizado': 'Sí',
-        'Fecha de Bautismo': fechaBaut,
+        'Fecha de Bautismo': serialHoy,
         'Clasificación': 'Frecuente',
         'Registro Iglesia': 'Sí',
         'Estado': 'Asiste',
