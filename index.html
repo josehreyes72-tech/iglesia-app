@@ -821,7 +821,10 @@ async function cargarDatos() {
       return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
     });
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
-    MISIONERO = mis.filter(r => getNombreHermano(r));
+    MISIONERO = mis.filter(r => {
+      const estudiante = String(r['Nombre del Estudiante'] || r['Nombre del\nEstudiante'] || '').trim();
+      return Boolean(estudiante);
+    });
 
     // Debug: ver qué devuelven las hojas
     console.log('🔍 VISITAS raw:', vis.length, vis[0] ? JSON.stringify(vis[0]).slice(0,100) : 'vacío');
