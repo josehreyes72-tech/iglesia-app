@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=42 -->
+<!-- v=43 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -1285,20 +1285,34 @@ function renderDashboard() {
   }).length;
 
   const recienBautizados = (() => {
-    // Bautizados desde hoja MIEMBROS con fecha ≤60 días
-    const desdeMembers = MIEMBROS.filter(m => {
-      const d = diasDesdeBautismo(m);
-      return d !== null && d <= 60;
-    }).map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase());
+    // 1) Bautizados desde hoja MIEMBROS con fecha de bautismo ≤60 días
+    const nombresConFecha = new Set(
+      MIEMBROS.filter(m => {
+        const d = diasDesdeBautismo(m);
+        return d !== null && d <= 60;
+      }).map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase())
+    );
+    // 2) Bautizados en MISIONERO que NO están en MIEMBROS aún
+    // Se asumen recientes porque están en el registro activo de estudios
+    const nombresEnMiembros = new Set(
+      MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase()).filter(Boolean)
+    );
+    const bautizadosSinRegistro = MISIONERO
+      .filter(r => {
+        const estado = String(r['Estado']||'').trim();
+        if (estado !== 'Bautizado') return false;
+        const nom = String(r['Nombre del\nEstudiante'] || r['Nombre del Estudiante'] || '').trim().toLowerCase();
+        if (!nom) return false;
+        // Si ya está en MIEMBROS con fecha ≤60 días, ya se contó arriba
+        if (nombresConFecha.has(nom)) return false;
+        // Si está en MIEMBROS pero la fecha es >60 días o sin fecha, no contar
+        if (nombresEnMiembros.has(nom)) return false;
+        // No está en MIEMBROS = fue bautizado recientemente desde estudios
+        return true;
+      })
+      .map(r => String(r['Nombre del\nEstudiante'] || r['Nombre del Estudiante'] || '').trim().toLowerCase());
 
-    // Bautizados recientemente desde MISIONERO (actualizados a "Bautizado" sin fecha confiable,
-    // pero que fueron añadidos al array MIEMBROS en esta sesión)
-    const nombres = new Set(desdeMembers);
-
-    // Buscar en MIEMBROS los que fueron agregados dinámicamente con estado Bautizado
-    // (tienen 'Fecha de Bautismo' asignada hoy) — ya cubierto arriba.
-    // Total único
-    return nombres.size;
+    return new Set([...nombresConFecha, ...bautizadosSinRegistro]).size;
   })();
 
   // Reporte por estado de estudios
