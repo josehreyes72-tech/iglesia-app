@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=53 -->
+<!-- v=54 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -166,7 +166,7 @@
   .hermano-search-wrap input { width: 100%; padding: 11px 12px 11px 38px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); outline: none; }
   .hermano-search-wrap input:focus { border-color: var(--azul); }
   .hermano-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
-  .hermano-dropdown { display:none; background:white; border:1px solid var(--border); border-radius:10px; margin-top:4px; max-height:200px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; position:relative; }
+  .hermano-dropdown { display:none; background:white; border:1px solid var(--border); border-radius:10px; margin-top:4px; max-height:220px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:99999; position:relative; width:100%; }
   .hermano-dropdown.show { display:block !important; }
   .hermano-opcion { padding:10px 14px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
   .hermano-opcion:last-child { border-bottom:none; }
@@ -514,6 +514,7 @@
         oninput="buscarEnInteresados('rmi',this.value)"
         onfocus="mostrarTodosInteresados('rmi')"
         onclick="mostrarTodosInteresados('rmi')"
+        ontouchstart="mostrarTodosInteresados('rmi')"
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rmi-interesado-lista"></div>
@@ -621,6 +622,7 @@
         oninput="buscarEnInteresados('rv',this.value)"
         onfocus="mostrarTodosInteresados('rv')"
         onclick="mostrarTodosInteresados('rv')"
+        ontouchstart="mostrarTodosInteresados('rv')"
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rv-interesado-lista"></div>
