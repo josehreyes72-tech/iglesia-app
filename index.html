@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=43 -->
+<!-- v=44 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -207,6 +207,10 @@
   <div class="topbar-title">
     <h1>Crecimiento Espiritual</h1>
     <p>Iglesia Adventista del Séptimo Día</p>
+  </div>
+  <div id="sync-indicator" title="Toca para sincronizar ahora" style="display:flex;align-items:center;gap:4px;font-size:11px;opacity:0.85;cursor:pointer;flex-shrink:0;" onclick="refrescarDatos()">
+    <span id="sync-icon" style="font-size:14px;transition:transform .4s;">🔄</span>
+    <span id="sync-label" style="white-space:nowrap;color:rgba(255,255,255,0.9);">Sync</span>
   </div>
 </div>
 
@@ -2567,6 +2571,176 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
 }
 
 cargarDatos();
+
+// ── REFRESCO AUTOMÁTICO EN SEGUNDO PLANO ─────────────────────────
+// Cada 5 minutos recarga los datos desde Google Sheets silenciosamente
+// para mantener sincronizados celular y PC sin recargar la página.
+
+const SYNC_INTERVALO_MS = 5 * 60 * 1000; // 5 minutos
+let syncTimer = null;
+let ultimaSync = null;
+let syncGirando = false;
+
+function formatSyncTime(fecha) {
+  if (!fecha) return 'Sync';
+  const h = fecha.getHours().toString().padStart(2,'0');
+  const m = fecha.getMinutes().toString().padStart(2,'0');
+  return h + ':' + m;
+}
+
+function setSyncEstado(estado) {
+  const icon  = document.getElementById('sync-icon');
+  const label = document.getElementById('sync-label');
+  if (!icon || !label) return;
+  if (estado === 'sincronizando') {
+    icon.style.animation = 'spin .8s linear infinite';
+    label.textContent = '...';
+    label.style.color = 'rgba(255,255,255,0.7)';
+  } else if (estado === 'ok') {
+    icon.style.animation = '';
+    ultimaSync = new Date();
+    label.textContent = formatSyncTime(ultimaSync);
+    label.style.color = 'rgba(255,255,255,0.9)';
+  } else if (estado === 'error') {
+    icon.style.animation = '';
+    icon.textContent = '⚠️';
+    label.textContent = 'Error';
+    label.style.color = '#FCA5A5';
+    // Restaurar icono normal luego de 4 s
+    setTimeout(() => {
+      const ic = document.getElementById('sync-icon');
+      if (ic) ic.textContent = '🔄';
+    }, 4000);
+  }
+}
+
+async function refrescarDatos() {
+  if (syncGirando) return;
+  syncGirando = true;
+  setSyncEstado('sincronizando');
+  try {
+    const [m, min, mis, cat, vis, est, int] = await Promise.all([
+      gvizFetchAll('MIEMBROS'),
+      gvizFetch('CRECIMIENTO_MINISTERIAL'),
+      gvizFetch('CRECIMIENTO_MISIONERO'),
+      gvizFetch('CATALOGOS'),
+      gvizFetch('VISITAS'),
+      gvizFetch('ESTUDIOS'),
+      gvizFetch('INTERESADOS'),
+    ]);
+
+    MIEMBROS = m.filter(r => {
+      const n = String(r['Apellidos y Nombres'] || '').trim();
+      return n && n !== 'Apellido, Nombre' && n !== '← Ejemplo';
+    });
+    MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
+    MISIONERO = mis.filter(r => {
+      const e = String(r['Nombre del Estudiante'] || r['Nombre del
+Estudiante'] || '').trim();
+      return Boolean(e);
+    });
+
+    VISITAS = vis.filter(r => {
+      const hermano = String(r['Hermano Visitador'] || r['Hermano'] || r['Apellidos y Nombres'] || '').trim();
+      const visitado = String(r['Nombre del Visitado'] || r['Nombre'] || '').trim();
+      return Boolean(hermano || visitado);
+    });
+
+    // Fusionar estudios desde hoja ESTUDIOS
+    est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
+      const nombre = String(e['Nombre del Estudiante']||'').trim();
+      const existe = MISIONERO.find(mx =>
+        String(mx['Nombre del
+Estudiante'] || mx['Nombre del Estudiante'] || '').trim() === nombre
+      );
+      if (!existe) {
+        MISIONERO.push({
+          'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
+          'Nombre del
+Estudiante': nombre,
+          'Nombre del Estudiante': nombre,
+          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Lección
+Actual (1-20)': e['Lección Actual (1-20)'] || 1,
+          'Teléfono': String(e['Teléfono']||'').trim(),
+          'Estado Civil': String(e['Estado Civil']||'').trim(),
+        });
+      }
+    });
+
+    // Cargar INTERESADOS
+    INTERESADOS = [];
+    int.filter(r => String(r['Nombre']||'').trim()).forEach(i => {
+      INTERESADOS.push({
+        nombre: String(i['Nombre']||'').trim(),
+        tel:    String(i['Teléfono']||'').trim(),
+        dir:    String(i['Dirección']||'').trim(),
+        tipo:   String(i['Tipo de Actividad']||'').trim(),
+        hermano:String(i['Hermano Adulto']||'').trim(),
+        obs:    String(i['Observaciones']||'').trim(),
+        fecha:  String(i['Fecha']||'').trim(),
+      });
+    });
+
+    // Re-procesar CATALOGOS
+    const catFila0 = cat[0] || {};
+    let keyDept = null, keyTal = null;
+    const catConHeaders = cat.length > 0 && !Object.keys(cat[0]).every(k => /^[A-Z]$/.test(k));
+    let catDatos;
+    if (catConHeaders) {
+      catDatos = cat;
+      Object.keys(cat[0]).forEach(k => {
+        const val = k.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        if (val.includes('DEPARTAMENTO')) keyDept = k;
+        if (val.includes('TALENTO') || val.includes('PRACTICO') || val.includes('AREA')) keyTal = k;
+      });
+    } else {
+      Object.entries(catFila0).forEach(([k, v]) => {
+        const val = String(v||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        if (val.includes('DEPARTAMENTO')) keyDept = k;
+        if (val.includes('TALENTO') || val.includes('PRACTICO') || val.includes('AREA')) keyTal = k;
+      });
+      catDatos = cat.slice(1);
+    }
+    window.CATALOGOS_DEPT = keyDept ? [...new Set(catDatos.map(r => String(r[keyDept]||'').trim()).filter(Boolean))].sort() : [];
+    window.CATALOGOS_TAL  = keyTal  ? [...new Set(catDatos.map(r => String(r[keyTal] ||'').trim()).filter(Boolean))].sort() : [];
+
+    // Re-renderizar todo
+    renderMiembros(MIEMBROS);
+    renderInteresados();
+    renderDashboard();
+    renderActualizar();
+    poblarSelectores();
+
+    setSyncEstado('ok');
+  } catch(e) {
+    console.warn('Sync error:', e);
+    setSyncEstado('error');
+  }
+  syncGirando = false;
+}
+
+function iniciarSyncAutomatico() {
+  setSyncEstado('ok'); // marcar hora inicial
+  syncTimer = setInterval(() => {
+    // Solo sincronizar si la página es visible (ahorra datos en segundo plano)
+    if (!document.hidden) {
+      refrescarDatos();
+    }
+  }, SYNC_INTERVALO_MS);
+}
+
+// Arrancar auto-sync después de que cargarDatos() termine (deja 3s de margen)
+setTimeout(iniciarSyncAutomatico, 3000);
+
+// También sincronizar cuando la página vuelve a estar visible
+// (usuario vuelve desde otra app o pestaña)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && ultimaSync) {
+    const minutos = (Date.now() - ultimaSync.getTime()) / 60000;
+    if (minutos >= 5) refrescarDatos();
+  }
+});
 </script>
 </body>
 </html>
