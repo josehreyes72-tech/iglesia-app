@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=52 -->
+<!-- v=53 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -509,8 +509,11 @@
     <label>Nombre del estudiante *</label>
     <div style="margin-bottom:6px;position:relative;">
       <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
-      <input type="text" id="rmi-interesado-input" placeholder="Buscar en lista de interesados..."
-        autocomplete="off" oninput="buscarEnInteresados('rmi',this.value)"
+      <input type="text" id="rmi-interesado-input" placeholder="Toca aquí para ver interesados..."
+        autocomplete="off"
+        oninput="buscarEnInteresados('rmi',this.value)"
+        onfocus="mostrarTodosInteresados('rmi')"
+        onclick="mostrarTodosInteresados('rmi')"
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rmi-interesado-lista"></div>
@@ -613,10 +616,11 @@
     <label>Nombre *</label>
     <div style="margin-bottom:6px;position:relative;">
       <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
-      <input type="text" id="rv-interesado-input" placeholder="Buscar en lista de interesados..."
+      <input type="text" id="rv-interesado-input" placeholder="Toca aquí para ver interesados..."
         autocomplete="off"
         oninput="buscarEnInteresados('rv',this.value)"
         onfocus="mostrarTodosInteresados('rv')"
+        onclick="mostrarTodosInteresados('rv')"
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rv-interesado-lista"></div>
