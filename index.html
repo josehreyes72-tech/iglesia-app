@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=44 -->
+<!-- v=45 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -2635,8 +2635,7 @@ async function refrescarDatos() {
     });
     MINISTERIAL = min.filter(r => r['Apellidos y Nombres']);
     MISIONERO = mis.filter(r => {
-      const e = String(r['Nombre del Estudiante'] || r['Nombre del
-Estudiante'] || '').trim();
+      const e = String(r['Nombre del Estudiante'] || r['Nombre del\nEstudiante'] || '').trim();
       return Boolean(e);
     });
 
@@ -2650,18 +2649,15 @@ Estudiante'] || '').trim();
     est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
       const nombre = String(e['Nombre del Estudiante']||'').trim();
       const existe = MISIONERO.find(mx =>
-        String(mx['Nombre del
-Estudiante'] || mx['Nombre del Estudiante'] || '').trim() === nombre
+        String(mx['Nombre del\nEstudiante'] || mx['Nombre del Estudiante'] || '').trim() === nombre
       );
       if (!existe) {
         MISIONERO.push({
           'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
-          'Nombre del
-Estudiante': nombre,
+          'Nombre del\nEstudiante': nombre,
           'Nombre del Estudiante': nombre,
           'Estado': String(e['Estado']||'En Curso').trim(),
-          'Lección
-Actual (1-20)': e['Lección Actual (1-20)'] || 1,
+          'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
           'Teléfono': String(e['Teléfono']||'').trim(),
           'Estado Civil': String(e['Estado Civil']||'').trim(),
         });
