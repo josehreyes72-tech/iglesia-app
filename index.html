@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=54 -->
+<!-- v=55 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -1297,6 +1297,25 @@ function renderDashboard() {
     else if (clasif.includes('no frecuente') || clasif === 'no frecuentes') noFrecuentes++;
   });
 
+  // Contadores de interesados asignados/sin asignar
+  const _conEstInt = new Set(MISIONERO.map(r => String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase()).filter(Boolean));
+  const _conVisInt = new Set(VISITAS.map(r => String(r['Nombre del Visitado']||r.nombre||'').trim().toLowerCase()).filter(Boolean));
+  const intSinAsignar = INTERESADOS.filter(i => {
+    const nom = i.nombre.toLowerCase();
+    return !_conEstInt.has(nom) && !_conVisInt.has(nom) && !i.hermano;
+  }).length;
+  const intAsignados = INTERESADOS.length - intSinAsignar;
+  const intDetalleHtml = INTERESADOS.length > 0
+    ? INTERESADOS.map(i => {
+        const nom = i.nombre.toLowerCase();
+        const asig = _conEstInt.has(nom) || _conVisInt.has(nom) || i.hermano;
+        return `<div style="padding:8px 0;border-top:1px solid var(--border);">
+          <div style="font-size:13px;font-weight:600;">${i.nombre || '—'}</div>
+          <div style="font-size:12px;color:var(--text2);">${i.tel ? i.tel+' · ' : ''}${i.tipo || ''} · ${asig ? '✅ Asignado' : '⏳ Sin asignar'}</div>
+        </div>`;
+      }).join('')
+    : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin interesados registrados aún</div>';
+
   const totalEst = MISIONERO.filter(r => {
     const est = String(r['Estado']||'').trim();
     return est === 'En Curso' || est === '';
@@ -1448,17 +1467,12 @@ function renderDashboard() {
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
           <div style="font-size:28px;font-weight:800;color:var(--azul);">${INTERESADOS.length}</div>
-          <div style="font-size:13px;color:var(--text2);">Total · <span style="color:var(--amber);font-weight:600;">${INTERESADOS.filter(i=>!i.hermano).length} sin asignar</span></div>
+          <div style="font-size:13px;color:var(--text2);">Total · <span style="color:var(--amber);font-weight:600;">${intSinAsignar} sin asignar</span> · <span style="color:var(--green);font-weight:600;">${intAsignados} asignados</span></div>
         </div>
         <span style="font-size:20px;color:var(--text2);">▼</span>
       </div>
       <div id="detalle-interesados" style="display:none;margin-top:12px;">
-        ${INTERESADOS.length > 0 ? INTERESADOS.map(i => `
-          <div style="padding:8px 0;border-top:1px solid var(--border);">
-            <div style="font-size:13px;font-weight:600;">${i.nombre || '—'}</div>
-            <div style="font-size:12px;color:var(--text2);">${i.tel ? i.tel+' · ' : ''}${i.tipo || ''} · ${i.hermano ? '👤 '+i.hermano : '⏳ Sin asignar'}</div>
-          </div>`).join('')
-        : '<div style="font-size:13px;color:var(--text2);padding:8px 0;">Sin interesados registrados aún</div>'}
+        ${intDetalleHtml}
       </div>
     </div>
 
