@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=45 -->
+<!-- v=47 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -731,7 +731,7 @@
 <script>
 const SHEET_ID = '1U_RhpC8ILMV_Xw_-BGSen453rzwosS8oM5yLMy6REiY';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSCeYVLjYt13lcZkmxG8jkCCNmiAJEUZCweuPvIBLjgj8gQbUp0f3pJS_d1qmIJxil/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcuGMkOaq5TUbj9i5SLVDkqhRTwu081NAgGl3t-S7lnmZ0u5jYmunzla62VYt-pKT2/exec';
 
 // Función central para grabar en Google Sheets automáticamente
 async function guardarEnSheets(tipo, fila) {
@@ -2443,18 +2443,21 @@ function actualizarEstadoEstudio(idx, nuevoEstado) {
     }
   }
 
-  // Grabar actualización en Sheets
-  guardarEnSheets('ESTUDIOS', {
-    'Fecha': new Date().toLocaleDateString('es-BO'),
-    'Nombre del Hermano': getNombreHermano(estudio),
-    'Nombre del Estudiante': String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim(),
-    'Teléfono': estudio['Teléfono'] || '',
-    'Estado Civil': estudio['Estado Civil'] || '',
-    'Lección Actual (1-20)': estudio['Lección\nActual (1-20)'] || '',
-    'Estado': nuevoEstado,
-    'Observaciones': estudio['Observaciones'] || '',
-    'Registrado por': estudio['Registrado por'] || '',
-  });
+  // Grabar actualización en Sheets — actualiza la celda existente (no agrega fila nueva)
+  const nomEstudiante = String(estudio['Nombre del\nEstudiante'] || estudio['Nombre del Estudiante'] || '').trim();
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'updateEstado',
+      hoja: 'ESTUDIOS',
+      nombre: nomEstudiante,
+      colNombre: 'Nombre del Estudiante',
+      colEstado: 'Estado',
+      estado: nuevoEstado,
+    }),
+  }).catch(e => console.warn('updateEstado error:', e));
 
   renderActualizar();
   renderDashboard();
@@ -2557,18 +2560,26 @@ function actualizarEstadoVisita(idx, nuevoEstado) {
   if (!VISITAS[idx]) return;
   VISITAS[idx]['Estado de la Visita'] = nuevoEstado;
   VISITAS[idx].estado = nuevoEstado;
+  // Actualizar celda en Sheets
+  const nomVisitado = String(VISITAS[idx]['Nombre del Visitado'] || VISITAS[idx].nombre || '').trim();
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'updateEstado',
+      hoja: 'VISITAS',
+      nombre: nomVisitado,
+      colNombre: 'Nombre del Visitado',
+      colEstado: 'Estado de la Visita',
+      estado: nuevoEstado,
+    }),
+  }).catch(e => console.warn('updateEstadoVisita error:', e));
   renderActualizar();
   renderDashboard();
   showToast(`✅ Visita actualizada: ${nuevoEstado}`);
 }
 
-function actualizarEstadoEstudio(idx, nuevoEstado) {
-  if (!MISIONERO[idx]) return;
-  MISIONERO[idx]['Estado'] = nuevoEstado;
-  renderActualizar();
-  renderDashboard();
-  showToast(`✅ Estudio actualizado: ${nuevoEstado}`);
-}
+// (función duplicada eliminada)
 
 cargarDatos();
 
