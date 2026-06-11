@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=51 -->
+<!-- v=52 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -614,7 +614,9 @@
     <div style="margin-bottom:6px;position:relative;">
       <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📋</span>
       <input type="text" id="rv-interesado-input" placeholder="Buscar en lista de interesados..."
-        autocomplete="off" oninput="buscarEnInteresados('rv',this.value)"
+        autocomplete="off"
+        oninput="buscarEnInteresados('rv',this.value)"
+        onfocus="mostrarTodosInteresados('rv')"
         style="width:100%;padding:9px 12px 9px 32px;font-size:13px;border:1px solid #BBF7D0;border-radius:8px;background:#F0FDF4;color:var(--text);outline:none;">
     </div>
     <div class="hermano-dropdown" id="rv-interesado-lista"></div>
@@ -2354,6 +2356,24 @@ function interesadosDisponibles(prefix) {
     if (conVisita.has(nom)) return false;
     return true;
   });
+}
+
+function mostrarTodosInteresados(prefix) {
+  const listaEl = document.getElementById(`${prefix}-interesado-lista`);
+  if (!listaEl) return;
+  const lista = interesadosDisponibles(prefix);
+  if (!lista.length) {
+    listaEl.innerHTML = '<div class="hermano-opcion" style="color:var(--text2);font-size:13px;">No hay interesados disponibles</div>';
+    listaEl.className = 'hermano-dropdown show';
+    return;
+  }
+  listaEl.innerHTML = lista.map(i =>
+    `<div class="hermano-opcion" onclick="seleccionarInteresado('${prefix}','${encodeURIComponent(i.nombre)}')">
+      <div>${i.nombre}</div>
+      <div style="font-size:12px;color:var(--text2);">${[i.tipo, i.dir, i.tel].filter(Boolean).join(' · ')}</div>
+    </div>`
+  ).join('');
+  listaEl.className = 'hermano-dropdown show';
 }
 
 function buscarEnInteresados(prefix, q) {
