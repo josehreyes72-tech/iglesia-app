@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=50 -->
+<!-- v=51 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -1236,16 +1236,29 @@ function renderInteresados() {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No hay interesados registrados aún.</div>';
     return;
   }
-  el.innerHTML = INTERESADOS.map(int => `
+  const conEstudio = new Set(
+    MISIONERO.map(r => String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase()).filter(Boolean)
+  );
+  const conVisita = new Set(
+    VISITAS.map(r => String(r['Nombre del Visitado']||r.nombre||'').trim().toLowerCase()).filter(Boolean)
+  );
+  const sinAsignar = INTERESADOS.filter(i => {
+    const nom = i.nombre.toLowerCase();
+    return !conEstudio.has(nom) && !conVisita.has(nom) && !i.hermano;
+  });
+  if (!sinAsignar.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>Todos los interesados han sido asignados.</div>';
+    return;
+  }
+  el.innerHTML = sinAsignar.map(int => `
     <div class="card">
       <div class="int-header">
         <div>
           <div class="int-name">${int.nombre}</div>
-          <div class="int-sub">${[int.tel, int.dir].filter(Boolean).join(' · ')}</div>
+          <div class="int-sub">${[int.tel, int.dir, int.tipo].filter(Boolean).join(' · ')}</div>
         </div>
-        <span class="badge ${int.hermano ? 'b-verde' : 'b-amarillo'}">${int.hermano ? 'Asignado' : 'En espera'}</span>
+        <span class="badge b-amarillo">En espera</span>
       </div>
-      ${int.hermano ? `<div style="font-size:13px;color:var(--text2);">Hermano: <strong style="color:var(--text);">${int.hermano}</strong></div>` : ''}
       ${int.obs ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">${int.obs}</div>` : ''}
     </div>
   `).join('');
@@ -2326,22 +2339,19 @@ function showPage(id) {
 
 // ── BUSCADOR DE INTERESADOS EN FORMULARIOS ───────────────────────
 function interesadosDisponibles(prefix) {
-  // Obtener nombres que ya tienen estudio asignado en MISIONERO
   const conEstudio = new Set(
-    MISIONERO.map(r => String(r['Nombre del\nEstudiante'] || r['Nombre del Estudiante'] || '').trim().toLowerCase()).filter(Boolean)
+    MISIONERO.map(r => String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase()).filter(Boolean)
   );
-  // Obtener nombres que ya tienen visita registrada en VISITAS
   const conVisita = new Set(
-    VISITAS.map(r => String(r['Nombre del Visitado'] || r.nombre || '').trim().toLowerCase()).filter(Boolean)
+    VISITAS.map(r => String(r['Nombre del Visitado']||r.nombre||'').trim().toLowerCase()).filter(Boolean)
   );
-  const tipoFiltro = prefix === 'rmi' ? ['estudio','estudio bíblico'] : ['visita'];
   return INTERESADOS.filter(i => {
     if (!i.nombre) return false;
-    const tipo = String(i.tipo || '').toLowerCase();
-    if (!tipoFiltro.some(t => tipo.includes(t))) return false;
-    if (i.asignado) return false;
-    // Excluir si ya tiene estudio bíblico asignado
-    if (prefix === 'rmi' && conEstudio.has(i.nombre.toLowerCase())) return false;
+    if (i.asignado || i.hermano) return false;
+    const nom = i.nombre.toLowerCase();
+    // Excluir si ya tiene estudio o visita asignada
+    if (conEstudio.has(nom)) return false;
+    if (conVisita.has(nom)) return false;
     return true;
   });
 }
