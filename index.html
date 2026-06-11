@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=47 -->
+<!-- v=48 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -840,18 +840,22 @@ async function cargarDatos() {
       return Boolean(hermano || visitado);
     });
 
-    // Agregar estudios desde hoja ESTUDIOS (evitar duplicados)
+    // Agregar/actualizar estudios desde hoja ESTUDIOS (fuente de verdad para Estado)
     est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
       const nombre = String(e['Nombre del Estudiante']||'').trim();
-      const existe = MISIONERO.find(m =>
+      const estadoEst = String(e['Estado']||'En Curso').trim();
+      const existeIdx = MISIONERO.findIndex(m =>
         String(m['Nombre del\nEstudiante'] || m['Nombre del Estudiante'] || '').trim() === nombre
       );
-      if (!existe) {
+      if (existeIdx >= 0) {
+        // Actualizar el Estado con el valor de ESTUDIOS (es la fuente de verdad)
+        MISIONERO[existeIdx]['Estado'] = estadoEst;
+      } else {
         MISIONERO.push({
           'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
           'Nombre del\nEstudiante': nombre,
           'Nombre del Estudiante': nombre,
-          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Estado': estadoEst,
           'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
           'Teléfono': String(e['Teléfono']||'').trim(),
           'Estado Civil': String(e['Estado Civil']||'').trim(),
@@ -2656,18 +2660,21 @@ async function refrescarDatos() {
       return Boolean(hermano || visitado);
     });
 
-    // Fusionar estudios desde hoja ESTUDIOS
+    // Fusionar estudios desde hoja ESTUDIOS (fuente de verdad para Estado)
     est.filter(r => String(r['Nombre del Estudiante']||'').trim()).forEach(e => {
       const nombre = String(e['Nombre del Estudiante']||'').trim();
-      const existe = MISIONERO.find(mx =>
+      const estadoEst = String(e['Estado']||'En Curso').trim();
+      const existeIdx = MISIONERO.findIndex(mx =>
         String(mx['Nombre del\nEstudiante'] || mx['Nombre del Estudiante'] || '').trim() === nombre
       );
-      if (!existe) {
+      if (existeIdx >= 0) {
+        MISIONERO[existeIdx]['Estado'] = estadoEst;
+      } else {
         MISIONERO.push({
           'Nombre del Hermano': String(e['Nombre del Hermano']||'').trim(),
           'Nombre del\nEstudiante': nombre,
           'Nombre del Estudiante': nombre,
-          'Estado': String(e['Estado']||'En Curso').trim(),
+          'Estado': estadoEst,
           'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
           'Teléfono': String(e['Teléfono']||'').trim(),
           'Estado Civil': String(e['Estado Civil']||'').trim(),
