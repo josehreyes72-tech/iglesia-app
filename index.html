@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=56 -->
+<!-- v=57 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -2371,9 +2371,17 @@ function interesadosDisponibles(prefix) {
     if (!i.nombre) return false;
     if (i.asignado || i.hermano) return false;
     const nom = i.nombre.toLowerCase();
-    // Excluir si ya tiene estudio o visita asignada
     if (conEstudio.has(nom)) return false;
     if (conVisita.has(nom)) return false;
+    // Filtrar por tipo de actividad
+    const tipo = String(i.tipo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (prefix === 'rmi') {
+      // Estudios: excluir interesados de tipo visita
+      if (tipo && tipo.includes('visita') && !tipo.includes('estudio')) return false;
+    } else if (prefix === 'rv') {
+      // Visitas: excluir interesados de tipo estudio
+      if (tipo && tipo.includes('estudio') && !tipo.includes('visita')) return false;
+    }
     return true;
   });
 }
