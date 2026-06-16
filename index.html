@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=57 -->
+<!-- v=58 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -560,7 +560,10 @@
   </div>
   <div class="form-group">
     <label>Registrado por</label>
-    <input type="text" id="rmi-registrador" placeholder="Su nombre">
+    <select id="rmi-registrador-select" onchange="seleccionarRegistrador('rmi')" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);margin-bottom:6px;">
+      <option value="">— Seleccionar nombre —</option>
+    </select>
+    <input type="text" id="rmi-registrador" placeholder="O escribir nombre manualmente">
   </div>
   <button class="btn-primary" onclick="guardarMisionero()">Guardar estudio</button>
   <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
@@ -683,7 +686,10 @@
   </div>
   <div class="form-group">
     <label>Registrado por</label>
-    <input type="text" id="rv-registrador" placeholder="Su nombre">
+    <select id="rv-registrador-select" onchange="seleccionarRegistrador('rv')" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);margin-bottom:6px;">
+      <option value="">— Seleccionar nombre —</option>
+    </select>
+    <input type="text" id="rv-registrador" placeholder="O escribir nombre manualmente">
   </div>
   <button class="btn-primary" onclick="guardarVisitacion()">Guardar visita</button>
   <button class="btn-secondary" onclick="showPage('reg-misionero-tipo')">Cancelar</button>
@@ -1516,6 +1522,7 @@ function validarLeccion(input) {
 
 function poblarSelectores() {
   const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
+  poblarSelectRegistrador();
 
   // Departamentos y Talentos desde hoja CATALOGOS (fuente correcta)
   const deptsHoja = window.CATALOGOS_DEPT || [];
@@ -2384,6 +2391,26 @@ function interesadosDisponibles(prefix) {
     }
     return true;
   });
+}
+
+// ── REGISTRADOR: poblar select con nombres existentes ────────────
+function poblarSelectRegistrador() {
+  const nombres = new Set();
+  MISIONERO.forEach(r => { const n = String(r['Registrado por']||'').trim(); if(n) nombres.add(n); });
+  VISITAS.forEach(r => { const n = String(r['Registrado por']||'').trim(); if(n) nombres.add(n); });
+  const opts = ['<option value="">— Seleccionar nombre —</option>',
+    ...[...nombres].sort().map(n => `<option value="${n}">${n}</option>`)
+  ].join('');
+  ['rmi-registrador-select','rv-registrador-select'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+function seleccionarRegistrador(prefix) {
+  const sel = document.getElementById(`${prefix}-registrador-select`);
+  const inp = document.getElementById(`${prefix}-registrador`);
+  if (sel && inp && sel.value) inp.value = sel.value;
 }
 
 function mostrarTodosInteresados(prefix) {
