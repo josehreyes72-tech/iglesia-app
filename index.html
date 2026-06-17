@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=60 -->
+<!-- v=61 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -812,6 +812,10 @@
       <label>Instructor CeC</label>
       <input type="text" id="cec-instructor" placeholder="Nombre del instructor">
     </div>
+  </div>
+  <div class="form-group" style="margin-top:8px;">
+    <label>Registrado por</label>
+    <input type="text" id="cec-registrador" placeholder="Su nombre" list="registradores-list">
   </div>
   <input type="hidden" id="cec-hermano-nombre" value="">
   <button class="btn-primary" onclick="guardarCeC()" style="margin-top:8px;">💾 Guardar</button>
@@ -2284,10 +2288,13 @@ function guardarMinisterial() {
     'Registrado por': document.getElementById('rm-registrador')?.value.trim() || '',
   };
 
-  MINISTERIAL.push(datos);
+  // Actualizar en memoria (reemplazar registro existente o agregar nuevo)
+  const idxMin = MINISTERIAL.findIndex(r => String(r['Apellidos y Nombres']||'').trim() === datos['Apellidos y Nombres']);
+  if (idxMin >= 0) MINISTERIAL[idxMin] = {...MINISTERIAL[idxMin], ...datos};
+  else MINISTERIAL.push(datos);
 
-  // Grabar en Sheets
-  guardarEnSheets('CRECIMIENTO_MINISTERIAL', datos);
+  // Grabar en Sheets: upsert (actualizar si existe, agregar si no)
+  upsertMinisterial(datos);
 
   // Limpiar
   document.querySelectorAll('#rm-areas-apoyo input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -2804,6 +2811,23 @@ function actualizarEstadoVisita(idx, nuevoEstado) {
 
 // (función duplicada eliminada)
 
+// ── UPSERT MINISTERIAL ───────────────────────────────────────────
+// Actualiza la fila si el hermano ya existe, agrega si es nuevo
+async function upsertMinisterial(datos) {
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'upsertRow',
+        hoja: 'CRECIMIENTO_MINISTERIAL',
+        colClave: 'Apellidos y Nombres',
+        fila: datos,
+      }),
+    });
+  } catch(e) { console.warn('upsertMinisterial error:', e); }
+}
+
 // ── RECIÉN BAUTIZADOS & CRECIENDO EN CRISTO ─────────────────────
 
 const GESTION_ACTUAL = 2026;
@@ -2859,13 +2883,13 @@ function renderBautizados() {
   el.innerHTML = todos.map(b => {
     // Buscar datos CeC en MINISTERIAL
     const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === b.nombre.toLowerCase()).slice(-1)[0];
-    const cecEst = minReg ? String(minReg['Creciendo en Cristo']||'') : '';
-    const cecSem = minReg ? String(minReg['Semana CeC']||'') : '';
-    const cecIns = minReg ? String(minReg['Instructor CeC']||'') : '';
+    const cecEstRaw = minReg ? String(minReg['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'') : '';
+    const cecSem = minReg ? String(minReg['Semana CeC']||'').trim() : '';
+    const cecIns = minReg ? String(minReg['Instructor CeC']||'').trim() : '';
 
-    let cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#FEF3C7;color:#92400E;">Sin iniciar</span>';
-    if (cecEst === 'si') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#D1FAE5;color:#065F46;">✅ Completó</span>';
-    else if (cecEst === 'en-curso') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#DBEAFE;color:#1E40AF;">📖 Sem. ' + (cecSem||'?') + '/7</span>';
+    let cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#FEF3C7;color:#92400E;font-weight:600;">⏳ Sin iniciar</span>';
+    if (cecEstRaw === 'si') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#D1FAE5;color:#065F46;font-weight:600;">✅ Completó</span>';
+    else if (cecEstRaw === 'en-curso' || cecEstRaw === 'en curso') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#DBEAFE;color:#1E40AF;font-weight:600;">📖 Sem. ' + (cecSem||'?') + '/7</span>';
 
     return `<div class="card" style="cursor:pointer;" onclick="abrirCeC('${encodeURIComponent(b.nombre)}')">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -2937,6 +2961,7 @@ function guardarCeC() {
   const estado = document.getElementById('cec-estado').value;
   const semana = document.getElementById('cec-semana').value;
   const instructor = document.getElementById('cec-instructor').value.trim();
+  const registrador = document.getElementById('cec-registrador')?.value.trim() || '';
 
   if (!estado) { showToast('⚠️ Selecciona el estado del curso'); return; }
 
@@ -2946,29 +2971,28 @@ function guardarCeC() {
     MINISTERIAL[idx]['Creciendo en Cristo'] = estado;
     MINISTERIAL[idx]['Semana CeC'] = semana;
     MINISTERIAL[idx]['Instructor CeC'] = instructor;
-    // Actualizar en Sheets usando updateEstado para la columna
-    fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'updateEstado',
-        hoja: 'CRECIMIENTO_MINISTERIAL',
-        nombre: nombre,
-        colNombre: 'Apellidos y Nombres',
-        colEstado: 'Creciendo en Cristo',
-        estado: estado,
-      })
+    if (registrador) MINISTERIAL[idx]['Registrado por'] = registrador;
+    // Actualizar en Sheets — todos los campos CeC
+    const camposCeC = {
+      'Creciendo en Cristo': estado,
+      'Semana CeC': semana,
+      'Instructor CeC': instructor,
+      'Registrado por': registrador,
+    };
+    Object.entries(camposCeC).forEach(([col, val]) => {
+      if (!val) return;
+      fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:col,estado:val})
+      });
     });
-    // Guardar Semana e Instructor CeC también
-    if (semana) fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:'Semana CeC',estado:semana})});
-    if (instructor) fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:'Instructor CeC',estado:instructor})});
   } else {
     // No tiene registro ministerial — crear uno nuevo mínimo
-    const nuevo = {'Apellidos y Nombres': nombre, 'Creciendo en Cristo': estado, 'Semana CeC': semana, 'Instructor CeC': instructor, 'Fecha': new Date().toLocaleDateString('es-BO')};
+    const nuevo = {'Apellidos y Nombres': nombre, 'Creciendo en Cristo': estado, 'Semana CeC': semana, 'Instructor CeC': instructor, 'Registrado por': registrador, 'Fecha': new Date().toLocaleDateString('es-BO')};
     MINISTERIAL.push(nuevo);
     guardarEnSheets('CRECIMIENTO_MINISTERIAL', nuevo);
   }
 
+  if(document.getElementById('cec-registrador')) document.getElementById('cec-registrador').value='';
   showToast('✅ Creciendo en Cristo guardado');
   showPage('bautizados');
   renderBautizados();
