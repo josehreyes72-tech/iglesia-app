@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=58 -->
+<!-- v=59 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -453,6 +453,32 @@
     </div>
     <div class="divider"></div>
     <div class="form-group">
+      <label>🌱 ¿Completó el estudio Creciendo en Cristo?</label>
+      <select id="rm-cec" onchange="toggleCeC(this)" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);">
+        <option value="">Seleccionar...</option>
+        <option value="si">Sí, lo completó</option>
+        <option value="en-curso">En curso</option>
+        <option value="no">No lo ha iniciado</option>
+      </select>
+    </div>
+    <div id="rm-cec-detalle" style="display:none;">
+      <div class="form-group">
+        <label>¿En qué semana va? (1–7)</label>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px;">
+          ${[1,2,3,4,5,6,7].map(n => `
+          <div style="display:flex;align-items:center;justify-content:center;gap:4px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeC(${n})" id="sem-cec-${n}">
+            <span style="font-size:13px;font-weight:600;">${n}</span>
+          </div>`).join('')}
+        </div>
+        <input type="hidden" id="rm-cec-semana" value="">
+      </div>
+      <div class="form-group">
+        <label>Instructor CeC</label>
+        <input type="text" id="rm-cec-instructor" placeholder="Nombre del instructor">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
       <label>Registrado por</label>
       <input type="text" id="rm-registrador" placeholder="Su nombre">
     </div>
@@ -742,6 +768,52 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- RECIÉN BAUTIZADOS 2026 -->
+<div id="page-bautizados" class="page">
+  <button class="back-btn" onclick="showPage('dashboard')">← Volver</button>
+  <div class="section-title" style="margin-bottom:4px;">🌟 Recién Bautizados</div>
+  <div id="bautizados-anio-badge" style="display:inline-block;background:var(--azul);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:12px;">Gestión 2026</div>
+  <div id="lista-bautizados" style="margin-top:8px;"></div>
+</div>
+
+<!-- DETALLE CeC DE UN BAUTIZADO -->
+<div id="page-cec-detalle" class="page">
+  <button class="back-btn" onclick="showPage('bautizados')">← Volver</button>
+  <div id="cec-nombre-titulo" class="section-title" style="margin-bottom:4px;"></div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">Programa Creciendo en Cristo</div>
+
+  <div class="form-group">
+    <label>🌱 Estado en Creciendo en Cristo</label>
+    <select id="cec-estado" onchange="toggleCeCDetalle(this)" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);">
+      <option value="">Seleccionar...</option>
+      <option value="si">Sí, lo completó</option>
+      <option value="en-curso">En curso</option>
+      <option value="no">No lo ha iniciado</option>
+    </select>
+  </div>
+  <div id="cec-semana-wrap" style="display:none;">
+    <div class="form-group">
+      <label>¿En qué semana va? (1–7)</label>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px;">
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(1)" id="sem-ced-1"><span style="font-size:13px;font-weight:600;">1</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(2)" id="sem-ced-2"><span style="font-size:13px;font-weight:600;">2</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(3)" id="sem-ced-3"><span style="font-size:13px;font-weight:600;">3</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(4)" id="sem-ced-4"><span style="font-size:13px;font-weight:600;">4</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(5)" id="sem-ced-5"><span style="font-size:13px;font-weight:600;">5</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(6)" id="sem-ced-6"><span style="font-size:13px;font-weight:600;">6</span></div>
+        <div style="display:flex;align-items:center;justify-content:center;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 4px;cursor:pointer;" onclick="selSemCeCDet(7)" id="sem-ced-7"><span style="font-size:13px;font-weight:600;">7</span></div>
+      </div>
+      <input type="hidden" id="cec-semana" value="">
+    </div>
+    <div class="form-group">
+      <label>Instructor CeC</label>
+      <input type="text" id="cec-instructor" placeholder="Nombre del instructor">
+    </div>
+  </div>
+  <input type="hidden" id="cec-hermano-nombre" value="">
+  <button class="btn-primary" onclick="guardarCeC()" style="margin-top:8px;">💾 Guardar</button>
+</div>
+
 <script>
 const SHEET_ID = '1U_RhpC8ILMV_Xw_-BGSen453rzwosS8oM5yLMy6REiY';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
@@ -873,8 +945,11 @@ async function cargarDatos() {
           'Lección\nActual (1-20)': e['Lección Actual (1-20)'] || 1,
           'Teléfono': String(e['Teléfono']||'').trim(),
           'Estado Civil': String(e['Estado Civil']||'').trim(),
+          'Registrado por': String(e['Registrado por']||'').trim(),
         });
       }
+      // Actualizar Registrado por desde ESTUDIOS en registro existente
+      if (existeIdx >= 0 && e['Registrado por']) MISIONERO[existeIdx]['Registrado por'] = String(e['Registrado por']).trim();
     });
 
     // Cargar interesados desde hoja INTERESADOS (sin duplicar)
@@ -1485,7 +1560,11 @@ function renderDashboard() {
     <div class="section-title">Grupos especiales</div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-val" style="color:#5B21B6;">${jovenes}</div><div class="stat-lbl">🧑 Jóvenes (12–19 años)</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:#B45309;">${recienBautizados}</div><div class="stat-lbl">🌟 Recién bautizados (≤60 días)</div></div>
+      <div class="stat-card" onclick="showPage('bautizados')" style="cursor:pointer;position:relative;">
+        <div class="stat-val" style="color:#B45309;">${recienBautizados}</div>
+        <div class="stat-lbl">🌟 Recién bautizados (≤60 días)</div>
+        <div style="font-size:10px;color:var(--azul);margin-top:4px;font-weight:600;">Ver listado →</div>
+      </div>
     </div>
 
     <div class="section-title">Oportunidades de crecimiento</div>
@@ -2068,11 +2147,29 @@ function cargarDatosMinisterialHermano(nombre) {
     'rm-capacitacion': registroMin['Capacitacion'],
     'rm-fe-jesus': registroMin['Fe de Jesus'],
     'rm-registrador': registroMin['Registrado por'],
+    'rm-cec': registroMin['Creciendo en Cristo'],
+    'rm-cec-instructor': registroMin['Instructor CeC'],
   };
   Object.entries(campos).forEach(([id, val]) => {
     const el = document.getElementById(id);
     if (el && val) el.value = val;
   });
+  // Mostrar detalle CeC si corresponde
+  const cecVal = registroMin['Creciendo en Cristo'];
+  if (cecVal === 'si' || cecVal === 'en-curso') {
+    const det = document.getElementById('rm-cec-detalle');
+    if (det) det.style.display = 'block';
+    const semana = String(registroMin['Semana CeC'] || '').trim();
+    if (semana) {
+      document.getElementById('rm-cec-semana').value = semana;
+      selSemCeC(parseInt(semana));
+    }
+  }
+  // Mostrar detalle Fe de Jesús si corresponde
+  if (registroMin['Fe de Jesus'] === 'no' || registroMin['Fe de Jesus'] === 'no-sabe') {
+    const det = document.getElementById('rm-fe-jesus-detalle');
+    if (det) det.style.display = 'block';
+  }
 }
 
 
@@ -2119,11 +2216,30 @@ function getHermanoVal(id) {
 function toggleFeJesus(sel) {
   const detalle = document.getElementById('rm-fe-jesus-detalle');
   if (!detalle) return;
-  // Mostrar para ambos casos - lecciones siempre con selección múltiple
   detalle.style.display = (sel.value === 'no' || sel.value === 'no-sabe') ? 'block' : 'none';
-  // Siempre mostrar lecciones (múltiple)
   const lecGrid = detalle.querySelector('[style*="grid-template-columns"]');
   if (lecGrid) lecGrid.closest('.form-group').style.display = 'block';
+}
+
+function toggleCeC(sel) {
+  const detalle = document.getElementById('rm-cec-detalle');
+  if (!detalle) return;
+  detalle.style.display = (sel.value === 'si' || sel.value === 'en-curso') ? 'block' : 'none';
+  document.getElementById('rm-cec-semana').value = '';
+  for (let i = 1; i <= 7; i++) {
+    const el = document.getElementById('sem-cec-' + i);
+    if (el) { el.style.background = '#F0FDF4'; el.style.borderColor = '#BBF7D0'; el.querySelector('span').style.color = ''; }
+  }
+}
+
+function selSemCeC(n) {
+  document.getElementById('rm-cec-semana').value = n;
+  for (let i = 1; i <= 7; i++) {
+    const el = document.getElementById('sem-cec-' + i);
+    if (!el) continue;
+    if (i === n) { el.style.background = '#065F46'; el.style.borderColor = '#065F46'; el.querySelector('span').style.color = 'white'; }
+    else { el.style.background = '#F0FDF4'; el.style.borderColor = '#BBF7D0'; el.querySelector('span').style.color = ''; }
+  }
 }
 
 
@@ -2159,6 +2275,9 @@ function guardarMinisterial() {
     'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
     'Lecciones Faltantes': lecFaltantes,
     'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
+    'Creciendo en Cristo': document.getElementById('rm-cec')?.value || '',
+    'Semana CeC': document.getElementById('rm-cec-semana')?.value || '',
+    'Instructor CeC': document.getElementById('rm-cec-instructor')?.value.trim() || '',
     'Registrado por': document.getElementById('rm-registrador')?.value.trim() || '',
   };
 
@@ -2175,6 +2294,11 @@ function guardarMinisterial() {
   ['rm-dia','rm-horario','rm-doctrinas','rm-estructura','rm-fe-jesus'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   if(document.getElementById('rm-instructor')) document.getElementById('rm-instructor').value='';
   if(document.getElementById('rm-fe-jesus-detalle')) document.getElementById('rm-fe-jesus-detalle').style.display='none';
+  if(document.getElementById('rm-cec')) document.getElementById('rm-cec').value='';
+  if(document.getElementById('rm-cec-semana')) document.getElementById('rm-cec-semana').value='';
+  if(document.getElementById('rm-cec-instructor')) document.getElementById('rm-cec-instructor').value='';
+  if(document.getElementById('rm-cec-detalle')) document.getElementById('rm-cec-detalle').style.display='none';
+  for(let i=1;i<=7;i++){const el=document.getElementById('sem-cec-'+i);if(el){el.style.background='#F0FDF4';el.style.borderColor='#BBF7D0';const sp=el.querySelector('span');if(sp)sp.style.color='';}}
   limpiarHermanoMinisterial();
 
   showToast('✅ Actividad ministerial guardada en Sheets.');
@@ -2355,6 +2479,9 @@ function showPage(id) {
 
   // Renderizar actualizar al entrar
   if (id === 'actualizar') renderActualizar();
+
+  // Renderizar recién bautizados al entrar
+  if (id === 'bautizados') renderBautizados();
 
   // Limpiar especial para nuevo-interesado
   if (id === 'nuevo-interesado') {
@@ -2673,6 +2800,176 @@ function actualizarEstadoVisita(idx, nuevoEstado) {
 }
 
 // (función duplicada eliminada)
+
+// ── RECIÉN BAUTIZADOS & CRECIENDO EN CRISTO ─────────────────────
+
+const GESTION_ACTUAL = 2026;
+
+function renderBautizados() {
+  const el = document.getElementById('lista-bautizados');
+  if (!el) return;
+
+  // Badge de gestión
+  const badge = document.getElementById('bautizados-anio-badge');
+  if (badge) badge.textContent = 'Gestión ' + GESTION_ACTUAL;
+
+  // Bautizados del año actual desde MIEMBROS con fecha
+  const bautizadosGestion = MIEMBROS.filter(m => {
+    const baut = String(m['Bautizado']||'').toLowerCase();
+    if (baut !== 'sí' && baut !== 'si') return false;
+    const d = diasDesdeBautismo(m);
+    if (d === null) return false;
+    // Calcular si fue en la gestión actual
+    const fechaNum = m['Fecha de Bautismo'];
+    if (!fechaNum) return false;
+    const fecha = typeof fechaNum === 'number'
+      ? new Date((fechaNum - 25569) * 86400000)
+      : new Date(fechaNum);
+    return fecha.getFullYear() === GESTION_ACTUAL;
+  });
+
+  // También incluir los de MISIONERO estado Bautizado
+  const nombresEnMiembros = new Set(bautizadosGestion.map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase()));
+  const deMisionero = MISIONERO.filter(r => {
+    const est = String(r['Estado']||'').trim().toLowerCase();
+    if (!est.includes('bautiz')) return false;
+    const nom = String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase();
+    return nom && !nombresEnMiembros.has(nom);
+  });
+
+  const todos = [
+    ...bautizadosGestion.map(m => ({
+      nombre: String(m['Apellidos y Nombres']||'').trim(),
+      fuente: 'miembros'
+    })),
+    ...deMisionero.map(r => ({
+      nombre: String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim(),
+      fuente: 'misionero'
+    }))
+  ];
+
+  if (!todos.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🌟</div>No hay bautizados registrados en ' + GESTION_ACTUAL + '</div>';
+    return;
+  }
+
+  el.innerHTML = todos.map(b => {
+    // Buscar datos CeC en MINISTERIAL
+    const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === b.nombre.toLowerCase()).slice(-1)[0];
+    const cecEst = minReg ? String(minReg['Creciendo en Cristo']||'') : '';
+    const cecSem = minReg ? String(minReg['Semana CeC']||'') : '';
+    const cecIns = minReg ? String(minReg['Instructor CeC']||'') : '';
+
+    let cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#FEF3C7;color:#92400E;">Sin iniciar</span>';
+    if (cecEst === 'si') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#D1FAE5;color:#065F46;">✅ Completó</span>';
+    else if (cecEst === 'en-curso') cecBadge = '<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#DBEAFE;color:#1E40AF;">📖 Sem. ' + (cecSem||'?') + '/7</span>';
+
+    return `<div class="card" style="cursor:pointer;" onclick="abrirCeC('${encodeURIComponent(b.nombre)}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:700;font-size:14px;">${b.nombre}</div>
+          ${cecIns ? '<div style="font-size:12px;color:var(--text2);">Instructor: ' + cecIns + '</div>' : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          ${cecBadge}
+          <span style="font-size:11px;color:var(--azul);">Editar →</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirCeC(nombreEnc) {
+  const nombre = decodeURIComponent(nombreEnc);
+  document.getElementById('cec-hermano-nombre').value = nombre;
+  document.getElementById('cec-nombre-titulo').textContent = nombre;
+
+  // Pre-llenar con datos existentes
+  const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === nombre.toLowerCase()).slice(-1)[0];
+  const cecEst = minReg ? String(minReg['Creciendo en Cristo']||'') : '';
+  const cecSem = minReg ? String(minReg['Semana CeC']||'') : '';
+  const cecIns = minReg ? String(minReg['Instructor CeC']||'') : '';
+
+  document.getElementById('cec-estado').value = cecEst;
+  document.getElementById('cec-instructor').value = cecIns;
+  document.getElementById('cec-semana').value = cecSem;
+
+  // Mostrar/ocultar semana
+  const wrap = document.getElementById('cec-semana-wrap');
+  wrap.style.display = (cecEst === 'si' || cecEst === 'en-curso') ? 'block' : 'none';
+
+  // Marcar semana si existe
+  for (let i = 1; i <= 7; i++) {
+    const el = document.getElementById('sem-ced-' + i);
+    if (!el) continue;
+    if (String(i) === cecSem) {
+      el.style.background = '#065F46'; el.style.borderColor = '#065F46';
+      el.querySelector('span').style.color = 'white';
+    } else {
+      el.style.background = '#F0FDF4'; el.style.borderColor = '#BBF7D0';
+      el.querySelector('span').style.color = '';
+    }
+  }
+  showPage('cec-detalle');
+}
+
+function toggleCeCDetalle(sel) {
+  const wrap = document.getElementById('cec-semana-wrap');
+  if (wrap) wrap.style.display = (sel.value === 'si' || sel.value === 'en-curso') ? 'block' : 'none';
+}
+
+function selSemCeCDet(n) {
+  document.getElementById('cec-semana').value = n;
+  for (let i = 1; i <= 7; i++) {
+    const el = document.getElementById('sem-ced-' + i);
+    if (!el) continue;
+    if (i === n) { el.style.background = '#065F46'; el.style.borderColor = '#065F46'; el.querySelector('span').style.color = 'white'; }
+    else { el.style.background = '#F0FDF4'; el.style.borderColor = '#BBF7D0'; el.querySelector('span').style.color = ''; }
+  }
+}
+
+function guardarCeC() {
+  const nombre = document.getElementById('cec-hermano-nombre').value;
+  if (!nombre) return;
+  const estado = document.getElementById('cec-estado').value;
+  const semana = document.getElementById('cec-semana').value;
+  const instructor = document.getElementById('cec-instructor').value.trim();
+
+  if (!estado) { showToast('⚠️ Selecciona el estado del curso'); return; }
+
+  // Actualizar en MINISTERIAL en memoria
+  const idx = MINISTERIAL.findIndex(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === nombre.toLowerCase());
+  if (idx >= 0) {
+    MINISTERIAL[idx]['Creciendo en Cristo'] = estado;
+    MINISTERIAL[idx]['Semana CeC'] = semana;
+    MINISTERIAL[idx]['Instructor CeC'] = instructor;
+    // Actualizar en Sheets usando updateEstado para la columna
+    fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'updateEstado',
+        hoja: 'CRECIMIENTO_MINISTERIAL',
+        nombre: nombre,
+        colNombre: 'Apellidos y Nombres',
+        colEstado: 'Creciendo en Cristo',
+        estado: estado,
+      })
+    });
+    // Guardar Semana e Instructor CeC también
+    if (semana) fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:'Semana CeC',estado:semana})});
+    if (instructor) fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:'Instructor CeC',estado:instructor})});
+  } else {
+    // No tiene registro ministerial — crear uno nuevo mínimo
+    const nuevo = {'Apellidos y Nombres': nombre, 'Creciendo en Cristo': estado, 'Semana CeC': semana, 'Instructor CeC': instructor, 'Fecha': new Date().toLocaleDateString('es-BO')};
+    MINISTERIAL.push(nuevo);
+    guardarEnSheets('CRECIMIENTO_MINISTERIAL', nuevo);
+  }
+
+  showToast('✅ Creciendo en Cristo guardado');
+  showPage('bautizados');
+  renderBautizados();
+}
 
 cargarDatos();
 
