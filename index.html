@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=62 -->
+<!-- v=63 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -870,7 +870,9 @@ async function gvizFetchAll(sheet) {
 }
 
 function gvizFetch(sheet) {
-  return fetch(BASE + encodeURIComponent(sheet))
+  // Para CRECIMIENTO_MINISTERIAL forzamos SELECT * para incluir columnas vacías
+  const extra = (sheet === 'CRECIMIENTO_MINISTERIAL') ? '&tq=' + encodeURIComponent('select *') : '';
+  return fetch(BASE + encodeURIComponent(sheet) + extra)
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
