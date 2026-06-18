@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=61 -->
+<!-- v=62 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -2965,32 +2965,26 @@ function guardarCeC() {
 
   if (!estado) { showToast('⚠️ Selecciona el estado del curso'); return; }
 
+  // Preparar datos CeC
+  const datosCeC = {
+    'Apellidos y Nombres': nombre,
+    'Creciendo en Cristo': estado,
+    'Semana CeC': semana,
+    'Instructor CeC': instructor,
+    'Registrado por': registrador,
+    'Fecha': new Date().toLocaleDateString('es-BO'),
+  };
+
   // Actualizar en MINISTERIAL en memoria
   const idx = MINISTERIAL.findIndex(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === nombre.toLowerCase());
   if (idx >= 0) {
-    MINISTERIAL[idx]['Creciendo en Cristo'] = estado;
-    MINISTERIAL[idx]['Semana CeC'] = semana;
-    MINISTERIAL[idx]['Instructor CeC'] = instructor;
-    if (registrador) MINISTERIAL[idx]['Registrado por'] = registrador;
-    // Actualizar en Sheets — todos los campos CeC
-    const camposCeC = {
-      'Creciendo en Cristo': estado,
-      'Semana CeC': semana,
-      'Instructor CeC': instructor,
-      'Registrado por': registrador,
-    };
-    Object.entries(camposCeC).forEach(([col, val]) => {
-      if (!val) return;
-      fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'updateEstado',hoja:'CRECIMIENTO_MINISTERIAL',nombre,colNombre:'Apellidos y Nombres',colEstado:col,estado:val})
-      });
-    });
+    MINISTERIAL[idx] = {...MINISTERIAL[idx], ...datosCeC};
   } else {
-    // No tiene registro ministerial — crear uno nuevo mínimo
-    const nuevo = {'Apellidos y Nombres': nombre, 'Creciendo en Cristo': estado, 'Semana CeC': semana, 'Instructor CeC': instructor, 'Registrado por': registrador, 'Fecha': new Date().toLocaleDateString('es-BO')};
-    MINISTERIAL.push(nuevo);
-    guardarEnSheets('CRECIMIENTO_MINISTERIAL', nuevo);
+    MINISTERIAL.push(datosCeC);
   }
+
+  // Siempre usar upsertMinisterial — actualiza si existe, crea si no
+  upsertMinisterial(datosCeC);
 
   if(document.getElementById('cec-registrador')) document.getElementById('cec-registrador').value='';
   showToast('✅ Creciendo en Cristo guardado');
