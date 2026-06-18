@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=63 -->
+<!-- v=64 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -2884,7 +2884,9 @@ function renderBautizados() {
 
   el.innerHTML = todos.map(b => {
     // Buscar datos CeC en MINISTERIAL
-    const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === b.nombre.toLowerCase()).slice(-1)[0];
+    const nomBuscar = b.nombre.trim().toLowerCase();
+    const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === nomBuscar).slice(-1)[0];
+    console.log('🔍 Buscando:', nomBuscar, '| encontrado:', minReg ? 'SÍ' : 'NO', '| CeC:', minReg?.['Creciendo en Cristo']);
     const cecEstRaw = minReg ? String(minReg['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'') : '';
     const cecSem = minReg ? String(minReg['Semana CeC']||'').trim() : '';
     const cecIns = minReg ? String(minReg['Instructor CeC']||'').trim() : '';
