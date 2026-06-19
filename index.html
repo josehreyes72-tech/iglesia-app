@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=66 -->
+<!-- v=67 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -241,6 +241,12 @@
     <button class="btn-primary" onclick="showPage('nuevo-interesado')">+ Registrar nuevo interesado</button>
   </div>
   <div class="section-title">Interesados registrados</div>
+  <div style="position:relative;margin-bottom:10px;">
+    <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
+    <input type="text" id="buscar-interesado" placeholder="Buscar por nombre..."
+      oninput="filtrarListaInteresados(this.value)"
+      style="width:100%;padding:9px 12px 9px 34px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);box-sizing:border-box;">
+  </div>
   <div id="lista-interesados">
     <div class="loading"><div class="spinner"></div>Cargando...</div>
   </div>
@@ -776,7 +782,27 @@
   <button class="back-btn" onclick="showPage('dashboard')">← Volver</button>
   <div class="section-title" style="margin-bottom:4px;">🌟 Recién Bautizados</div>
   <div id="bautizados-anio-badge" style="display:inline-block;background:var(--azul);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:12px;">Gestión 2026</div>
+  <div style="position:relative;margin-bottom:10px;">
+    <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
+    <input type="text" id="buscar-bautizado" placeholder="Buscar por nombre..."
+      oninput="filtrarListaBautizados(this.value)"
+      style="width:100%;padding:9px 12px 9px 34px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);box-sizing:border-box;">
+  </div>
   <div id="lista-bautizados" style="margin-top:8px;"></div>
+</div>
+
+<!-- MIEMBROS CON CRECIENDO EN CRISTO -->
+<div id="page-cec-miembros" class="page">
+  <button class="back-btn" onclick="showPage('dashboard')">← Volver</button>
+  <div class="section-title" style="margin-bottom:4px;">🌱 Creciendo en Cristo</div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Miembros con estudio iniciado o completado</div>
+  <div style="position:relative;margin-bottom:10px;">
+    <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
+    <input type="text" id="buscar-cec" placeholder="Buscar por nombre..."
+      oninput="filtrarListaCeC(this.value)"
+      style="width:100%;padding:9px 12px 9px 34px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);box-sizing:border-box;">
+  </div>
+  <div id="lista-cec-miembros"></div>
 </div>
 
 <!-- DETALLE CeC DE UN BAUTIZADO -->
@@ -1422,6 +1448,12 @@ function renderDashboard() {
     return edad >= 12 && edad <= 19;
   }).length;
 
+  // Miembros con CeC iniciado o completado
+  const totalCeC = MINISTERIAL.filter(r => {
+    const cec = String(r['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    return cec === 'si' || cec === 'en-curso' || cec === 'en curso';
+  }).length;
+
   const recienBautizados = (() => {
     // Debug: ver estados en MISIONERO
     console.log('🔍 MISIONERO estados:', MISIONERO.map(r => ({
@@ -1569,9 +1601,14 @@ function renderDashboard() {
     <div class="section-title">Grupos especiales</div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-val" style="color:#5B21B6;">${jovenes}</div><div class="stat-lbl">🧑 Jóvenes (12–19 años)</div></div>
-      <div class="stat-card" onclick="showPage('bautizados')" style="cursor:pointer;position:relative;">
+      <div class="stat-card" onclick="showPage('bautizados')" style="cursor:pointer;">
         <div class="stat-val" style="color:#B45309;">${recienBautizados}</div>
         <div class="stat-lbl">🌟 Recién bautizados (≤60 días)</div>
+        <div style="font-size:10px;color:var(--azul);margin-top:4px;font-weight:600;">Ver listado →</div>
+      </div>
+      <div class="stat-card" onclick="showPage('cec-miembros')" style="cursor:pointer;">
+        <div class="stat-val" style="color:#065F46;">${totalCeC}</div>
+        <div class="stat-lbl">🌱 Con estudio Creciendo en Cristo</div>
         <div style="font-size:10px;color:var(--azul);margin-top:4px;font-weight:600;">Ver listado →</div>
       </div>
     </div>
@@ -2493,7 +2530,20 @@ function showPage(id) {
   if (id === 'actualizar') renderActualizar();
 
   // Renderizar recién bautizados al entrar
-  if (id === 'bautizados') renderBautizados();
+  if (id === 'bautizados') {
+    if(document.getElementById('buscar-bautizado')) document.getElementById('buscar-bautizado').value='';
+    renderBautizados();
+  }
+  // Renderizar miembros CeC al entrar
+  if (id === 'cec-miembros') {
+    if(document.getElementById('buscar-cec')) document.getElementById('buscar-cec').value='';
+    renderCeCMiembros();
+  }
+  // Ordenar interesados al entrar
+  if (id === 'interesados') {
+    if(document.getElementById('buscar-interesado')) document.getElementById('buscar-interesado').value='';
+    filtrarListaInteresados('');
+  }
 
   // Limpiar especial para nuevo-interesado
   if (id === 'nuevo-interesado') {
@@ -2830,13 +2880,80 @@ async function upsertMinisterial(datos) {
   } catch(e) { console.warn('upsertMinisterial error:', e); }
 }
 
+// ── FILTROS DE BÚSQUEDA EN LISTAS ───────────────────────────────
+
+function filtrarListaInteresados(q) {
+  const el = document.getElementById('lista-interesados');
+  if (!el) return;
+  const conEstudio = new Set(MISIONERO.map(r => String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase()).filter(Boolean));
+  const conVisita  = new Set(VISITAS.map(r => String(r['Nombre del Visitado']||r.nombre||'').trim().toLowerCase()).filter(Boolean));
+  let lista = INTERESADOS.filter(i => {
+    const nom = i.nombre.toLowerCase();
+    return !conEstudio.has(nom) && !conVisita.has(nom) && !i.hermano;
+  }).sort((a,b) => a.nombre.localeCompare(b.nombre));
+  if (q.trim()) lista = lista.filter(i => i.nombre.toLowerCase().includes(q.toLowerCase()));
+  if (!lista.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>Sin resultados para "' + q + '"</div>';
+    return;
+  }
+  el.innerHTML = lista.map((int, idx) => `
+    <div class="card">
+      <div class="int-header">
+        <div>
+          <div class="int-name"><span style="color:var(--text2);font-size:12px;margin-right:4px;">${idx+1}.</span>${int.nombre}</div>
+          <div class="int-sub">${[int.tel, int.dir, int.tipo].filter(Boolean).join(' · ')}</div>
+        </div>
+        <span class="badge b-amarillo">En espera</span>
+      </div>
+      ${int.obs ? '<div style="font-size:12px;color:var(--text2);margin-top:4px;">' + int.obs + '</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function filtrarListaBautizados(q) {
+  renderBautizados(q);
+}
+
+function filtrarListaCeC(q) {
+  renderCeCMiembros(q);
+}
+
+function renderCeCMiembros(q) {
+  const el = document.getElementById('lista-cec-miembros');
+  if (!el) return;
+  let lista = MINISTERIAL.filter(r => {
+    const cec = String(r['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    return cec === 'si' || cec === 'en-curso' || cec === 'en curso';
+  }).sort((a,b) => String(a['Apellidos y Nombres']||'').localeCompare(String(b['Apellidos y Nombres']||'')));
+  if (q && q.trim()) lista = lista.filter(r => String(r['Apellidos y Nombres']||'').toLowerCase().includes(q.toLowerCase()));
+  if (!lista.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🌱</div>' + (q ? 'Sin resultados para "'+q+'"' : 'Ningún miembro tiene CeC registrado aún') + '</div>';
+    return;
+  }
+  el.innerHTML = lista.map((r, idx) => {
+    const nombre = String(r['Apellidos y Nombres']||'').trim();
+    const cecEstRaw = String(r['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const cecSem = String(r['Semana CeC']||'').trim();
+    const cecIns = String(r['Instructor CeC']||'').trim();
+    let cecTexto = '⏳ Sin iniciar';
+    if (cecEstRaw === 'si') cecTexto = '✅ Completó CeC';
+    else if (cecEstRaw === 'en-curso' || cecEstRaw === 'en curso') cecTexto = '📖 CeC Sem. ' + (cecSem||'?') + '/7';
+    return '<div class="card">' +
+      '<div style="font-weight:700;font-size:14px;margin-bottom:4px;"><span style="color:var(--text2);font-size:12px;margin-right:4px;">' + (idx+1) + '.</span>' + nombre + '</div>' +
+      '<div style="font-size:13px;color:var(--text2);">' + cecTexto + '</div>' +
+      (cecIns ? '<div style="font-size:12px;color:var(--text2);">Instructor: ' + cecIns + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+
 // ── RECIÉN BAUTIZADOS & CRECIENDO EN CRISTO ─────────────────────
 
 const GESTION_ACTUAL = 2026;
 
-function renderBautizados() {
+function renderBautizados(filtro) {
   const el = document.getElementById('lista-bautizados');
   if (!el) return;
+  const q = filtro || document.getElementById('buscar-bautizado')?.value || '';
 
   // Badge de gestión
   const badge = document.getElementById('bautizados-anio-badge');
@@ -2877,12 +2994,16 @@ function renderBautizados() {
     }))
   ];
 
-  if (!todos.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🌟</div>No hay bautizados registrados en ' + GESTION_ACTUAL + '</div>';
+  // Ordenar alfabéticamente y filtrar por búsqueda
+  todos.sort((a,b) => a.nombre.localeCompare(b.nombre));
+  const todosFiltr = q.trim() ? todos.filter(b => b.nombre.toLowerCase().includes(q.toLowerCase())) : todos;
+
+  if (!todosFiltr.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + (q ? '🔍' : '🌟') + '</div>' + (q ? 'Sin resultados para "'+q+'"' : 'No hay bautizados registrados en ' + GESTION_ACTUAL) + '</div>';
     return;
   }
 
-  el.innerHTML = todos.map(b => {
+  el.innerHTML = todosFiltr.map((b, idx) => {
     // Buscar datos CeC en MINISTERIAL
     const nomBuscar = b.nombre.trim().toLowerCase();
     const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === nomBuscar).slice(-1)[0];
@@ -2896,7 +3017,7 @@ function renderBautizados() {
     else if (cecEstRaw === 'en-curso' || cecEstRaw === 'en curso') cecTexto = '📖 CeC Sem. ' + (cecSem||'?') + '/7';
 
     return `<div class="card" style="cursor:pointer;" onclick="abrirCeC('${encodeURIComponent(b.nombre)}')">
-      <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${b.nombre}</div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px;"><span style="color:var(--text2);font-size:12px;margin-right:4px;">${idx+1}.</span>${b.nombre}</div>
       <div style="font-size:13px;color:var(--text2);">${cecTexto}</div>
       ${cecIns ? '<div style="font-size:12px;color:var(--text2);">Instructor: ' + cecIns + '</div>' : ''}
       <div style="font-size:12px;color:var(--azul);margin-top:4px;">Tocar para editar →</div>
