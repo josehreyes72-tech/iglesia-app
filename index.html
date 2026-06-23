@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=67 -->
+<!-- v=68 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -198,6 +198,21 @@
   .tipo-misionero-card { background: white; border-radius: 14px; padding: 20px 14px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 2px solid var(--border); transition: border-color .2s; }
   .tipo-misionero-card:active { transform: scale(0.96); }
   .tipo-misionero-card.selected { border-color: var(--azul); background: #EFF6FF; }
+
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; }
+  .print-header { text-align: center; margin-bottom: 16px; border-bottom: 2px solid #1E3A5F; padding-bottom: 10px; }
+  .print-header h2 { font-size: 18px; color: #1E3A5F; margin: 0; }
+  .print-header p { font-size: 12px; color: #666; margin: 4px 0 0; }
+  .print-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .print-table th { background: #1E3A5F; color: white; padding: 6px 8px; text-align: left; }
+  .print-table td { padding: 5px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  .print-table tr:nth-child(even) td { background: #f5f5f5; }
+  .print-footer { margin-top: 12px; font-size: 10px; color: #999; text-align: right; }
+  nav, .topbar, .back-btn, .btn-primary, .btn-secondary, input, select, button { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -240,7 +255,10 @@
   <div style="margin-top:8px;margin-bottom:14px;">
     <button class="btn-primary" onclick="showPage('nuevo-interesado')">+ Registrar nuevo interesado</button>
   </div>
-  <div class="section-title">Interesados registrados</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <div class="section-title" style="margin:0;">Interesados registrados</div>
+    <button onclick="imprimirLista('interesados')" style="font-size:12px;padding:5px 10px;background:#1E3A5F;color:white;border:none;border-radius:8px;cursor:pointer;">🖨️ Imprimir</button>
+  </div>
   <div style="position:relative;margin-bottom:10px;">
     <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
     <input type="text" id="buscar-interesado" placeholder="Buscar por nombre..."
@@ -776,12 +794,17 @@
 </nav>
 
 <div class="toast" id="toast"></div>
+<div id="print-area" style="display:none;"></div>
 
 <!-- RECIÉN BAUTIZADOS 2026 -->
 <div id="page-bautizados" class="page">
   <button class="back-btn" onclick="showPage('dashboard')">← Volver</button>
   <div class="section-title" style="margin-bottom:4px;">🌟 Recién Bautizados</div>
   <div id="bautizados-anio-badge" style="display:inline-block;background:var(--azul);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:12px;">Gestión 2026</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <div style="font-size:13px;color:var(--text2);">Lista de bautizados</div>
+    <button onclick="imprimirLista('bautizados')" style="font-size:12px;padding:5px 10px;background:#1E3A5F;color:white;border:none;border-radius:8px;cursor:pointer;">🖨️ Imprimir</button>
+  </div>
   <div style="position:relative;margin-bottom:10px;">
     <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
     <input type="text" id="buscar-bautizado" placeholder="Buscar por nombre..."
@@ -795,7 +818,10 @@
 <div id="page-cec-miembros" class="page">
   <button class="back-btn" onclick="showPage('dashboard')">← Volver</button>
   <div class="section-title" style="margin-bottom:4px;">🌱 Creciendo en Cristo</div>
-  <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Miembros con estudio iniciado o completado</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <div style="font-size:13px;color:var(--text2);">Miembros con estudio iniciado o completado</div>
+    <button onclick="imprimirLista('cec')" style="font-size:12px;padding:5px 10px;background:#1E3A5F;color:white;border:none;border-radius:8px;cursor:pointer;">🖨️ Imprimir</button>
+  </div>
   <div style="position:relative;margin-bottom:10px;">
     <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
     <input type="text" id="buscar-cec" placeholder="Buscar por nombre..."
@@ -2878,6 +2904,86 @@ async function upsertMinisterial(datos) {
       }),
     });
   } catch(e) { console.warn('upsertMinisterial error:', e); }
+}
+
+// ── IMPRESIÓN DE LISTADOS ────────────────────────────────────────
+function imprimirLista(tipo) {
+  const fecha = new Date().toLocaleDateString('es-BO', {year:'numeric',month:'long',day:'numeric'});
+  let titulo = '', columnas = [], filas = [];
+
+  if (tipo === 'interesados') {
+    titulo = 'Listado de Interesados';
+    columnas = ['N°','Nombre','Teléfono','Dirección','Tipo','Observaciones'];
+    const conEstudio = new Set(MISIONERO.map(r => String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase()).filter(Boolean));
+    const conVisita  = new Set(VISITAS.map(r => String(r['Nombre del Visitado']||r.nombre||'').trim().toLowerCase()).filter(Boolean));
+    const lista = INTERESADOS
+      .filter(i => { const n=i.nombre.toLowerCase(); return !conEstudio.has(n)&&!conVisita.has(n)&&!i.hermano; })
+      .sort((a,b) => a.nombre.localeCompare(b.nombre));
+    filas = lista.map((i, idx) => [idx+1, i.nombre, i.tel||'—', i.dir||'—', i.tipo||'—', i.obs||'—']);
+
+  } else if (tipo === 'bautizados') {
+    titulo = 'Listado de Recién Bautizados — Gestión ' + GESTION_ACTUAL;
+    columnas = ['N°','Nombre','Estado CeC','Semana','Instructor CeC'];
+    const bautizadosGestion = MIEMBROS.filter(m => {
+      const baut = String(m['Bautizado']||'').toLowerCase();
+      if (baut !== 'sí' && baut !== 'si') return false;
+      const fechaNum = m['Fecha de Bautismo'];
+      if (!fechaNum) return false;
+      const fecha = typeof fechaNum === 'number' ? new Date((fechaNum-25569)*86400000) : new Date(fechaNum);
+      return fecha.getFullYear() === GESTION_ACTUAL;
+    });
+    const nombresEnMiembros = new Set(bautizadosGestion.map(m => String(m['Apellidos y Nombres']||'').trim().toLowerCase()));
+    const deMisionero = MISIONERO.filter(r => {
+      const est = String(r['Estado']||'').trim().toLowerCase();
+      if (!est.includes('bautiz')) return false;
+      const nom = String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim().toLowerCase();
+      return nom && !nombresEnMiembros.has(nom);
+    });
+    const todos = [
+      ...bautizadosGestion.map(m => ({nombre: String(m['Apellidos y Nombres']||'').trim()})),
+      ...deMisionero.map(r => ({nombre: String(r['Nombre del\nEstudiante']||r['Nombre del Estudiante']||'').trim()}))
+    ].sort((a,b) => a.nombre.localeCompare(b.nombre));
+    filas = todos.map((b, idx) => {
+      const minReg = MINISTERIAL.filter(r => String(r['Apellidos y Nombres']||'').trim().toLowerCase() === b.nombre.toLowerCase()).slice(-1)[0];
+      const cecEst = minReg ? String(minReg['Creciendo en Cristo']||'').trim() : '—';
+      const cecSem = minReg ? String(minReg['Semana CeC']||'').trim() : '—';
+      const cecIns = minReg ? String(minReg['Instructor CeC']||'').trim() : '—';
+      return [idx+1, b.nombre, cecEst||'Sin iniciar', cecSem||'—', cecIns||'—'];
+    });
+
+  } else if (tipo === 'cec') {
+    titulo = 'Listado Creciendo en Cristo — IASD HAMACAS';
+    columnas = ['N°','Nombre','Estado','Semana','Instructor'];
+    const lista = MINISTERIAL.filter(r => {
+      const cec = String(r['Creciendo en Cristo']||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      return cec === 'si' || cec === 'en-curso' || cec === 'en curso';
+    }).sort((a,b) => String(a['Apellidos y Nombres']||'').localeCompare(String(b['Apellidos y Nombres']||'')));
+    filas = lista.map((r, idx) => [
+      idx+1,
+      String(r['Apellidos y Nombres']||'').trim(),
+      String(r['Creciendo en Cristo']||'').trim(),
+      String(r['Semana CeC']||'').trim()||'—',
+      String(r['Instructor CeC']||'').trim()||'—'
+    ]);
+  }
+
+  // Generar HTML de impresión
+  const printEl = document.getElementById('print-area');
+  printEl.innerHTML = `
+    <div class="print-header">
+      <h2>${titulo}</h2>
+      <p>Iglesia Adventista del Séptimo Día — HAMACAS &nbsp;|&nbsp; ${fecha}</p>
+      <p>Total: ${filas.length} registros</p>
+    </div>
+    <table class="print-table">
+      <thead><tr>${columnas.map(c => '<th>'+c+'</th>').join('')}</tr></thead>
+      <tbody>${filas.map(f => '<tr>'+f.map(c => '<td>'+c+'</td>').join('')+'</tr>').join('')}</tbody>
+    </table>
+    <div class="print-footer">Generado por App Crecimiento Espiritual — IASD HAMACAS</div>
+  `;
+  printEl.style.display = 'block';
+  window.print();
+  printEl.style.display = 'none';
 }
 
 // ── FILTROS DE BÚSQUEDA EN LISTAS ───────────────────────────────
