@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Iglesia App">
 <title>Crecimiento Espiritual — IASD</title>
-<!-- v=68 -->
+<!-- v=69 -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -473,6 +473,31 @@
       <div class="form-group">
         <label>Nombre del instructor bíblico</label>
         <input type="text" id="rm-instructor" placeholder="Quién le dio el estudio">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label>⛪ ¿Pertenece a una Clase de Escuela Sabática?</label>
+      <select id="rm-eess" onchange="toggleEESS(this)" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);">
+        <option value="">Seleccionar...</option>
+        <option value="si">Sí</option>
+        <option value="no">No</option>
+      </select>
+    </div>
+    <div id="rm-eess-detalle" style="display:none;">
+      <div class="form-group">
+        <label>Nombre de la Clase</label>
+        <select id="rm-eess-clase" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);">
+          <option value="">Seleccionar clase...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>¿Tiene suscripción al folleto de Escuela Sabática?</label>
+        <select id="rm-eess-folleto" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);">
+          <option value="">Seleccionar...</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
       </div>
     </div>
     <div class="divider"></div>
@@ -1672,6 +1697,7 @@ function validarLeccion(input) {
 }
 
 function poblarSelectores() {
+  poblarClasesEESS();
   const nombres = [...new Set(MIEMBROS.map(m => String(m['Apellidos y Nombres']||'').trim()).filter(Boolean))].sort();
   poblarSelectRegistrador();
 
@@ -2191,6 +2217,7 @@ function limpiarHermanoMinisterial() { limpiarHermano('rm'); }
 
 // Cargar datos previos del hermano en Ministerial
 function cargarDatosMinisterialHermano(nombre) {
+  poblarClasesEESS();
   // Buscar en MINISTERIAL si ya existe un registro para este hermano
   const registroMin = MINISTERIAL.filter(r =>
     String(r['Apellidos y Nombres']||'').trim() === nombre
@@ -2219,6 +2246,9 @@ function cargarDatosMinisterialHermano(nombre) {
     'rm-capacitacion': registroMin['Capacitacion'],
     'rm-fe-jesus': registroMin['Fe de Jesus'],
     'rm-registrador': registroMin['Registrado por'],
+    'rm-eess': registroMin['Clase EESS'],
+    'rm-eess-clase': registroMin['Nombre Clase EESS'],
+    'rm-eess-folleto': registroMin['Suscripción Folleto EESS'],
     'rm-cec': registroMin['Creciendo en Cristo'],
     'rm-cec-instructor': registroMin['Instructor CeC'],
   };
@@ -2226,6 +2256,11 @@ function cargarDatosMinisterialHermano(nombre) {
     const el = document.getElementById(id);
     if (el && val) el.value = val;
   });
+  // Mostrar detalle EESS si corresponde
+  if (registroMin['Clase EESS'] === 'si') {
+    const det = document.getElementById('rm-eess-detalle');
+    if (det) det.style.display = 'block';
+  }
   // Mostrar detalle CeC si corresponde
   const cecVal = registroMin['Creciendo en Cristo'];
   if (cecVal === 'si' || cecVal === 'en-curso') {
@@ -2293,6 +2328,23 @@ function toggleFeJesus(sel) {
   if (lecGrid) lecGrid.closest('.form-group').style.display = 'block';
 }
 
+function toggleEESS(sel) {
+  const det = document.getElementById('rm-eess-detalle');
+  if (!det) return;
+  det.style.display = sel.value === 'si' ? 'block' : 'none';
+}
+
+function poblarClasesEESS() {
+  const sel = document.getElementById('rm-eess-clase');
+  if (!sel) return;
+  // Extraer clases únicas de MIEMBROS columna "Clase EESS"
+  const clases = [...new Set(
+    MIEMBROS.map(m => String(m['Clase EESS']||'').trim()).filter(Boolean)
+  )].sort();
+  sel.innerHTML = '<option value="">Seleccionar clase...</option>' +
+    clases.map(c => '<option value="'+c+'">'+c+'</option>').join('');
+}
+
 function toggleCeC(sel) {
   const detalle = document.getElementById('rm-cec-detalle');
   if (!detalle) return;
@@ -2347,6 +2399,9 @@ function guardarMinisterial() {
     'Fe de Jesus': document.getElementById('rm-fe-jesus')?.value || '',
     'Lecciones Faltantes': lecFaltantes,
     'Instructor Biblico': document.getElementById('rm-instructor')?.value.trim() || '',
+    'Clase EESS': document.getElementById('rm-eess')?.value || '',
+    'Nombre Clase EESS': document.getElementById('rm-eess-clase')?.value || '',
+    'Suscripción Folleto EESS': document.getElementById('rm-eess-folleto')?.value || '',
     'Creciendo en Cristo': document.getElementById('rm-cec')?.value || '',
     'Semana CeC': document.getElementById('rm-cec-semana')?.value || '',
     'Instructor CeC': document.getElementById('rm-cec-instructor')?.value.trim() || '',
@@ -2369,6 +2424,10 @@ function guardarMinisterial() {
   ['rm-dia','rm-horario','rm-doctrinas','rm-estructura','rm-fe-jesus'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   if(document.getElementById('rm-instructor')) document.getElementById('rm-instructor').value='';
   if(document.getElementById('rm-fe-jesus-detalle')) document.getElementById('rm-fe-jesus-detalle').style.display='none';
+  if(document.getElementById('rm-eess')) document.getElementById('rm-eess').value='';
+  if(document.getElementById('rm-eess-clase')) document.getElementById('rm-eess-clase').value='';
+  if(document.getElementById('rm-eess-folleto')) document.getElementById('rm-eess-folleto').value='';
+  if(document.getElementById('rm-eess-detalle')) document.getElementById('rm-eess-detalle').style.display='none';
   if(document.getElementById('rm-cec')) document.getElementById('rm-cec').value='';
   if(document.getElementById('rm-cec-semana')) document.getElementById('rm-cec-semana').value='';
   if(document.getElementById('rm-cec-instructor')) document.getElementById('rm-cec-instructor').value='';
@@ -2967,23 +3026,46 @@ function imprimirLista(tipo) {
     ]);
   }
 
-  // Generar HTML de impresión
-  const printEl = document.getElementById('print-area');
-  printEl.innerHTML = `
-    <div class="print-header">
-      <h2>${titulo}</h2>
-      <p>Iglesia Adventista del Séptimo Día — HAMACAS &nbsp;|&nbsp; ${fecha}</p>
-      <p>Total: ${filas.length} registros</p>
-    </div>
-    <table class="print-table">
-      <thead><tr>${columnas.map(c => '<th>'+c+'</th>').join('')}</tr></thead>
-      <tbody>${filas.map(f => '<tr>'+f.map(c => '<td>'+c+'</td>').join('')+'</tr>').join('')}</tbody>
-    </table>
-    <div class="print-footer">Generado por App Crecimiento Espiritual — IASD HAMACAS</div>
-  `;
-  printEl.style.display = 'block';
-  window.print();
-  printEl.style.display = 'none';
+  // Generar ventana con tabla lista para guardar como PDF
+  const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>${titulo}</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; color: #222; }
+  .print-header { text-align: center; margin-bottom: 16px; border-bottom: 2px solid #1E3A5F; padding-bottom: 10px; }
+  .print-header h2 { font-size: 18px; color: #1E3A5F; margin: 0 0 4px; }
+  .print-header p { font-size: 12px; color: #666; margin: 2px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 12px; }
+  th { background: #1E3A5F; color: white; padding: 6px 8px; text-align: left; }
+  td { padding: 5px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f5f5; }
+  .footer { margin-top: 14px; font-size: 10px; color: #999; text-align: right; }
+  @media print { button { display: none; } }
+</style>
+</head>
+<body>
+<div class="print-header">
+  <h2>${titulo}</h2>
+  <p>Iglesia Adventista del Séptimo Día — HAMACAS &nbsp;|&nbsp; ${fecha}</p>
+  <p>Total: ${filas.length} registros</p>
+</div>
+<button onclick="window.print()" style="margin:8px 0;padding:6px 16px;background:#1E3A5F;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;">🖨️ Imprimir / Guardar PDF</button>
+<table>
+  <thead><tr>${columnas.map(c => '<th>'+c+'</th>').join('')}</tr></thead>
+  <tbody>${filas.map(f => '<tr>'+f.map(c => '<td>'+(c||'—')+'</td>').join('')+'</tr>').join('')}</tbody>
+</table>
+<div class="footer">Generado por App Crecimiento Espiritual — IASD HAMACAS</div>
+</body></html>`;
+
+  const ventana = window.open('', '_blank');
+  if (ventana) {
+    ventana.document.write(htmlContent);
+    ventana.document.close();
+  } else {
+    showToast('⚠️ Permite ventanas emergentes para generar el PDF');
+  }
 }
 
 // ── FILTROS DE BÚSQUEDA EN LISTAS ───────────────────────────────
